@@ -1,0 +1,77 @@
+<h2 mat-dialog-title>
+  Détails du Candidat
+  <button mat-icon-button mat-dialog-close class="close-button" aria-label="Fermer">
+    <mat-icon>close</mat-icon>
+  </button>
+</h2>
+
+<mat-dialog-content class="dialog-content">
+  <!-- 📄 Lien pour consulter le CV -->
+  <div class="links-section">
+    <a [href]="data.cvUrl" target="_blank" class="cv-link">
+      <mat-icon>attach_file</mat-icon> CV
+    </a>
+    <a [href]="data.linkedinUrl" target="_blank" class="linkedin-link">
+      <mat-icon>link</mat-icon> LinkedIn
+    </a>
+
+  </div>
+  <br>
+
+  <!-- 🎯 Compétences extraites -->
+  <div class="skills-section" *ngIf="data.extractedSkills?.length > 0">
+    <h3>🎯 Compétences Extraites</h3>
+    <mat-chip-list>
+      <mat-chip *ngFor="let skill of data.extractedSkills" color="primary">
+        {{ skill }}
+      </mat-chip>
+    </mat-chip-list>
+  </div>
+  <br>
+
+  <!-- 📝 Test du candidat -->
+  <div class="test-section" *ngIf="data.testResults?.length > 0">
+    <h3>📝 Résultats du Test</h3>
+    <table mat-table [dataSource]="data.testResults" class="mat-elevation-z8">
+      <!-- Question -->
+      <ng-container matColumnDef="question">
+        <th mat-header-cell *matHeaderCellDef> Question </th>
+        <td mat-cell *matCellDef="let element"> {{ element.question }} </td>
+      </ng-container>
+
+      <!-- Réponse du candidat -->
+      <ng-container matColumnDef="answer">
+        <th mat-header-cell *matHeaderCellDef> Réponse </th>
+        <td mat-cell *matCellDef="let element"> {{ element.candidateAnswer }} </td>
+      </ng-container>
+
+      <!-- Correction -->
+      <ng-container matColumnDef="correction">
+        <th mat-header-cell *matHeaderCellDef> Statut </th>
+        <td mat-cell *matCellDef="let element">
+          <span [ngClass]="element.isCorrect ? 'correct' : 'wrong'">
+            {{ element.isCorrect ? '✔ Correct' : '❌ Faux' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="action-buttons">
+  <button (click)="acceptCandidate()" 
+          class="py-2 px-4 w-30 bg-green-500 text-white rounded hover:bg-green-600" 
+          [disabled]="!isInProgress()">
+    Accepter
+  </button>
+  
+  <button (click)="rejectCandidate()" 
+          class="py-2 px-4 w-30 bg-red-500 text-white rounded hover:bg-red-600" 
+          [disabled]="!isInProgress()">
+    Refuser
+  </button>
+</mat-dialog-actions>
+

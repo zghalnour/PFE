@@ -1,0 +1,70 @@
+<div class="admin-dashboard">
+  <!-- Barre supérieure -->
+  <header class="top-bar">
+    <!-- Menu et Logo à gauche -->
+    <div class="left-section">
+    
+      <img src="assets/logo.png" alt="Logo" class="logo">
+    </div>
+  
+
+  
+  
+    <!-- Nom utilisateur et icône utilisateur -->
+    <div class="user-info">
+      <i class="fas fa-user user-icon"></i>
+      <span class="username">Bienvenu, {{ nomUtilisateur }}</span>
+      
+    </div>
+  
+    <!-- Menu déroulant pour déconnexion -->
+    <div class="dropdown">
+      <div class="icons">
+        <i class="fas fa-bell notification-icon"></i>
+        <i class="fas fa-sign-out-alt logout-icon" (click)="logout()"></i>
+      </div>
+    </div>
+  </header>
+  
+
+<!-- Menu latéral -->
+<!-- Menu latéral -->
+<nav class="sidebar" >
+  <ul>
+    <li>
+      <a routerLink="/admin" 
+         [class.active]="isActive('/admin')" 
+         (click)="setActiveRoute('/admin')">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/users" 
+      [class.active]="isActive('/users')" 
+      (click)="setActiveRoute('/users')">
+     <i class="fas fa-users"></i>
+     <span>Utilisateurs</span>
+   </a>
+    </li>
+    <li>
+      <a routerLink="/offres" 
+         [class.active]="isActive('/offres')" 
+         (click)="setActiveRoute('/offres')">
+         <i class="fas fa-briefcase"></i>
+
+        <span>Recrutement</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/settings" 
+         [class.active]="isActive('/settings')" 
+         (click)="setActiveRoute('/settings')">
+        <i class="fas fa-cog"></i>
+        <span>Paramètres</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+

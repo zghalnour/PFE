@@ -1,0 +1,161 @@
+
+/* Contenu principal */
+.content {
+  min-height: 100vh; /* Assure que le contenu prend toute la hauteur */
+  width: calc(100% - 260px); /* Prend toute la largeur sauf la sidebar */
+  margin-left: 240px;
+  margin-top: 25px;
+  margin-right: 20px; /* Supprime la marge droite pour qu'il prenne toute la largeur */
+  padding: 20px; /* Optionnel pour l'espacement */
+  background-color: #eae8e889; /* Fond du content */
+  display: flex;
+  flex-direction: column; /* Pour bien organiser les éléments */
+}
+.offres-list {
+  display: flex;
+  flex-wrap: wrap;
+ gap:20px;
+}
+.filters {
+  display: flex;
+  margin-bottom: 20px;
+  
+}
+.offres-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.card {
+  background-color: white;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 450px;
+  max-height: 350px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+  padding: 15px;
+}
+
+.card-body.border-b {
+  border-bottom: 1px solid #e2e8f0; /* Light gray for the separation between the two parts */
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.card-body p {
+  font-size: 0.875rem;
+  color: #4a5568; /* Text gray */
+}
+
+.card-body strong {
+  font-weight: 600;
+}
+
+.card-body.flex {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-body.flex.flex-col {
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.card-body p {
+  margin-bottom: 10px;
+}
+
+.card-body .btn {
+  background-color: #f7fafc;
+  border-radius: 5px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.card-body .btn:hover {
+  background-color: #e2e8f0;
+}
+
+.card-body .btn i {
+  margin-right: 5px;
+}
+
+.text-green-500 {
+  color: green;
+}
+
+.text-red-500 {
+  color: red;
+}
+
+
+/* Style pour le bouton flottant */
+.fab.fab-new-offer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #006c8a;
+  color: white;
+  border-radius: 50%;
+  padding: 15px;
+  font-size: 24px;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.fab.fab-new-offer:hover {
+background-color: rgb(1, 175, 201);
+}
+/* Conteneur de fond semi-transparent */
+/* Formulaire flottant au centre */
+.create-offer-form {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 600px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  display: none;
+}
+
+/* Lorsque le formulaire est ouvert */
+.create-offer-form.open {
+  display: block;
+}
+.scrollbar-hidden {
+  scrollbar-width: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

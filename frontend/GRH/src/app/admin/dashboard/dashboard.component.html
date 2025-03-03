@@ -1,0 +1,45 @@
+<app-header></app-header>
+
+  
+
+  <!-- Contenu principal -->
+  <main class="content">
+    <!-- Cartes de statistiques -->
+    <div class="cards">
+      <div class="card">
+          <div class="icon"><i class="fas fa-users"></i></div>
+          <div class="number">120</div>
+          <div class="label">Total Employés</div>
+      </div>
+      <div class="card">
+          <div class="icon"><i class="fas fa-briefcase"></i></div>
+          <div class="number">15</div>
+          <div class="label">Nouvelles Embauches</div>
+      </div>
+      <div class="card">
+          <div class="icon"><i class="fas fa-user-minus"></i></div>
+          <div class="number">5</div>
+          <div class="label">Départs</div>
+      </div>
+  </div>
+
+    <!-- Graphiques -->
+    <div class="charts">
+      <!-- Partie gauche avec Line Chart et Bar Chart -->
+      <div class="charts-left">
+          <div class="chart-container">
+              <canvas id="lineChart"></canvas>
+          </div>
+          <div class="chart-container">
+              <canvas id="barChart"></canvas>
+          </div>
+        
+      </div>
+  
+      <!-- Pie Chart à droite -->
+      <div class="pie-chart">
+          <canvas id="pieChart"></canvas>
+      </div>
+  </div>
+  </main>
+

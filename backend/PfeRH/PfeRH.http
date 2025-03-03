@@ -1,0 +1,6 @@
+@PfeRH_HostAddress = http://localhost:5053
+
+GET {{PfeRH_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

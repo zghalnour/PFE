@@ -1,0 +1,176 @@
+<app-header></app-header>
+
+  <!-- Liste des offres sous forme de cartes -->
+  <main class="content">
+  
+   
+    <div class="filters">
+      <mat-form-field>
+        <mat-label>État</mat-label>
+        <mat-select [(value)]="selectedEtat" (selectionChange)="onEtatChange()">
+          <mat-option value="all">Tous</mat-option>
+          <mat-option value="Ouverte">Ouverte</mat-option>
+          <mat-option value="Fermée">Fermée</mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+    </div>
+    <div class="offres-list">
+      <div class="card bg-white w-96 shadow-xl rounded-lg" *ngFor="let offre of filteredOffres()">
+        <!-- Upper part: Job details (Title, Skills, Applications) -->
+        <div class="card-body border-b p-4">
+          <h2 class="card-title text-xl font-semibold">{{ offre.titre }}</h2>
+          <p class="text-sm text-gray-600">Description: <strong>{{ offre.description || 'Aucune description fournie' }}</strong></p>
+          <p class="text-sm text-gray-600">Compétences requises: <strong>{{ offre.competencesRequises || 'Non spécifiées' }}</strong></p>
+        
+        </div>
+    
+        <!-- Bottom part: Job state and action buttons -->
+        <div class="card-body p-4 flex flex-col items-start space-y-4">
+          <p class="text-sm text-gray-600">Nombre de candidatures: <strong>{{ offre.nbCandidatures }}</strong></p>
+          <p class="text-sm text-gray-600">
+            <strong class="{{ offre.etat === 'Ouverte' ? 'text-green-500' : 'text-red-500' }}">{{ offre.etat }}</strong>
+          </p>
+            
+          <div class="flex space-x-4">
+            <!-- Edit button -->
+            <button class="btn btn-primary text-black flex items-center space-x-2" (click)="editOffre(offre)">
+              <i class="fas fa-edit"></i>
+            </button>
+    
+            <!-- Delete button -->
+            <button class="btn btn-warning text-black flex items-center space-x-2" (click)="deleteOffre(offre.id)">
+              <i class="fas fa-trash"></i>
+            </button>
+    
+            <!-- View applications button -->
+            <button class="btn btn-secondary text-black flex items-center space-x-2" (click)="viewCandidatures(offre.id)">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+<!-- Formulaire avec 'ngIf' basé sur la variable isOpenForm -->
+<!-- Modal de création de l'offre -->
+<div *ngIf="isOpenForm" class="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
+    <!-- Partie 1 : Saisie des informations de l'offre -->
+    <div *ngIf="isFirstStep" class="flex flex-col space-y-4 items-center">
+      <h2 class="text-2xl font-semibold mb-4 text-center">Créer une nouvelle offre</h2>
+
+      <!-- Titre -->
+      <div class="w-2/4 self-start">
+        <label for="title" class="block text-lg font-medium">Titre</label>
+        <input id="title" type="text" [(ngModel)]="offer.title" class="mt-1 p-2 w-full border rounded" placeholder="Entrez le titre de l'offre" required />
+      </div>
+
+      <!-- Description -->
+      <div class="w-3/4 self-start">
+        <label for="description" class="block text-lg font-medium">Description</label>
+        <textarea id="description" [(ngModel)]="offer.description" class="mt-1 p-2 w-full border rounded" placeholder="Entrez une description de l'offre" required></textarea>
+      </div>
+
+      <!-- Compétences -->
+      <div class="w-3/4 self-start">
+        <label for="skills" class="block text-lg font-medium">Compétences requises</label>
+        <input id="skills" type="text" [(ngModel)]="offer.skills" class="mt-1 p-2 w-full border rounded" placeholder="Entrez les compétences requises" required />
+      </div>
+
+      <!-- Bouton suivant -->
+      <div class="flex justify-end gap-x-4 mt-4 w-3/4 ">
+        <!-- Bouton Précédent -->
+        <button (click)="cancelForm()" class="py-2 px-4 w-30 bg-gray-500 text-white rounded hover:bg-gray-600 ">
+          Annuler
+        </button>
+        
+        <!-- Bouton Soumettre -->
+        <button (click)="nextStep()" class="py-2 px-4 w-30 bg-blue-500 text-white rounded hover:bg-blue-600 ">
+          Suivant
+        </button>
+      </div>
+      
+    </div>
+
+    <!-- Partie 2 : Création des questions -->
+    <div *ngIf="!isFirstStep" class="flex flex-col space-y-4 items-center">
+      <h2 class="text-2xl font-semibold mb-4 text-center">Création du test associé</h2>
+    
+      <div class="max-h-[345px] overflow-y-scroll w-3/4 space-y-4 scrollbar-hidden">
+
+        <div *ngFor="let question of questions; let i = index" class="space-y-4">
+          <div>
+            <label for="question-{{i}}" class="block text-lg font-medium">Question {{i + 1}}</label>
+            <input id="question-{{i}}" type="text" [(ngModel)]="question.text" class="mt-1 p-2 w-3/4 border rounded" placeholder="Entrez la question" required />
+          </div>
+    
+          <div class="flex space-x-2">
+            <div class="flex-1">
+              <label class="block text-lg font-medium">Option A</label>
+              <input type="text" [(ngModel)]="question.options[0]" class="mt-1 p-2 w-full border rounded" placeholder="Option A" required />
+            </div>
+    
+            <div class="flex-1">
+              <label class="block text-lg font-medium">Option B</label>
+              <input type="text" [(ngModel)]="question.options[1]" class="mt-1 p-2 w-full border rounded" placeholder="Option B" required />
+            </div>
+    
+            <div class="flex-1">
+              <label class="block text-lg font-medium">Option C</label>
+              <input type="text" [(ngModel)]="question.options[2]" class="mt-1 p-2 w-full border rounded" placeholder="Option C" required />
+            </div>
+          </div>
+    
+          <div>
+            <label class="block text-lg font-medium">Réponse correcte</label>
+            <select [(ngModel)]="question.correctAnswer" class="mt-1 p-2 w-2/4 border rounded" required>
+              <option value="A">Option A</option>
+              <option value="B">Option B</option>
+              <option value="C">Option C</option>
+            </select>
+          </div>
+    
+          <div class="flex space-x-4 mt-4">
+            <button (click)="addQuestion()" class="py-2 px-1 bg-green-500 text-white rounded hover:bg-green-600">
+              Ajouter Question
+            </button>
+          
+            <button *ngIf="questions.length > initialQuestionsCount" (click)="cancelLastQuestion()" class="py-2 px-1 bg-gray-500 text-white rounded hover:bg-gray-600">
+              Annuler Question
+            </button>
+          </div>
+          
+          
+        </div>
+    
+    </div>
+        <!-- Déplacement du conteneur des boutons ici -->
+        <div class="flex justify-end gap-x-4 mt-4 w-3/4 ">
+          <!-- Bouton Précédent -->
+          <button (click)="previousStep()" class="py-2 px-4 w-30 bg-gray-500 text-white rounded hover:bg-gray-600 ">
+            Précédent
+          </button>
+          
+          <!-- Bouton Soumettre -->
+          <button (click)="submitForm()" class="py-2 px-4 w-30 bg-blue-500 text-white rounded hover:bg-blue-600 ">
+            Soumettre
+          </button>
+        </div>
+    </div>
+    
+  </div>
+</div>
+
+
+
+
+  
+  </main>
+  
+  <!-- Bouton flottant pour créer une nouvelle offre -->
+  <button class="fab fab-new-offer" (click)="toggleForm()">
+    <i class="fas fa-plus"></i>
+  </button>
+
+
+

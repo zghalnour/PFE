@@ -1,0 +1,129 @@
+/* Global */
+html,body {
+  margin: 0;
+  padding: 0;
+
+
+  height: 100%;
+  
+}
+
+/* Conteneur principal */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 70%;
+  height: 90vh;
+  background: rgb(241, 241, 241);/* Effet semi-transparent */
+  border-radius: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  backdrop-filter: blur(10px); /* Effet de verre */
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: transform 0.3s ease-in-out;
+  margin: 30px auto 30px auto;
+}
+
+/* Partie gauche avec dégradé et animation */
+.left-side {
+  width: 380px; /* Largeur ajustée */
+  height: 75vh; /* Hauteur ajustée */
+  background: linear-gradient(135deg, #b8a4cb, #3463ad);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Centre verticalement */
+  color: white;
+  padding: 40px;
+  position: relative;
+  border-radius: 20px 0 0 20px;
+}
+
+/* Logo animé */
+.logo img {
+  width: 120px;
+  height: auto;
+  animation: fadeIn 2s infinite alternate; /* Animation appliquée au logo */
+}
+
+/* Image de l'application */
+.app-image {
+  width: 100%; /* Ajuste la largeur */
+  max-height: 400px; /* Empêche qu'elle devienne trop grande */
+  margin-top: 50px; /* Espacement avec le logo */
+}
+
+/* Effet d'animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0.5;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(10px);
+  }
+}
+
+
+/* Form Box flottant */
+.box {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* Formulaire flottant */
+.form-container {
+  
+  background: white;
+  padding: 40px;
+  border-radius: 0 20px 20px 0; /* Arrondi seulement à droite */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  width: 400px;
+  
+  text-align: center;
+  position: relative;
+}
+
+
+
+/* Champs et boutons */
+input, select {
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  width: 50%;
+  padding: 12px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #9333ea;
+}
+
+/* Texte toggle */
+.toggle {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #555;
+  cursor: pointer;
+}
+
+.toggle span:hover {
+  text-decoration: underline;
+}

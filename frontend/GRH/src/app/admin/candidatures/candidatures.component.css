@@ -1,0 +1,65 @@
+
+.content {
+  min-height: 100vh; /* Assure que le contenu prend toute la hauteur */
+  width: calc(100% - 260px); /* Prend toute la largeur sauf la sidebar */
+  margin-left: 240px;
+  margin-top: 25px;
+  margin-right: 20px; /* Supprime la marge droite pour qu'il prenne toute la largeur */
+  padding: 20px; /* Optionnel pour l'espacement */
+  background-color: #eae8e889; /* Fond du content */
+  display: flex;
+  flex-direction: column; /* Pour bien organiser les éléments */
+}
+.candidatures-container {
+  margin-top: 20px;
+  padding: 20px;
+}
+
+.candidatures-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.candidature-card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.candidature-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.candidature-card p {
+  font-size: 1rem;
+  color: #4a5568;
+}
+
+.actions button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.actions .btn-primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.actions .btn-warning {
+  background-color: #f39c12;
+  color: white;
+}
+
+.actions button:hover {
+  opacity: 0.8;
+}
+
+

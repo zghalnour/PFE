@@ -1,0 +1,35 @@
+<app-header></app-header>
+<main class="content">
+  <div class="candidatures-container">
+    <h2 class="text-2xl font-semibold mb-4">Candidatures pour l'Offre: {{ offerId }}</h2>
+  
+    <div class="candidatures-list">
+      <div *ngFor="let candidature of candidatures" class="candidature-card">
+        <h3 class="text-xl font-semibold">{{ candidature.name }}</h3>
+        <div class="flex justify-between items-center">
+          <p><strong>Score AI:</strong> {{ candidature.scoreAI }}</p>
+          <p><strong>Test Score:</strong> {{ candidature.testScore }}</p>
+        </div>
+        
+        <!-- Affichage de l'état de la candidature -->
+        <div class="candidature-status mt-2">
+          <strong>
+          <span [ngClass]="{
+              'text-green-500': candidature.etat === 'accepte',
+              'text-red-500': candidature.etat === 'refuse',
+              'text-yellow-500': candidature.etat === 'en cours'
+          }">
+            {{ candidature.etat | titlecase }}
+          </span>
+        </strong> 
+        </div>
+
+        <div class="actions mt-4">
+          <button class="btn btn-primary" (click)="openDetails(candidature)">
+            Voir Détails
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
