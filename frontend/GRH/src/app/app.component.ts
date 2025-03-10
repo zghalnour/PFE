@@ -22,14 +22,14 @@ export class AppComponent implements OnInit {
       this.router.navigate(['/condidat']);
     } else {
       // Rediriger vers le dashboard correspondant au rôle
-      switch (role) {
-        case 'Admin':
+      switch (role?.toLocaleLowerCase()) {
+        case 'admin':
           this.router.navigate(['/admin']);
           break;
-        case 'GestionnaireRH':
+        case 'gestionnairerh':
           this.router.navigate(['/chef-departement']);
           break;
-        case 'Employe':
+        case 'employe':
           this.router.navigate(['/employe']);
           break;
         default:

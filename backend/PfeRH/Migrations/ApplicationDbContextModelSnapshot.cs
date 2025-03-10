@@ -385,7 +385,7 @@ namespace PfeRH.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AdminId")
+                    b.Property<int?>("AdminId")
                         .HasColumnType("int");
 
                     b.Property<string>("Competences")
@@ -413,7 +413,8 @@ namespace PfeRH.Migrations
 
                     b.HasIndex("AdminId");
 
-                    b.HasIndex("TestId");
+                    b.HasIndex("TestId")
+                        .IsUnique();
 
                     b.ToTable("Offres");
                 });
@@ -429,16 +430,11 @@ namespace PfeRH.Migrations
                     b.Property<bool>("EstCorrecte")
                         .HasColumnType("bit");
 
-                    b.Property<int>("QuestionId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Texte")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("QuestionId");
 
                     b.ToTable("OptionQuestions");
                 });
@@ -519,6 +515,21 @@ namespace PfeRH.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Option1")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Option2")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Option3")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReponseCorrecte")
+                        .HasColumnType("int");
+
                     b.Property<int>("TestId")
                         .HasColumnType("int");
 
@@ -549,8 +560,6 @@ namespace PfeRH.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CandidatureId");
-
-                    b.HasIndex("OptionChoisieId");
 
                     b.HasIndex("QuestionId");
 
@@ -600,6 +609,13 @@ namespace PfeRH.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OffreId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -707,7 +723,6 @@ namespace PfeRH.Migrations
                     b.HasBaseType("PfeRH.Models.Utilisateur");
 
                     b.Property<string>("CVPath")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.PrimitiveCollection<string>("CompetencesExtraites")
@@ -919,30 +934,17 @@ namespace PfeRH.Migrations
                 {
                     b.HasOne("PfeRH.Models.Utilisateur", "Admin")
                         .WithMany()
-                        .HasForeignKey("AdminId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AdminId");
 
                     b.HasOne("PfeRH.Models.Test", "Test")
-                        .WithMany()
-                        .HasForeignKey("TestId")
+                        .WithOne("Offre")
+                        .HasForeignKey("PfeRH.Models.Offre", "TestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Admin");
 
                     b.Navigation("Test");
-                });
-
-            modelBuilder.Entity("PfeRH.Models.OptionQuestion", b =>
-                {
-                    b.HasOne("PfeRH.Models.Question", "Question")
-                        .WithMany("Options")
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Question");
                 });
 
             modelBuilder.Entity("PfeRH.Models.Presence", b =>
@@ -986,12 +988,6 @@ namespace PfeRH.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PfeRH.Models.OptionQuestion", "OptionChoisie")
-                        .WithMany("ReponseCandidats")
-                        .HasForeignKey("OptionChoisieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("PfeRH.Models.Question", "Question")
                         .WithMany("ReponseCandidats")
                         .HasForeignKey("QuestionId")
@@ -999,8 +995,6 @@ namespace PfeRH.Migrations
                         .IsRequired();
 
                     b.Navigation("Candidature");
-
-                    b.Navigation("OptionChoisie");
 
                     b.Navigation("Question");
                 });
@@ -1050,11 +1044,6 @@ namespace PfeRH.Migrations
                     b.Navigation("Candidatures");
                 });
 
-            modelBuilder.Entity("PfeRH.Models.OptionQuestion", b =>
-                {
-                    b.Navigation("ReponseCandidats");
-                });
-
             modelBuilder.Entity("PfeRH.Models.Projet", b =>
                 {
                     b.Navigation("Taches");
@@ -1062,13 +1051,14 @@ namespace PfeRH.Migrations
 
             modelBuilder.Entity("PfeRH.Models.Question", b =>
                 {
-                    b.Navigation("Options");
-
                     b.Navigation("ReponseCandidats");
                 });
 
             modelBuilder.Entity("PfeRH.Models.Test", b =>
                 {
+                    b.Navigation("Offre")
+                        .IsRequired();
+
                     b.Navigation("Questions");
                 });
 

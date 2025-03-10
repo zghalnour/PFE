@@ -14,20 +14,23 @@ namespace PfeRH.Models
         public DateTime DatePublication { get; set; }
         public DateTime DateLimitePostulation { get; set; }
         [ForeignKey("Admin")]
-        public int AdminId { get; set; }
-        public virtual Utilisateur Admin { get; set; }
+        public int? AdminId { get; set; }
+        
+        public virtual Utilisateur? Admin { get; set; }
 
         // Liste des candidatures associées à cette offre
+        [NotMapped]
         public virtual ICollection<Candidature> Candidatures { get; set; }
+        public int TestId { get; set; } // TestId nullable
         public virtual Test Test { get; set; }
-        public string Statut
+        public string? Statut
         {
-            get => DateTime.Now > DateLimitePostulation ? "Fermée" : "Ouverte";
+            get => DateTime.Today > DateLimitePostulation ? "Fermée" : "Ouverte";
         }
         public Offre()
         {
             Candidatures = new List<Candidature>();
-            DatePublication = DateTime.Now; // Initialiser la date de publication par défaut
+            DatePublication = DateTime.Today; // Initialiser la date de publication par défaut
         }
 
         // ✅ Constructeur avec paramètres (corrigé)

@@ -153,6 +153,35 @@ namespace PfeRH.Controllers
             return Ok(new { message = "Déconnexion réussie" });
         }
 
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            try
+            {
+                // Rechercher l'utilisateur par ID
+                var user = await _userManager.FindByIdAsync(id.ToString());
+                if (user == null)
+                {
+                    return NotFound(new { message = "Utilisateur non trouvé." });
+                }
+
+                // Supprimer l'utilisateur
+                var result = await _userManager.DeleteAsync(user);
+                if (!result.Succeeded)
+                {
+                    return BadRequest(new { message = "Erreur lors de la suppression de l'utilisateur." });
+                }
+
+                // Retourner une réponse réussie
+                return Ok(new { message = "Utilisateur supprimé avec succès." });
+            }
+            catch (Exception ex)
+            {
+                // Retourner l'erreur en cas d'exception
+                return StatusCode(500, new { message = "Une erreur est survenue : " + ex.Message });
+            }
+        }
+
 
     }
 }

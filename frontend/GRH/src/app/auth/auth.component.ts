@@ -69,14 +69,14 @@ export class AuthComponent {
   }
   redirectUser(role: string) {
     console.log('Redirection vers :', role);
-    switch (role) {
-      case 'Admin':
+    switch (role.toLocaleLowerCase()) {
+      case 'admin':
         this.router.navigate(['/admin']);
         break;
-      case 'GestionnaireRH':
+      case 'gestionnairerh':
         this.router.navigate(['/chef-departement']);
         break;
-      case 'Employe':
+      case 'employe':
         this.router.navigate(['/employe']);
         break;
     

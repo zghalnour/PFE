@@ -12,13 +12,11 @@ namespace PfeRH.Models
         public string Texte { get; set; } // Texte de l'option
         public bool EstCorrecte { get; set; } // Indique si c'est la bonne réponse
 
-        [ForeignKey("Question")]
-        public int QuestionId { get; set; }
-        public virtual Question Question { get; set; }
-        public ICollection<ReponseCandidat> ReponseCandidats { get; set; }
+      
+      
         public OptionQuestion()
         {
-            ReponseCandidats = new HashSet<ReponseCandidat>(); // Initialiser la collection pour éviter les erreurs de nullité
+           // Initialiser la collection pour éviter les erreurs de nullité
         }
 
         // Constructeur avec paramètres
@@ -26,8 +24,8 @@ namespace PfeRH.Models
         {
             Texte = texte;
             EstCorrecte = estCorrecte;
-            QuestionId = questionId;
-            ReponseCandidats = new HashSet<ReponseCandidat>(); // Initialiser la collection
+           
+           // Initialiser la collection
         }
     }
 }

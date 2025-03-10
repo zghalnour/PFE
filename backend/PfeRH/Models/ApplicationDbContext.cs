@@ -54,16 +54,32 @@ namespace PfeRH.Models
                 .HasForeignKey(rc => rc.QuestionId)
                 .OnDelete(DeleteBehavior.NoAction); // Modification ici pour éviter les cycles de cascade
 
-            modelBuilder.Entity<ReponseCandidat>()
-                .HasOne(rc => rc.OptionChoisie)
-                .WithMany(o => o.ReponseCandidats)
-                .HasForeignKey(rc => rc.OptionChoisieId)
-                .OnDelete(DeleteBehavior.Cascade);
+          
             modelBuilder.Entity<Entretien>()
                .HasOne(e => e.Candidature)
                .WithMany(c => c.Entretiens)
                .HasForeignKey(e => e.CandidatureId)
                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Offre>()
+           .HasOne(o => o.Test) // Offre a un Test
+           .WithOne(t => t.Offre) // Test a une Offre
+           .HasForeignKey<Offre>(o => o.TestId) // Spécifier la clé étrangère
+           .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Offre>()
+          .HasMany(o => o.Candidatures)
+          .WithOne(c => c.Offre)
+          .HasForeignKey(c => c.OffreId);
+
+            modelBuilder.Entity<Test>()
+                .HasMany(t => t.Questions)
+                .WithOne(q => q.Test)
+                .HasForeignKey(q => q.TestId);
+            modelBuilder.Entity<Test>()
+       .HasOne(t => t.Offre)  // La relation entre Test et Offre
+       .WithOne(o => o.Test)  // Chaque Offre a un Test
+       .OnDelete(DeleteBehavior.Cascade);
+
+
         }
 
 

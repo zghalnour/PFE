@@ -35,9 +35,7 @@ namespace PfeRH.Models
             Statut = "En cours"; // Statut initial par défaut
             ScoreAI = 0.0;
             TestScore = 0.0;
-            CompetencesExtraites = Candidat?.CompetencesExtraites != null
-                ? string.Join(", ", Candidat.CompetencesExtraites)
-                : string.Empty;
+            
         }
 
         // Constructeur avec paramètres
@@ -51,9 +49,7 @@ namespace PfeRH.Models
             Entretiens = new List<Entretien>();
             ReponseCandidats = new List<ReponseCandidat>();
             DateCandidature = DateTime.Now;
-            CompetencesExtraites = Candidat?.CompetencesExtraites != null
-                ? string.Join(", ", Candidat.CompetencesExtraites)
-                : string.Empty;
+          
         }
         public void CalculerTestScore(List<ReponseCandidat> reponsesCandidat)
         {

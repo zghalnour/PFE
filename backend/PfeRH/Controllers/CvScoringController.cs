@@ -17,7 +17,7 @@ namespace PfeRH.Controllers
     public class CvScoringController : ControllerBase
     {
         [HttpPost("score-pdf")]
-        public async Task<IActionResult> ScoreCVPdf(IFormFile cv, [FromQuery] string jobOfferText)
+        public async Task<IActionResult> ScoreCVPdf(IFormFile cv,  string jobOfferText)
         {
             if (cv == null || string.IsNullOrEmpty(jobOfferText))
             {

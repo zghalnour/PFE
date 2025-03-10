@@ -10585,11 +10585,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\nourh\\OneDrive\\Documents\\Terminal\\PFE\\backend\\PfeRH\\PfeRH.csproj",
+      "projectUniqueName": "C:\\Users\\nourh\\OneDrive\\Documents\\Terminal\\PFE\\PfeGit\\PFE\\backend\\PfeRH\\PfeRH.csproj",
       "projectName": "PfeRH",
-      "projectPath": "C:\\Users\\nourh\\OneDrive\\Documents\\Terminal\\PFE\\backend\\PfeRH\\PfeRH.csproj",
+      "projectPath": "C:\\Users\\nourh\\OneDrive\\Documents\\Terminal\\PFE\\PfeGit\\PFE\\backend\\PfeRH\\PfeRH.csproj",
       "packagesPath": "C:\\Users\\nourh\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\nourh\\OneDrive\\Documents\\Terminal\\PFE\\backend\\PfeRH\\obj\\",
+      "outputPath": "C:\\Users\\nourh\\OneDrive\\Documents\\Terminal\\PFE\\PfeGit\\PFE\\backend\\PfeRH\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -10704,17 +10704,5 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1603",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Microsoft.AspNetCore.Identity 2.3.0 dépend de Microsoft.Extensions.Identity.Core (>= 2.3.0), mais Microsoft.Extensions.Identity.Core 2.3.0 est introuvable. Une meilleure correspondance approximative de Microsoft.Extensions.Identity.Core 3.0.0 a été résolue.",
-      "libraryId": "Microsoft.Extensions.Identity.Core",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    }
-  ]
+  }
 }

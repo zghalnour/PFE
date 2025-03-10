@@ -3,7 +3,7 @@
     public class Condidat : Utilisateur
     {
        
-        public string CVPath { get; set; }
+        public string? CVPath { get; set; }
         public string LinkedIn { get; set; }
        
         public string Telephone { get; set; }
