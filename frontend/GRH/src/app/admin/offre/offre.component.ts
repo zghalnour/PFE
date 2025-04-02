@@ -14,7 +14,8 @@ export class OffreComponent implements OnInit {
   isFirstStep = true;
   testDescription='';
   offre = {
-    titre: '', // Nom de la propriété modifié pour correspondre à l'API
+    titre: '',
+    typeContrat:'', // Nom de la propriété modifié pour correspondre à l'API
     description: '',
     competences: '',
     dateLimitePostulation: ''
@@ -23,33 +24,117 @@ export class OffreComponent implements OnInit {
   initialQuestionsCount: number ;  
   selectedEtat = 'all';
   searchCategory = '';
-  offres: any[] = [];
-
-
   
-  ngAfterViewInit() {
-    
+  offres: any[] = [];
+  isEditing: boolean = false; // Variable pour afficher/masquer le formulaire
+  currentOffre: any = { questions: [] };
+  currentQuestionIndex: number =0;
+
+  newQuestion = {
+    intitule: '',
+    options: ['', '', ''],
+    reponseCorrecte: 1
+  };
+
+
+
+ngOnInit() {
+  this.loadOffres();
+}
+
+previousQuestion() {
+  if (this.currentQuestionIndex > 0) {
+    this.currentQuestionIndex--;
   }
-  ngOnInit() {this.loadOffres();}
-  loadOffres() {
-    this.http.get<any[]>('http://localhost:5053/api/Offre/get-all-offres').subscribe(
-      (response) => {
-        // Transformation des données si nécessaire
-        this.offres = response.map(offre => ({
-          id:offre.id,
-          titre: offre.titre,
-          description: offre.description,
-          competences: offre.competences,
-          nbCandidatures: offre.nombreCandidatures,
-          etat: offre.statut, // Renommé pour correspondre à votre affichage
-          deadline: offre.dateLimite // Ajout temporaire, car API ne fournit pas de deadline
-        }));
-      },
-      (error) => {
-        console.error('Erreur lors du chargement des offres:', error);
-      }
-    );
+}
+
+nextQuestion() {
+  if (this.currentQuestionIndex < this.currentOffre.questions.length - 1) {
+    this.currentQuestionIndex++;
   }
+}
+
+
+onQuestionChange() {
+  // Handle question change if needed
+  console.log('Question changed');
+}
+
+addNewQuestion() {
+  this.addQuestion();
+}
+editOffre(offre: any) {
+  // Afficher le formulaire de modification
+  this.isEditing = true;
+  this.currentQuestionIndex=0;
+  this.getOffreById(offre.id); 
+  
+
+ }
+
+
+cancelEdit() {
+  
+  this.isEditing = false;
+    this.currentOffre = {}; 
+}
+getOffreById(id: number) {
+  this.http.get(`http://localhost:5053/api/Offre/get-offre/${id}`).subscribe(
+    (response: any) => {
+      this.currentOffre = {
+        ...response,
+        questions: response.questions ? response.questions : []
+      };
+    },
+    (error) => {
+      console.error('Erreur lors du chargement de l\'offre:', error);
+    }
+  );
+}
+
+updateOffre() {
+  // Appel à l'API pour mettre à jour l'offre
+  this.http.put(`http://localhost:5053/api/Offre/modifier-offre/${this.currentOffre.id}`, this.currentOffre).subscribe(
+    (response) => {
+      console.log('Offre mise à jour avec succès:', response);
+      this.isEditing = false; // Cacher le formulaire après la mise à jour
+      this.loadOffres(); // Recharger les offres après la mise à jour
+    },
+    (error) => {
+      console.error('Erreur lors de la mise à jour de l\'offre:', error);
+    }
+  );
+}
+loadOffres() {
+  this.http.get<any[]>('http://localhost:5053/api/Offre/get-all-offres').subscribe(
+    (response) => {
+      // Transformation des données reçues de l'API
+      this.offres = response.map(offre => ({
+        id: offre.id,
+        titre: offre.titre,
+      
+        description: offre.description,
+        competences: offre.competences,
+        nbCandidatures: offre.nombreCandidatures,
+        etat: offre.statut, // Renommé pour l'affichage
+        deadline: offre.dateLimite,
+        testId: offre.testId,
+        questions: offre.questions ? offre.questions.map((question: any) => ({
+          id: question.id,
+          intitule: question.intitule,
+          option1: question.option1,
+          option2: question.option2,
+          option3: question.option3,
+          reponseCorrecte: question.reponseCorrecte // Ici, on suppose que `reponseCorrecte` est un nombre
+        })) : [] // Si questions est undefined ou null, on met un tableau vide
+      }));
+    },
+    (error) => {
+      console.error('Erreur lors du chargement des offres:', error);
+    }
+  );
+}
+
   nextStep() {
     this.isFirstStep = false;
   }
@@ -64,7 +149,8 @@ export class OffreComponent implements OnInit {
   submitForm() {
     // Créez un objet pour envoyer à votre API avec l'offre, la description du test et les questions
     const offerWithTest = {
-      titre: this.offre.titre, // Correspond à l'API
+      titre: this.offre.titre,
+      typeContrat:this.offre.typeContrat,
       description: this.offre.description,
       competences: this.offre.competences,
       dateLimitePostulation: this.offre.dateLimitePostulation,
@@ -131,9 +217,7 @@ export class OffreComponent implements OnInit {
     );
   }
 
-  editOffre(offre:any) {
-    console.log('Modifier offre:', offre);
-  }
+
 
   deleteOffre(id: any) {
     console.log('Supprimer offre avec ID:', id);

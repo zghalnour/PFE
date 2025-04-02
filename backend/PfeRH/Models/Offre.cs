@@ -11,6 +11,7 @@ namespace PfeRH.Models
         public string Titre {  get; set; }
         public string Description { get; set; }
         public string Competences { get; set; }
+        public string TypeContrat {  get; set; }
         public DateTime DatePublication { get; set; }
         public DateTime DateLimitePostulation { get; set; }
         [ForeignKey("Admin")]
@@ -21,8 +22,8 @@ namespace PfeRH.Models
         // Liste des candidatures associées à cette offre
         [NotMapped]
         public virtual ICollection<Candidature> Candidatures { get; set; }
-        public int TestId { get; set; } // TestId nullable
-        public virtual Test Test { get; set; }
+        public int? TestId { get; set; } // TestId nullable
+        public virtual Test? Test { get; set; }
         public string? Statut
         {
             get => DateTime.Today > DateLimitePostulation ? "Fermée" : "Ouverte";
@@ -34,11 +35,12 @@ namespace PfeRH.Models
         }
 
         // ✅ Constructeur avec paramètres (corrigé)
-        public Offre(string titre, string description, string competences, DateTime dateLimitePostulation, int adminId)
+        public Offre(string titre, string description, string competences, string contrat, DateTime dateLimitePostulation, int adminId)
         {
             Titre = titre;
             Description = description;
             Competences = competences;
+            TypeContrat = contrat;
             DatePublication = DateTime.Now; // Toujours initialisé à la date actuelle
             DateLimitePostulation = dateLimitePostulation;
             AdminId = adminId;

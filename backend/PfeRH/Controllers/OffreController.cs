@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using Microsoft.IdentityModel.Tokens;
 namespace PfeRH.Controllers
 {
     [Route("api/[controller]")]
@@ -55,6 +56,7 @@ namespace PfeRH.Controllers
                     var nouvelleOffre = new Offre
                     {
                         Titre = offreDto.Titre,
+                        TypeContrat=offreDto.TypeContrat,
                         Description = offreDto.Description,
                         TestId = nouveauTest.Id, // Associez le TestId
                      
@@ -84,29 +86,55 @@ namespace PfeRH.Controllers
         public async Task<ActionResult<IEnumerable<OffreDTO>>> GetAllOffres()
         {
             var offres = await _context.Offres
-                .Include(o => o.Candidatures) // Inclure les candidatures pour compter
+                .AsNoTracking()
+                .GroupJoin(
+                    _context.Candidatures,
+                    o => o.Id,
+                    c => c.OffreId,
+                    (o, candidatures) => new { Offre = o, NombreCandidatures = candidatures.Count() }
+                )
                 .Select(o => new OffreDTO
                 {
-                    ID=o.Id,
-                    Titre = o.Titre,
-                    Description = o.Description,
-                    Competences = o.Competences,
-                    NombreCandidatures = o.Candidatures != null ? o.Candidatures.Count : 0,
-                    Statut = o.Statut,
-                    DateLimite = DateOnly.FromDateTime(o.DateLimitePostulation).ToString("dd/MM/yyyy")
+                    ID = o.Offre.Id,
+                    Titre = o.Offre.Titre,
+                    TypeContrat = o.Offre.TypeContrat,
+                    Description = o.Offre.Description,
+                    Competences = o.Offre.Competences,
+                    NombreCandidatures = o.NombreCandidatures,
+                    Statut = o.Offre.Statut,
+                    DateLimite = DateOnly.FromDateTime(o.Offre.DateLimitePostulation).ToString("dd/MM/yyyy"),
 
-        })
+                    // Vérification de l'existence du test
+                    TestId = o.Offre.TestId ?? 0,
+                    descTest = o.Offre.Test != null ? o.Offre.Test.Description : string.Empty,
+
+                    // Charger uniquement les questions si un test existe
+                    Questions = o.Offre.Test != null
+                        ? o.Offre.Test.Questions.Select(q => new QuestionDTO
+                        {
+                            Id = q.Id,
+                            Intitule = q.Intitule,
+                            Option1 = q.Option1,
+                            Option2 = q.Option2,
+                            Option3 = q.Option3,
+                            ReponseCorrecte = q.ReponseCorrecte
+                        }).ToList()
+                        : new List<QuestionDTO>()
+                })
                 .ToListAsync();
 
             return Ok(offres);
         }
 
+
         [HttpGet("candidatures-par-offre-titre/{titre}")]
         public async Task<ActionResult> GetCandidaturesByOffreTitre(string titre)
         {
-            // Recherche de l'offre par titre (insensible à la casse)
+            
+
+            // Recherche de l'offre par titre (insensible à la casse et aux espaces)
             var offre = await _context.Offres
-                .FirstOrDefaultAsync(o => o.Titre.ToLower() == titre.ToLower());
+                .FirstOrDefaultAsync(o => o.Titre.Trim().ToLower() == titre.Trim().ToLower());
 
             if (offre == null)
             {
@@ -131,15 +159,15 @@ namespace PfeRH.Controllers
             {
                 Id = c.Id,
                 Statut = c.Statut,
-                Score = c.ReponseCandidats.Count(r => r.EstCorrecte), // Score basé sur les réponses correctes
-                scoreAI = c.ScoreAI, // Assurez-vous que ScoreAI est bien défini dans l'entité
+                Score = c.ReponseCandidats.Count(r => r.EstCorrecte),
+                scoreAI = c.ScoreAI,
                 CompetencesExtraites = c.CompetencesExtraites.Split(", ").ToList(),
                 Candidat = new CandidatDTO
                 {
                     Id = c.Candidat.Id,
                     NomPrenom = c.Candidat.NomPrenom,
                     Email = c.Candidat.Email,
-                    Telephone = c.Candidat.Telephone,
+                    PhoneNumber = c.Candidat.PhoneNumber,
                     LinkedIn = c.Candidat.LinkedIn,
                     CVPath = c.Candidat.CVPath
                 },
@@ -151,13 +179,86 @@ namespace PfeRH.Controllers
                 }).ToList()
             }).ToList();
 
-            // Retourner un JSON structuré avec un message et les candidatures
             return Ok(new
             {
                 message = "Candidatures récupérées avec succès.",
                 candidatures = result
             });
         }
+        [HttpGet("candidatures-sans-test/{titre}")]
+        public async Task<ActionResult> GetCandidaturesSansTest(string titre)
+        {
+            // Recherche de l'offre par titre (insensible à la casse et aux espaces)
+            var offre = await _context.Offres
+                .FirstOrDefaultAsync(o => o.Titre.Trim().ToLower() == titre.Trim().ToLower());
+
+            if (offre == null)
+            {
+                return NotFound(new { message = "Offre non trouvée." });
+            }
+
+            // Recherche des candidatures pour l'offre trouvée
+            var candidatures = await _context.Candidatures
+                .Where(c => c.OffreId == offre.Id)
+                .Include(c => c.Candidat)
+                .ToListAsync();
+
+            if (!candidatures.Any())
+            {
+                return NotFound(new { message = "Aucune candidature trouvée pour cette offre." });
+            }
+
+            // Construction du résultat (avec scoreAI mais sans test score ni réponses candidat)
+            var result = candidatures.Select(c => new
+            {
+                Id = c.Id,
+                Statut = c.Statut,
+                ScoreAI = c.ScoreAI,  // ✅ Score AI conservé
+                CompetencesExtraites = c.CompetencesExtraites.Split(", ").ToList(),
+                Candidat = new
+                {
+                    Id = c.Candidat.Id,
+                    NomPrenom = c.Candidat.NomPrenom,
+                    Email = c.Candidat.Email,
+                    PhoneNumber = c.Candidat.PhoneNumber,
+                    LinkedIn = c.Candidat.LinkedIn,
+                    CVPath = c.Candidat.CVPath
+                }
+            }).ToList();
+
+            return Ok(new
+            {
+                message = "Candidatures récupérées avec succès.",
+                candidatures = result
+            });
+        }
+
+
+        [HttpPost("ajouter-offre-sans-test")]
+        public async Task<ActionResult> AjouterOffre(OffreSansTestDto offreDto)
+        {
+            try
+            {
+                var nouvelleOffre = new Offre
+                {
+                    Titre = offreDto.Titre,
+                    TypeContrat = offreDto.TypeContrat,
+                    Description = offreDto.Description,
+                    Competences = offreDto.Competences,
+                    DateLimitePostulation = DateTime.Parse(offreDto.DateLimitePostulation)
+                };
+
+                _context.Offres.Add(nouvelleOffre);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Offre ajoutée avec succès.", offreId = nouvelleOffre.Id });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Erreur lors de l'ajout de l'offre : " + ex.Message);
+            }
+        }
+
 
 
         [HttpPut("modifier-offre/{id}")]
@@ -168,52 +269,157 @@ namespace PfeRH.Controllers
                 return BadRequest("offreDto is required.");
             }
 
-            var offre = await _context.Offres.FindAsync(id);
+            var offre = await _context.Offres
+                .Include(o => o.Test)
+                .ThenInclude(t => t.Questions)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
             if (offre == null)
             {
-                return NotFound();
+                return NotFound("Offre not found.");
             }
 
-            // Conversion de la chaîne de la dateLimite en DateOnly
-            if (DateOnly.TryParseExact(offreDto.DateLimite, "dd/MM/yyyy", out DateOnly dateLimite))
+            bool isUpdated = false;
+
+            // Mise à jour des champs de l'offre
+            if (!string.IsNullOrEmpty(offreDto.Titre) && offre.Titre != offreDto.Titre)
             {
-                // Mettre à jour seulement si la date a changé
-                if (offre.DateLimitePostulation != dateLimite.ToDateTime(new TimeOnly(0, 0)))
+                offre.Titre = offreDto.Titre;
+                isUpdated = true;
+            }
+            if (!string.IsNullOrEmpty(offreDto.TypeContrat) && offre.TypeContrat != offreDto.TypeContrat)
+            {
+                offre.TypeContrat = offreDto.TypeContrat;
+                isUpdated = true;
+            }
+
+            if (!string.IsNullOrEmpty(offreDto.Description) && offre.Description != offreDto.Description)
+            {
+                offre.Description = offreDto.Description;
+                isUpdated = true;
+            }
+
+            if (!string.IsNullOrEmpty(offreDto.Competences) && offre.Competences != offreDto.Competences)
+            {
+                offre.Competences = offreDto.Competences;
+                isUpdated = true;
+            }
+
+            // Mise à jour de la date limite
+            if (!string.IsNullOrEmpty(offreDto.DateLimite) && DateOnly.TryParseExact(offreDto.DateLimite, "dd/MM/yyyy", out DateOnly dateLimite))
+            {
+                var nouvelleDate = dateLimite.ToDateTime(new TimeOnly(0, 0));
+                if (offre.DateLimitePostulation != nouvelleDate)
                 {
-                    offre.DateLimitePostulation = dateLimite.ToDateTime(new TimeOnly(0, 0));
+                    offre.DateLimitePostulation = nouvelleDate;
+                    isUpdated = true;
                 }
             }
-            else
+            else if (!string.IsNullOrEmpty(offreDto.DateLimite))
             {
                 return BadRequest("Invalid date format. Expected dd/MM/yyyy.");
             }
 
-            // Mise à jour des autres propriétés, uniquement si elles ont changé
-            if (offre.Titre != offreDto.Titre && !string.IsNullOrEmpty(offreDto.Titre))
+            // Mise à jour du test associé
+            if (offreDto.TestId > 0 && (offre.Test == null || offre.Test.Id != offreDto.TestId))
             {
-                offre.Titre = offreDto.Titre;
+                var test = await _context.Tests
+                    .Include(t => t.Questions)
+                    .FirstOrDefaultAsync(t => t.Id == offreDto.TestId);
+
+                if (test == null)
+                {
+                    return NotFound("Test not found.");
+                }
+
+                offre.Test = test;
+                isUpdated = true;
+            }
+            if (offre.Test != null && !string.IsNullOrEmpty(offreDto.descTest) && offre.Test.Description != offreDto.descTest)
+            {
+                offre.Test.Description = offreDto.descTest;
+                isUpdated = true;
             }
 
-            if (offre.Description != offreDto.Description && !string.IsNullOrEmpty(offreDto.Description))
+            // Mise à jour des questions
+            if (offre.Test != null && offreDto.Questions != null)
             {
-                offre.Description = offreDto.Description;
+                foreach (var questionDto in offreDto.Questions)
+                {
+                    var existingQuestion = offre.Test.Questions.FirstOrDefault(q => q.Id == questionDto.Id);
+                    if (existingQuestion != null)
+                    {
+                        bool questionUpdated = false;
+
+                        if (!string.IsNullOrEmpty(questionDto.Intitule) && existingQuestion.Intitule != questionDto.Intitule)
+                        {
+                            existingQuestion.Intitule = questionDto.Intitule;
+                            questionUpdated = true;
+                        }
+
+                        if (!string.IsNullOrEmpty(questionDto.Option1) && existingQuestion.Option1 != questionDto.Option1)
+                        {
+                            existingQuestion.Option1 = questionDto.Option1;
+                            questionUpdated = true;
+                        }
+
+                        if (!string.IsNullOrEmpty(questionDto.Option2) && existingQuestion.Option2 != questionDto.Option2)
+                        {
+                            existingQuestion.Option2 = questionDto.Option2;
+                            questionUpdated = true;
+                        }
+
+                        if (!string.IsNullOrEmpty(questionDto.Option3) && existingQuestion.Option3 != questionDto.Option3)
+                        {
+                            existingQuestion.Option3 = questionDto.Option3;
+                            questionUpdated = true;
+                        }
+
+                        if (questionDto.ReponseCorrecte > 0 && existingQuestion.ReponseCorrecte != questionDto.ReponseCorrecte)
+
+                        {
+                            existingQuestion.ReponseCorrecte = questionDto.ReponseCorrecte;
+                            questionUpdated = true;
+                        }
+
+                        if (questionUpdated)
+                        {
+                            isUpdated = true;
+                        }
+                    }
+                    else
+                    {
+                        // Ajouter une nouvelle question seulement si toutes les valeurs sont valides
+                        if (!string.IsNullOrEmpty(questionDto.Intitule) &&
+                            !string.IsNullOrEmpty(questionDto.Option1) &&
+                            !string.IsNullOrEmpty(questionDto.Option2) &&
+                            !string.IsNullOrEmpty(questionDto.Option3) &&
+                           questionDto.ReponseCorrecte > 0)
+                        {
+                            offre.Test.Questions.Add(new Question
+                            {
+                                Intitule = questionDto.Intitule,
+                                Option1 = questionDto.Option1,
+                                Option2 = questionDto.Option2,
+                                Option3 = questionDto.Option3,
+                                ReponseCorrecte = questionDto.ReponseCorrecte
+                            });
+
+                            isUpdated = true;
+                        }
+                    }
+                }
             }
 
-            if (offre.Competences != offreDto.Competences && !string.IsNullOrEmpty(offreDto.Competences))
+            if (isUpdated)
             {
-                offre.Competences = offreDto.Competences;
+                await _context.SaveChangesAsync();
             }
-
-            // Le statut peut aussi être modifié en fonction de la date limite, si nécessaire.
-            // Par exemple, si la date limite est passée, on pourrait mettre à jour le statut :
-          
-
-            // Mettre à jour l'état de l'entité dans le contexte
-            _context.Entry(offre).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
+
 
         [HttpDelete("supprimer-offre/{id}")]
         public async Task<IActionResult> SupprimerOffre(int id)
@@ -253,6 +459,65 @@ namespace PfeRH.Controllers
             return Ok("Offre, candidatures, réponses des candidats et test supprimés avec succès.");
         }
 
+        [HttpGet("get-offre/{id}")]
+        public async Task<ActionResult<OffreDTO>> GetOffreById(int id)
+        {
+            var offre = await _context.Offres
+                .AsNoTracking()
+                .Where(o => o.Id == id)
+                .GroupJoin(
+                    _context.Candidatures,
+                    o => o.Id,
+                    c => c.OffreId,
+                    (o, candidatures) => new { Offre = o, NombreCandidatures = candidatures.Count() }
+                )
+                .Select(o => new OffreDTO
+                {
+                    ID = o.Offre.Id,
+                    Titre = o.Offre.Titre,
+                    TypeContrat = o.Offre.TypeContrat,
+                    Description = o.Offre.Description,
+                    Competences = o.Offre.Competences,
+                    NombreCandidatures = o.NombreCandidatures,
+                    Statut = o.Offre.Statut,
+                    DateLimite = DateOnly.FromDateTime(o.Offre.DateLimitePostulation).ToString("dd/MM/yyyy"),
 
+                    // Vérifie si un test existe
+                    TestId = o.Offre.TestId ?? 0,
+                    descTest = o.Offre.Test != null ? o.Offre.Test.Description : string.Empty,
+
+                    // Charge les questions uniquement si un test est présent
+                    Questions = o.Offre.Test != null
+                        ? o.Offre.Test.Questions.Select(q => new QuestionDTO
+                        {
+                            Id = q.Id,
+                            Intitule = q.Intitule,
+                            Option1 = q.Option1,
+                            Option2 = q.Option2,
+                            Option3 = q.Option3,
+                            ReponseCorrecte = q.ReponseCorrecte
+                        }).ToList()
+                        : new List<QuestionDTO>()
+                })
+                .FirstOrDefaultAsync();
+
+            if (offre == null)
+            {
+                return NotFound(new { message = "Offre non trouvée." });
+            }
+
+            return Ok(offre);
+        }
+
+
+
+    }
+    public class OffreSansTestDto
+    {
+        public string Titre { get; set; }
+        public string Description { get; set; }
+        public string TypeContrat { get; set; }
+        public string Competences { get; set; }
+        public string DateLimitePostulation { get; set; }
     }
 }

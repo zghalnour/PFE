@@ -1,0 +1,35 @@
+.content {
+  min-height: 100vh; /* Assure que le contenu prend toute la hauteur */
+  width: calc(100% - 260px); /* Prend toute la largeur sauf la sidebar */
+  margin-left: 240px;
+  margin-top: 25px;
+  margin-right: 20px; /* Supprime la marge droite pour qu'il prenne toute la largeur */
+  padding: 20px; /* Optionnel pour l'espacement */
+  background-color: #eae8e889; /* Fond du content */
+  display: flex;
+  flex-direction: column; /* Pour bien organiser les éléments */
+}
+.select-box {
+  position: relative;
+  background-color: white;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 160px; /* Empêche la liste de dépasser */
+  overflow-y: auto;
+  border-radius: 4px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-menu li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+  background-color: #f0f0f0;
+}

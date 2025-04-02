@@ -36,6 +36,16 @@ namespace PfeRH.Controllers
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
+                var roleCandidat = await _roleManager.FindByNameAsync("Candidat");
+                if (roleCandidat == null)
+                {
+                    var newRole = new IdentityRole<int> { Name = "Candidat" };
+                    var createRoleResult = await _roleManager.CreateAsync(newRole);
+                    if (!createRoleResult.Succeeded)
+                    {
+                        return StatusCode(500, "Erreur lors de la création du rôle Candidat.");
+                    }
+                }
                 // Vérifier l'offre et le test associé
                 var offre = await _context.Offres
                                            .Include(o => o.Test)
@@ -58,10 +68,14 @@ namespace PfeRH.Controllers
                         NomPrenom = candidatureDto.NomPrenom,
                         Email = candidatureDto.Email,
                         UserName = candidatureDto.Email,
-                        Telephone = candidatureDto.Telephone,
-                        LinkedIn = candidatureDto.LinkedIn,
+                        PhoneNumber = candidatureDto.Telephone,
+                        LinkedIn = !string.IsNullOrEmpty(candidatureDto.LinkedIn)
+    ? (candidatureDto.LinkedIn.StartsWith("http") ? candidatureDto.LinkedIn : "https://" + candidatureDto.LinkedIn)
+    : null, // ou "" si tu veux éviter le null
+
                         Role = "Candidat"
                     };
+
 
                     var result = await _userManager.CreateAsync(candidat, "DefaultPassword123!");
                     if (!result.Succeeded)
@@ -74,7 +88,7 @@ namespace PfeRH.Controllers
                 else
                 {
                     candidat.NomPrenom = candidatureDto.NomPrenom;
-                    candidat.Telephone = candidatureDto.Telephone;
+                    candidat.PhoneNumber = candidatureDto.Telephone;
                     candidat.LinkedIn = candidatureDto.LinkedIn;
                 }
 
@@ -96,14 +110,19 @@ namespace PfeRH.Controllers
 
                     var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(candidatureDto.CVFile.FileName)}";
                     var filePath = Path.Combine(uploadsDir, fileName);
+
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await candidatureDto.CVFile.CopyToAsync(stream);
                     }
 
-                    cvPath = $"uploads/{fileName}";
+                    // Construire l'URL complète
+                    string baseUrl = $"{Request.Scheme}://{Request.Host}"; // Récupère l'URL de base du backend
+                    cvPath = $"{baseUrl}/uploads/{fileName}";
+
                     candidat.CVPath = cvPath;
                 }
+
 
                 _context.Utilisateurs.Update(candidat);
                 await _context.SaveChangesAsync();
@@ -112,7 +131,7 @@ namespace PfeRH.Controllers
                 double scoreAI = 0.0;
                 string competencesExtraites = "";
 
-                var responseObject = await _cvScoringController.ScoreCVPdf(candidatureDto.CVFile, offre.Competences) as OkObjectResult;
+                var responseObject = await _cvScoringController.ScoreCVPdf(candidatureDto.CVFile, offre.Description + " " + offre.Competences) as OkObjectResult;
 
                 // Vérifiez que la réponse contient une valeur
                 if (responseObject != null && responseObject.Value != null)
@@ -250,8 +269,178 @@ namespace PfeRH.Controllers
             }
         }
 
+        [HttpPut("modifier-statut/{id}/{nouveauStatut}")]
+        public async Task<IActionResult> ModifierStatutCandidature(int id, string nouveauStatut)
+        {
+            try
+            {
+                // Vérifier si la candidature existe
+                var candidature = await _context.Candidatures.FindAsync(id);
+                if (candidature == null)
+                {
+                    return NotFound("Candidature non trouvée.");
+                }
+
+                // Mettre à jour le statut
+                candidature.Statut = nouveauStatut;
+
+                // Sauvegarder les modifications
+                _context.Candidatures.Update(candidature);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Statut de la candidature mis à jour avec succès." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Une erreur est survenue : {ex.Message}");
+            }
+        }
+        [HttpPost("soumettre-candidature-simple")]
+        public async Task<IActionResult> SoumettreCandidatureSimple([FromForm] CandidatureSimpleDto candidatureDto)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var roleCandidat = await _roleManager.FindByNameAsync("Candidat");
+                if (roleCandidat == null)
+                {
+                    var newRole = new IdentityRole<int> { Name = "Candidat" };
+                    var createRoleResult = await _roleManager.CreateAsync(newRole);
+                    if (!createRoleResult.Succeeded)
+                    {
+                        return StatusCode(500, "Erreur lors de la création du rôle Candidat.");
+                    }
+                }
+
+                // Vérification de l'offre
+                var offre = await _context.Offres.FirstOrDefaultAsync(o => o.Id == candidatureDto.OffreId);
+                if (offre == null)
+                {
+                    return NotFound("Offre non trouvée.");
+                }
+
+                // Vérifier si le candidat existe ou le créer
+                var candidat = await _context.Utilisateurs.OfType<Condidat>()
+                                                          .FirstOrDefaultAsync(c => c.Email == candidatureDto.Email);
+
+                if (candidat == null)
+                {
+                    candidat = new Condidat
+                    {
+                        NomPrenom = candidatureDto.NomPrenom,
+                        Email = candidatureDto.Email,
+                        UserName = candidatureDto.Email,
+                        PhoneNumber = candidatureDto.Telephone,
+                        LinkedIn = !string.IsNullOrEmpty(candidatureDto.LinkedIn)
+                            ? (candidatureDto.LinkedIn.StartsWith("http") ? candidatureDto.LinkedIn : "https://" + candidatureDto.LinkedIn)
+                            : null,
+                        Role = "Candidat"
+                    };
+
+                    var result = await _userManager.CreateAsync(candidat, "DefaultPassword123!");
+                    if (!result.Succeeded)
+                    {
+                        return BadRequest(result.Errors);
+                    }
+
+                    await _userManager.AddToRoleAsync(candidat, "Candidat");
+                }
+                else
+                {
+                    candidat.NomPrenom = candidatureDto.NomPrenom;
+                    candidat.PhoneNumber = candidatureDto.Telephone;
+                    candidat.LinkedIn = candidatureDto.LinkedIn;
+                }
+
+                // Sauvegarde du CV (si fourni)
+                string cvPath = null;
+                if (candidatureDto.CVFile != null && candidatureDto.CVFile.Length > 0)
+                {
+                    var extension = Path.GetExtension(candidatureDto.CVFile.FileName);
+                    if (extension.ToLower() != ".pdf")
+                    {
+                        return BadRequest("Seuls les fichiers PDF sont acceptés.");
+                    }
+
+                    var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                    if (!Directory.Exists(uploadsDir))
+                    {
+                        Directory.CreateDirectory(uploadsDir);
+                    }
+
+                    var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(candidatureDto.CVFile.FileName)}";
+                    var filePath = Path.Combine(uploadsDir, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await candidatureDto.CVFile.CopyToAsync(stream);
+                    }
+
+                    string baseUrl = $"{Request.Scheme}://{Request.Host}";
+                    cvPath = $"{baseUrl}/uploads/{fileName}";
+                    candidat.CVPath = cvPath;
+                }
+
+                _context.Utilisateurs.Update(candidat);
+                await _context.SaveChangesAsync();
+
+                // Calcul du ScoreAI et des compétences extraites
+                double scoreAI = 0.0;
+                string competencesExtraites = "";
+
+                if (candidatureDto.CVFile != null)
+                {
+                    var responseObject = await _cvScoringController.ScoreCVPdf(candidatureDto.CVFile, offre.Description + " " + offre.Competences) as OkObjectResult;
+                    if (responseObject != null && responseObject.Value != null)
+                    {
+                        string jsonResponse = JsonConvert.SerializeObject(responseObject.Value, Formatting.Indented);
+                        Console.WriteLine($"Response Content: {jsonResponse}");
+                        var jsonObject = JObject.Parse(jsonResponse);
+                        scoreAI = jsonObject["Value"]["ScoreAI"].Value<double>();
+                        var extractedSkills = jsonObject["Value"]["ExtractedSkills"].ToObject<List<string>>();
+                        competencesExtraites = string.Join(", ", extractedSkills);
+                    }
+                }
+
+                // Création de l'objet Candidature
+                var candidature = new Candidature
+                {
+                    CandidatId = candidat.Id,
+                    OffreId = candidatureDto.OffreId,
+                    Statut = "En cours",
+                    DateCandidature = DateTime.Now,
+                    ScoreAI = scoreAI,
+                    CompetencesExtraites = competencesExtraites
+                };
+
+                _context.Candidatures.Add(candidature);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return Ok(new { message = "Candidature soumise avec succès.", candidatureId = candidature.Id, scoreAI });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, $"Une erreur est survenue : {ex.Message}");
+            }
+        }
+
+
+
 
 
 
     }
+    public class CandidatureSimpleDto
+    {
+        public int OffreId { get; set; }
+        public string NomPrenom { get; set; }
+        public string Email { get; set; }
+        public string Telephone { get; set; }
+        public string LinkedIn { get; set; }
+        public IFormFile CVFile { get; set; }
+    }
+
 }

@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
     if (!token) {
       // Aucun utilisateur connecté => Rediriger vers candidat
       console.log("Pas de token -> Redirection vers /condidat");
-      this.router.navigate(['/condidat']);
+      this.router.navigate(['/candidat']);
     } else {
       // Rediriger vers le dashboard correspondant au rôle
       switch (role?.toLocaleLowerCase()) {
@@ -33,7 +33,7 @@ export class AppComponent implements OnInit {
           this.router.navigate(['/employe']);
           break;
         default:
-          this.router.navigate(['/condidat']); // Par défaut vers candidat
+          this.router.navigate(['/candidat']); // Par défaut vers candidat
       }
     }
   }

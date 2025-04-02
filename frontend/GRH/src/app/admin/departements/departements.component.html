@@ -1,0 +1,108 @@
+<app-header></app-header>
+
+<main class="content">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+    <div *ngFor="let dept of departements" class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
+      <h2 class="text-2xl font-semibold text-gray-800">{{ dept.nom }}</h2>
+      <div class="mt-3 text-gray-600 flex items-center text-lg">
+        <i class="fas fa-user-tie text-yellow-500 mr-2"></i>
+        <span>{{ dept.nomResponsable }}</span>  <!-- Afficher le nom du responsable -->
+      </div>
+      <div class="mt-3 text-gray-600 flex items-center text-lg">
+        <i class="fas fa-users text-blue-500 mr-2"></i>
+        <span>{{ dept.employes.length }} employés</span>
+      </div>
+      <div class="mt-1 text-gray-600 flex items-center text-lg">
+        <i class="fas fa-tasks text-green-500 mr-2"></i>
+        <span>{{ dept.projets.length }} projets</span>
+      </div>
+      <div class="mt-4 flex justify-end gap-4">
+        <button (click)="openEditForm(dept)" class="text-blue-500 hover:text-blue-700">
+          <i class="fas fa-edit text-xl"></i>
+        </button>
+        <button (click)="deleteDepartement(dept.id)" class="text-gray-500 hover:text-red-700">
+          <i class="fas fa-trash-alt text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulaire flottant -->
+<!-- Formulaire flottant -->
+<div *ngIf="isFormVisible" class="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white p-8 rounded-lg shadow-lg w-[500px]">
+    <h2 class="text-2xl font-semibold mb-4 text-center">Modifier Département</h2>
+
+    <div class="w-2/3 flex flex-col items-center">
+      <div class="mb-4 w-full max-w-xs">
+        <label for="nom" class="block text-lg font-medium">Nom du Département</label>
+        <input [(ngModel)]="currentDept.nom" id="nom" class="mt-1 p-2 w-full border rounded" type="text" />
+      </div>
+
+      <!-- 🔻 Dropdown Responsable -->
+
+<div class="mb-4 w-full max-w-xs">
+  <label for="responsable" class="block text-lg font-medium">Responsable</label>
+  <select
+    id="responsable"
+    class="mt-1 p-2 w-full border rounded"
+    [(ngModel)]="currentDept.responsableId"
+    name="responsable"
+    required
+  >
+    
+
+    <!-- Liste des responsables -->
+    <option *ngFor="let responsable of responsables" [value]="responsable.id">
+      {{ responsable.nomPrenom }}
+    </option>
+  </select>
+</div>
+
+
+
+
+      <!-- 🔻 Dropdown Employé -->
+      <div class="mb-4 w-full max-w-xs relative">
+        <label for="employe" class="block text-lg font-medium">Employés</label>
+        
+        <!-- Affichage des employés sélectionnés -->
+        <div class="select-box mt-1 p-2 w-full border rounded cursor-pointer text-left" (click)="toggleDropdown('employe')">
+          <span *ngFor="let employe of selectedEmployes; let i = index" class="badge badge-info mr-2">
+            {{ employe.nomPrenom }}
+            <button (click)="removeEmploye(i)" class="ml-2 text-red-500">x</button>
+          </span>
+          <span *ngIf="selectedEmployes.length === 0">Sélectionner un Employé</span>
+        </div>
+        
+        <!-- Liste des employés à sélectionner -->
+        <ul *ngIf="isEmployeDropdownOpen" class="dropdown-menu absolute z-10 bg-white border border-gray-300 w-full max-h-40 overflow-y-auto">
+          <li *ngFor="let employe of employes" 
+              (click)="selectEmploye(employe)" 
+              class="p-2 hover:bg-gray-200 cursor-pointer"
+              [class.bg-gray-300]="isEmployeSelected(employe)" 
+              [class.text-gray-500]="isEmployeSelected(employe)"
+              [attr.disabled]="isEmployeSelected(employe) ? true : null">
+            {{ employe.nomPrenom }}
+          </li>
+        </ul>
+      </div>
+      
+      
+      
+      
+    </div>
+
+    <div class="flex justify-end gap-x-4 mt-6 w-full max-w-xs">
+      <button (click)="saveChanges()" class="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600">
+        Modifier
+      </button>
+      <button (click)="cancelEdit()" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600">
+        Annuler
+      </button>
+    </div>
+  </div>
+</div>
+
+  
+</main>

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace PfeRH.Models
 {
@@ -6,10 +7,11 @@ namespace PfeRH.Models
     {
         public string Poste { get; set; } // Exemple : "Développeur"
         public DateTime DateEmbauche { get; set; }
+        public double Salaire {  get; set; }
 
         // Relation avec le département
         [ForeignKey("Departement")]
-        public int? DepartementId { get; set; } // Clé étrangère vers le département
+        public int? DepartementId { get; set; }
         public Departement Departement { get; set; } // Navigation vers le département
 
         // Relation avec les projets
@@ -18,23 +20,21 @@ namespace PfeRH.Models
         // Relation avec les demandes de congé
         public ICollection<DemandeConge> DemandesConge { get; set; }
         public ICollection<Evaluation> EvaluationsRecues { get; set; }
+        public ICollection<ObjectifSmart> ObjectifsSmarts { get; set; }
 
-        // Feedbacks reçus
-       
-        // Réunions auxquelles l'employé participe
+        public ICollection<Reclamation> Reclamations { get; set; }
 
 
-        // Présences (Check-in / Check-out)
-        public ICollection<Presence> Presences { get; set; }
         public Employe()
         {
             // Initialisation des collections pour éviter les nulls
             Projets = new List<Projet>();
             DemandesConge = new List<DemandeConge>();
             EvaluationsRecues = new List<Evaluation>();
-            
-        
-            Presences = new List<Presence>();
+            ObjectifsSmarts = new List<ObjectifSmart>();
+            Reclamations = new List<Reclamation>();
+
+
         }
 
         // Constructeur avec paramètres
@@ -47,8 +47,9 @@ namespace PfeRH.Models
             Projets = new List<Projet>(); // Initialisation des collections
             DemandesConge = new List<DemandeConge>();
             EvaluationsRecues = new List<Evaluation>();
-         
-            Presences = new List<Presence>();
+            ObjectifsSmarts = new List<ObjectifSmart>();
+            Reclamations = new List<Reclamation>();
+
         }
     }
 }

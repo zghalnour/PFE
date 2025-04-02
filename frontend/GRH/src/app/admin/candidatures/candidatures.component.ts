@@ -27,6 +27,7 @@ export class CandidaturesComponent implements OnInit {
     const apiUrl = `http://localhost:5053/api/Offre/candidatures-par-offre-titre/${encodeURIComponent(titreOffre)}`;
     this.http.get<any>(apiUrl).subscribe(response => {
       if (response && response.candidatures) {
+      
         this.candidatures = response.candidatures.map((cand: any) => ({
           id: cand.id,
           name: cand.candidat.nomPrenom,
@@ -34,6 +35,7 @@ export class CandidaturesComponent implements OnInit {
           testScore: `${cand.score}/${cand.reponses.length}`,
           etat: cand.statut,
           cvUrl: cand.candidat.cvPath,
+          linkedinUrl:cand.candidat.linkedIn,
           extractedSkills: cand.competencesExtraites,
           testResults: cand.reponses.map((rep: any) => ({
             question: rep.intitule,
@@ -51,11 +53,40 @@ export class CandidaturesComponent implements OnInit {
     this.dialog.open(CandidatureDetailsDialogComponent, {
       width: '700px',
       data: {
+        id:candidature.id,
         cvUrl: candidature.cvUrl,
+        linkedinUrl:candidature.linkedinUrl,
         extractedSkills: candidature.extractedSkills,
         testResults: candidature.testResults,
         state: candidature.etat
       }
     });
   }
+  acceptCandidate(candidature: any) {
+    this.updateCandidatureState(candidature.id, 'Accepte');
+  }
+
+  rejectCandidate(candidature: any) {
+    this.updateCandidatureState(candidature.id, 'Refuse');
+  }
+
+  // Mise à jour de l'état de la candidature
+  updateCandidatureState(id: number, nouveauStatut: string) {
+    const apiUrl = `http://localhost:5053/api/Candidature/modifier-statut/${id}/${nouveauStatut}`;
+    
+    this.http.put(apiUrl, {}, { headers: { 'Accept': 'application/json' } }).subscribe({
+      next: (response: any) => {
+        console.log(response.message);
+        // Mettre à jour localement l'état de la candidature
+        const updatedCandidature = this.candidatures.find(c => c.id === id);
+        if (updatedCandidature) {
+          updatedCandidature.etat = nouveauStatut;
+        }
+      },
+      error: (error) => {
+        console.error('Erreur lors de la mise à jour du statut :', error);
+      }
+    });
+  }
+
 }

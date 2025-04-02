@@ -1,0 +1,144 @@
+<app-header></app-header>
+<main class="content flex items-start space-x-6"> <!-- Utiliser flex avec items-start pour aligner à gauche -->
+  <!-- Liste des employés (à gauche) -->
+  <ul class="bg-white rounded-lg shadow-lg w-[700px] p-6 mt-5 max-h-[560px] overflow-y-auto">
+    <li class="p-4 pb-2 text-lg opacity-60 tracking-wide">Liste des employés</li>
+
+    <!-- Employé 1 -->
+    <li *ngFor="let employe of employes" class="flex items-center justify-between p-4 border-b">
+      <div class="flex items-center gap-6">
+        <img class="size-14 rounded-full" src="https://ui-avatars.com/api/?name={{ employe.nomPrenom }}&background=random"/>
+        <div class="space-y-2">
+          <div class="font-bold text-xl">{{ employe.nomPrenom }}</div>
+          <div class="text-lg font-semibold opacity-60">Département: {{ employe.departement }}</div>
+          <div class="text-sm opacity-60">Salaire: {{ employe.salaire }}dt | Ancienneté: {{ employe.anciennete }} ans</div>
+        </div>
+      </div>
+
+      <!-- Conteneur pour les icônes de modification et réclamation -->
+      <div class="flex items-center gap-4">
+        <!-- Icône de modification -->
+        <button (click)="openEditForm(employe)" class="text-blue-500 hover:text-blue-700">
+          <i class="fas fa-edit text-xl"></i>
+        </button>
+        
+        <!-- Icône de réclamation -->
+        <button (click)="openReclamationPanel(employe)" class="text-gray-500 hover:text-black">
+          <i class="fas fa-envelope-open-text text-xl"></i>
+        </button>
+      </div>
+    </li>
+  </ul>
+
+  <!-- Panneau des réclamations (à droite) -->
+  <div *ngIf="selectedEmploye && selectedEmploye.reclamations" class="w-1/3 p-6 bg-white rounded-lg shadow-lg max-h-[330px] mt-[150px] overflow-y-auto no-scrollbar">
+    <h2 class="text-2xl font-semibold mb-6 text-center">Réclamations de {{ selectedEmploye.nomPrenom }}</h2>
+
+    <!-- Liste des réclamations -->
+    <ul class="space-y-4">
+      <li *ngFor="let reclamation of selectedEmploye.reclamations" class="border-b p-2">
+        <div class="font-semibold">{{ reclamation.date }}</div>
+        <p>{{ reclamation.details }}</p>
+      </li>
+    </ul>
+  </div>
+</main>
+
+
+
+
+<!-- Formulaire de modification d'employé -->
+<div *ngIf="isFormVisible" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-start pt-20">
+  <div class="bg-white p-8 rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-hidden hover:overflow-y-auto no-scrollbar transition-all">
+    <h2 class="text-2xl font-semibold mb-6 text-center">Modifier Employé</h2>
+
+    <!-- Salaire -->
+    <div class="flex items-center mb-6">
+      <label class="text-sm font-medium text-gray-700 w-1/3">Salaire (dt)</label>
+      <input [(ngModel)]="currentEmploye.salaire" 
+             class="p-2 w-1/3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
+             type="number" />
+    </div>
+
+    <!-- Objectifs SMART -->
+    <div class="mb-6">
+      <label class="block text-sm font-medium text-gray-700 mb-2">Objectifs SMART</label>
+  
+      <!-- Grid pour aligner 1 objectif par ligne -->
+      <div class="grid grid-cols-1 gap-4 p-2">
+          <div *ngFor="let objectif of currentEmploye.objectifs; let i = index" 
+               class="relative stat bg-yellow-50 p-4 rounded-lg shadow w-full">
+            
+              <div class="stat-title text-left">{{ objectif.description }}</div>
+              <div *ngIf="isEditingObjective && editingObjectiveIndex === i">
+                <input [(ngModel)]="editedDescription" 
+                       class="p-2 w-full border border-gray-300 rounded focus:outline-none" 
+                       type="text" />
+              </div>
+  
+              <!-- Afficher l'état atteint ou non atteint -->
+              <div class="text-center mt-4">
+                <span [ngClass]="{
+                  'text-green-500': objectif.atteint,
+                  'text-red-500': !objectif.atteint
+                }" class="font-bold">
+                  {{ objectif.atteint ? 'Atteint' : 'Non Atteint' }}
+                </span>
+              </div>
+              
+              <div class="absolute bottom-2 left-2 flex space-x-2">
+                <!-- Icône de modification -->
+              <!-- Icône de modification avec couleur noire -->
+<button (click)="editObjective(i)" class="text-blue-500 hover:text-blue-600 ">
+  <i class="fas fa-edit"></i>
+</button>
+
+<!-- Icône de suppression avec couleur noire -->
+<button (click)="deleteObjective(i)" class="text-gray-500 hover:text-red-600 ">
+  <i class="fas fa-trash"></i>
+</button>
+
+              </div>
+              <div *ngIf="isEditingObjective && editingObjectiveIndex === i" class="absolute bottom-2 right-2 flex space-x-2">
+                <button (click)="saveEditedObjective()" class="text-green-500 hover:text-green-300">
+                  <i class="fas fa-save"></i> 
+                </button>
+                <button (click)="cancelEditO()" class="text-gray-500 hover:text-gray-300">
+                  <i class="fas fa-times"></i> 
+                </button>
+              </div>
+          </div>
+  
+          <!-- Ajouter un nouvel objectif -->
+          <div *ngIf="!isAddingObjective" 
+               class="stat border-dashed border-2 border-gray-400 flex items-center justify-center cursor-pointer p-6 rounded-lg hover:bg-gray-100"
+               (click)="toggleAddObjective()">
+              <i class="fas fa-plus text-3xl text-gray-500"></i>
+          </div>
+
+  
+
+        <!-- Champ de saisie pour un nouvel objectif -->
+        <div *ngIf="isAddingObjective" class="stat bg-gray-50 p-4 rounded-lg shadow">
+          <input [(ngModel)]="newObjective" 
+                 class="p-2 w-full border border-gray-300 rounded focus:outline-none" 
+                 placeholder="Nouvel objectif..." type="text" />
+          <div class="flex justify-end mt-2 space-x-2">
+            <button (click)="addObjective()" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 text-sm">Ajouter</button>
+            <button (click)="toggleAddObjective()" class="bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-500 text-sm">Annuler</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Boutons Enregistrer et Annuler -->
+    <div class="flex justify-end gap-4 mt-6">
+      <button (click)="saveChanges()" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+        Enregistrer
+      </button>
+      <button (click)="cancelEdit()" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600">
+        Annuler
+      </button>
+    </div>
+  </div>
+</div>

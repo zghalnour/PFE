@@ -1,0 +1,24 @@
+.content {
+  min-height: 180vh; /* Assure que le contenu prend toute la hauteur */
+  width: calc(100% - 260px); /* Prend toute la largeur sauf la sidebar */
+  margin-left: 240px;
+  margin-top: 25px;
+  margin-right: 20px; /* Supprime la marge droite pour qu'il prenne toute la largeur */
+  padding: 20px; /* Optionnel pour l'espacement */
+  background-color: #eae8e889; /* Fond du content */
+  display: flex;
+  flex-direction: row;
+  gap: 20px; 
+}
+ul::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* Internet Explorer et Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+

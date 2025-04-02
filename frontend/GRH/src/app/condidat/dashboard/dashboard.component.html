@@ -1,7 +1,185 @@
-<div >
-  <h1>Bienvenue sur l'espace candidat</h1>
-  <p>Accédez à toutes les informations sans connexion.</p>
 
-  <button (click)="goToLogin()" >Se connecter</button>
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="left-section">
+      <img src="assets/logo.png" alt="Logo" class="logo">
+    </div>
+    <div class="nav-links">
+      <a routerLink="/">Site</a>
+    
+      <a >  <button (click)="goToLogin()" >Se connecter</button></a>
+    </div>
+  </div>
+</nav>
+
+
+<div class="container p-6 w-full">
+
+
+  <!-- Disposition en deux colonnes : 3/4 pour les filtres et la liste des offres à gauche, 1/4 à droite pour les détails du job -->
+  <div class="flex gap-[50px] w-full">
+
+    <!-- Partie gauche avec le texte, les filtres et la liste des offres (3/4 de la page) -->
+    <div class="w-1/2 flex flex-col gap-6">
+      <h1 class="text-3xl font-bold ">Découvrez nos offres d'emploi</h1>
+
+      <!-- Filtres -->
+      <div class="filters flex gap-4 mb-6">
+        <input type="text" placeholder="Rechercher" [(ngModel)]="searchQuery" class="p-2 border border-gray-300 rounded w-1/3" />
+        <select [(ngModel)]="selectedContract" class="p-2 border border-gray-300 rounded w-1/3">
+          <option value="">Type de contrat...</option>
+          <option *ngFor="let type of contractTypes" [value]="type">{{ type }}</option>
+        </select>
+      
+      </div>
+
+      <!-- Liste des offres -->
+      <div class="job-list">
+        <div *ngFor="let job of filteredJobs()" class="job-card p-4 border border-gray-300 rounded-lg hover:bg-gray-100 cursor-pointer mb-4" (click)="showJobDetails(job)">
+          <h3 class="font-semibold text-lg">{{ job.title }} |📄{{ job.type }}  <p class="text-sm text-gray-600">
+            
+          </p></h3>
+      
+          <p class="deadline text-sm text-gray-500">🕒 Postulez avant : <strong>{{ job.deadline }}</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Partie droite (détails du job, 1/4 de la page) -->
+    <div class="w-1/2 h-[500px]">
+      <div *ngIf="selectedJob" class="job-details bg-white p-6 rounded-lg shadow-lg h-full flex flex-col gap-6">
+        
+        <!-- Titre du Job -->
+        <h2 class="text-2xl font-semibold text-gray-800 mb-3">{{ selectedJob.title }}</h2>
+
+        <!-- Description -->
+        <p class="text-gray-600 mb-4">
+          <strong class="text-gray-800">Description :</strong> {{ selectedJob.description }}
+        </p>
+
+        <!-- Compétences requises -->
+        <div class="flex flex-col gap-1 mb-3">
+          <p class="text-gray-800 font-medium"> <strong class="text-gray-800">Compétences requises :</strong></p>
+          <div class="flex flex-wrap gap-2">
+            <span *ngFor="let skill of selectedJob.skills" class="bg-[#01b9b9] text-white px-3 py-1 rounded-full text-sm font-medium">
+              {{ skill }}
+            </span>
+          </div>
+        </div>
+        
+
+        <!-- Bouton Postuler -->
+        <button (click)="openModal(selectedJob)" 
+        class="bg-[#3799b2] hover:bg-[#01b9b9] text-white font-bold py-2 px-4 rounded-xl w-1/3 mt-auto mx-auto mb-2">
+        Postuler
+      </button>
+      </div>
+    </div>
+    <div *ngIf="isModalOpen" class="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white p-8 rounded-lg shadow-lg w-1/2 relative h-[490px]  flex flex-col">
+        <button (click)="closeModal()" class="absolute top-2 right-4 text-gray-700 text-2xl">
+          X
+        </button>
+        <h2 class="text-2xl font-semibold ">Formulaire de Candidature</h2>
+
+        
+        <!-- Formulaire avec flexbox pour ajuster le contenu -->
+        <form (ngSubmit)="submitApplication()" class="flex flex-col flex-grow mt-8">
+          
+          <!-- Informations personnelles -->
+          <div class="grid grid-cols-2 gap-4 mb-4" *ngIf="currentStep === 'form'">
+            <div class="flex flex-col">
+              <label for="nomPrenom" class="font-medium text-gray-700">Nom et Prénom</label>
+              <input id="nomPrenom" type="text" [(ngModel)]="applicant.nomPrenom" name="nomPrenom" class="border-b-2 border-gray-300 p-2 rounded" required />
+            </div>
+            <div class="flex flex-col">
+              <label for="email" class="font-medium text-gray-700">Email</label>
+              <input id="email" type="email" [(ngModel)]="applicant.email" name="email" class="border-b-2 border-gray-300 p-2 rounded" required />
+            </div>
+            <div class="flex flex-col">
+              <label for="telephone" class="font-medium text-gray-700">Téléphone</label>
+              <input id="telephone" type="tel" [(ngModel)]="applicant.telephone" name="telephone" class="border-b-2 border-gray-300 p-2 rounded" required />
+            </div>
+            <div class="flex flex-col mb-[16px]">
+              <label for="linkedin" class="font-medium text-gray-700">LinkedIn</label>
+              <input id="linkedin" type="text" [(ngModel)]="applicant.linkedin" name="linkedin" class="border-b-2 border-gray-300 p-2 rounded" required />
+            </div>
+          </div>
+        
+          <!-- Importer CV -->
+          <div class="mb-4" *ngIf="currentStep === 'form'">
+            <label for="cv" class="font-medium text-gray-700 block mb-1">Importer votre CV</label>
+            <input id="cv" type="file" (change)="onCvSelected($event)" class="p-2" required />
+          </div>
+      
+          <!-- Questions de Test -->
+          <div *ngIf="currentStep === 'test'" class=" test-section">
+            <p>{{ selectedJob.descrTest }}</p>
+            <br>
+            <h3 class="text-xl mb-4 text-gray-800 font-bold">
+              Choisir la seule réponse correcte parmi les options proposées.
+            </h3>
+            
+            
+            <div *ngFor="let question of selectedJob.testQuestions">
+              <div class="mb-2">
+                <label class="font-medium text-gray-700">{{ question.text }}</label>
+                <div class="flex flex-col">
+                  <div *ngFor="let option of question.options; let index = index">
+                    <label>
+                      <input type="radio" 
+                             name="question{{ question.id }}" 
+                             [(ngModel)]="question.selectedOption" 
+                             [value]="index + 1"   
+                             class="mr-2" />
+                      {{ option }}
+                    </label>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Boutons de navigation -->
+          <div class="flex justify-center mt-auto mb-4">
+            <!-- Si l'offre a des questions de test -->
+            <button *ngIf="currentStep === 'form' && selectedJob?.testQuestions && selectedJob.testQuestions.length > 0"
+                    type="button"
+                    (click)="goToNextStep()"
+                    class="bg-[#01b9b9] text-white px-4 py-2 rounded  mt-auto mx-auto mb-0">
+              Passer au Test
+            </button>
+      
+            <!-- Si l'offre n'a pas de questions de test ou quand on est dans l'étape 'test' -->
+            <button *ngIf="currentStep === 'form' && (!selectedJob?.testQuestions || selectedJob.testQuestions.length === 0)"
+                    type="button"
+                    (click)="submitApplication()"
+                    class="bg-[#01b9b9] text-white px-4 py-2 rounded mr-2">
+              Soumettre la Candidature
+            </button>
+      
+            <!-- Si on est dans l'étape 'test', afficher les boutons pour soumettre ou annuler -->
+            <button *ngIf="currentStep === 'test'"
+                    type="button"
+                    (click)="submitApplication()"
+                    class="bg-[#01b9b9] text-white px-4 py-2 rounded mr-2">
+              Soumettre la Candidature
+            </button>
+            <button *ngIf="currentStep === 'test'"
+                    type="button"
+                    (click)="goToPreviousStep()"
+                    class="bg-gray-400 text-white px-4 py-2 rounded">
+              Précédent
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    
+  </div>
+
 </div>
+
 

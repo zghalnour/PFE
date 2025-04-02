@@ -4,11 +4,11 @@ import { AuthComponent } from './auth/auth.component';
 import { AuthGuard } from './guards/auth.guard';
 const routes: Routes = [
   { path: 'login', component: AuthComponent },
-  { path: '', redirectTo: '/condidat', pathMatch: 'full' }, // Rediriger les utilisateurs vers condidat par défaut
+  { path: '', redirectTo: '/candidat', pathMatch: 'full' }, // Rediriger les utilisateurs vers condidat par défaut
 
   // ✅ Le candidat peut accéder sans connexion
   { 
-    path: 'condidat', 
+    path: 'candidat', 
     loadChildren: () => import('./condidat/condidat.module').then(m => m.CondidatModule) 
   },
 

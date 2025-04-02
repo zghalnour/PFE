@@ -16,7 +16,7 @@ namespace PfeRH.Models
         public DbSet<Question> Questions { get; set; }
         public DbSet<Departement> Departements { get; set; }
         public DbSet<Evaluation> Evaluations { get; set; }
-        public DbSet<Presence> Presences { get; set; }
+        public DbSet<Responsable> Responsables { get; set; }
         public DbSet<Projet> Projets { get; set; }
         public DbSet<Entretien> Entretiens { get; set; }
         public DbSet<Candidature> Candidatures { get; set; }
@@ -26,6 +26,8 @@ namespace PfeRH.Models
         public DbSet<Test>Tests { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Offre>Offres { get; set; }
+        public DbSet<ObjectifSmart> Objectifs { get; set; }
+        public DbSet<Reclamation> Reclamations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -46,15 +48,26 @@ namespace PfeRH.Models
        .HasOne(rc => rc.Candidature)
        .WithMany(c => c.ReponseCandidats)
        .HasForeignKey(rc => rc.CandidatureId)
-       .OnDelete(DeleteBehavior.Restrict); // Empêche la suppression en cascade
+       .OnDelete(DeleteBehavior.Cascade); 
 
             modelBuilder.Entity<ReponseCandidat>()
                 .HasOne(rc => rc.Question)
                 .WithMany(q => q.ReponseCandidats)
                 .HasForeignKey(rc => rc.QuestionId)
-                .OnDelete(DeleteBehavior.NoAction); // Modification ici pour éviter les cycles de cascade
+                .OnDelete(DeleteBehavior.NoAction); 
 
-          
+            modelBuilder.Entity<Candidature>()
+      .HasOne(c => c.Candidat)
+      .WithMany(c => c.Candidatures)
+      .HasForeignKey(c => c.CandidatId)
+      .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Candidature>()
+    .HasMany(c => c.ReponseCandidats)
+    .WithOne(r => r.Candidature)
+    .OnDelete(DeleteBehavior.Cascade);
+
+
             modelBuilder.Entity<Entretien>()
                .HasOne(e => e.Candidature)
                .WithMany(c => c.Entretiens)
@@ -78,6 +91,13 @@ namespace PfeRH.Models
        .HasOne(t => t.Offre)  // La relation entre Test et Offre
        .WithOne(o => o.Test)  // Chaque Offre a un Test
        .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Departement>()
+           .HasOne(d => d.Responsable)
+           .WithOne(r => r.Departement)
+           .HasForeignKey<Departement>(d => d.ResponsableId)
+           .OnDelete(DeleteBehavior.Restrict);
+
 
 
         }

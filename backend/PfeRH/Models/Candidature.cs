@@ -20,10 +20,10 @@ namespace PfeRH.Models
         public DateTime DateCandidature { get; set; }
         public string Statut { get; set; }
         public double ScoreAI { get; set; }
-        public double TestScore { get; set; }
-        public string CompetencesExtraites { get; set; }
+        public double? TestScore { get; set; }
+        public string? CompetencesExtraites { get; set; }
 
-        public virtual ICollection<ReponseCandidat> ReponseCandidats { get; set; }
+        public virtual ICollection<ReponseCandidat>? ReponseCandidats { get; set; }
         public virtual ICollection<Entretien> Entretiens { get; set; }
 
 

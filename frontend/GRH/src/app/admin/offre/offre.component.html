@@ -19,15 +19,15 @@
       <div class="card bg-white w-96 shadow-xl rounded-lg" *ngFor="let offre of filteredOffres()">
         <!-- Upper part: Job details (Title, Skills, Applications) -->
         <div class="card-body border-b p-4">
-          <h2 class="card-title text-xl font-semibold">{{ offre.titre }}</h2>
-          <p class="text-sm text-gray-600">Description: <strong>{{ offre.description || 'Aucune description fournie' }}</strong></p>
-          <p class="text-sm text-gray-600">Compétences requises: <strong>{{ offre.competences || 'Non spécifiées' }}</strong></p>
+          <h2 class="text-2xl font-semibold text-gray-800">{{ offre.titre }}</h2>
+          <p class="text-sm text-gray-600"> <strong>Description: </strong> {{ offre.description || 'Aucune description fournie' }}</p>
+          <p class="text-sm text-gray-600"><strong>compétences requises: </strong>{{ offre.competences || 'Non spécifiées' }}</p>
         
         </div>
     
         <!-- Bottom part: Job state and action buttons -->
         <div class="card-body p-4 flex flex-col items-start space-y-4">
-          <p class="text-sm text-gray-600">Nombre de candidatures: <strong>{{ offre.nbCandidatures }}</strong></p>
+          <p class="text-sm text-gray-600"><strong>Nombre de candidatures: {{ offre.nbCandidatures }}</strong></p>
           <p class="text-sm text-gray-600">
             <strong class="{{ offre.etat === 'Ouverte' ? 'text-green-500' : 'text-red-500' }}">{{ offre.etat }}</strong>
           </p>
@@ -52,6 +52,127 @@
       </div>
     </div>
 <!-- Formulaire avec 'ngIf' basé sur la variable isOpenForm -->
+<!-- Modal de modification de l'offre -->
+<div *ngIf="isEditing" class="modal fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white p-8 rounded-lg shadow-lg w-3/4 h-auto flex">
+    
+    <!-- Partie gauche : Modifier l'offre -->
+    <div class="w-1/2 p-4">
+      <h2 class="text-2xl font-semibold mb-4 text-center">Modifier l'offre</h2>
+      <form (ngSubmit)="updateOffre()">
+        
+        <!-- Titre -->
+        <div class="w-full mb-4">
+          <label for="titre" class="block text-lg font-medium">Titre</label>
+          <input id="titre" type="text" [(ngModel)]="currentOffre.titre" name="titre" class="mt-1 p-2 w-full border rounded" required />
+        </div>
+
+        <!-- Description -->
+        <div class="w-full mb-4">
+          <label for="description" class="block text-lg font-medium">Description</label>
+          <textarea id="description" [(ngModel)]="currentOffre.description" name="description" class="mt-1 p-2 w-full border rounded" required></textarea>
+        </div>
+
+        <!-- Compétences -->
+        <div class="w-full mb-4">
+          <label for="competences" class="block text-lg font-medium">Compétences requises</label>
+          <input id="competences" type="text" [(ngModel)]="currentOffre.competences" name="competences" class="mt-1 p-2 w-full border rounded" required />
+        </div>
+
+        <!-- Date limite -->
+        <div class="w-full mb-4">
+          <label for="dateLimite" class="block text-lg font-medium">Date limite</label>
+          <input id="dateLimite" type="text" [(ngModel)]="currentOffre.dateLimite" name="dateLimite" class="mt-1 p-2 w-full border rounded" required />
+        </div>
+
+        <!-- Description du test -->
+        <div class="w-full mb-4">
+          <label for="testDescription" class="block text-lg font-medium">Description du test</label>
+          <textarea id="testDescription" [(ngModel)]="currentOffre.descTest" name="testDescription" class="mt-1 p-2 w-full border rounded" required></textarea>
+        </div>
+
+      </form>
+    </div>
+    
+    <!-- Séparation (petit trait) -->
+    <div class="w-0.5 bg-gray-400 mx-4"></div>
+
+    <!-- Partie droite : Modifier les questions -->
+    <div class="w-1/2 p-4">
+    
+      <div *ngIf="currentOffre.questions.length > 0">
+        <div *ngIf="currentOffre.questions[currentQuestionIndex]">
+          <div>
+            <label class="block text-lg font-medium">Énoncé des questions</label>
+            <input type="text" [(ngModel)]="currentOffre.questions[currentQuestionIndex].intitule" 
+                   name="questionTitle" class="mt-1 p-2 w-full border rounded" />
+          </div>
+    
+          <div>
+            <label class="block text-lg font-medium mt-2">Options</label>
+            <input type="text" [(ngModel)]="currentOffre.questions[currentQuestionIndex].option1" 
+                   name="option1" class="mt-1 p-2 w-full border rounded" placeholder="Option 1" />
+            <input type="text" [(ngModel)]="currentOffre.questions[currentQuestionIndex].option2" 
+                   name="option2" class="mt-1 p-2 w-full border rounded" placeholder="Option 2" />
+            <input type="text" [(ngModel)]="currentOffre.questions[currentQuestionIndex].option3" 
+                   name="option3" class="mt-1 p-2 w-full border rounded" placeholder="Option 3" />
+          </div>
+    
+          <div>
+            <label class="block text-lg font-medium mt-2">Réponse correcte</label>
+            <select [(ngModel)]="currentOffre.questions[currentQuestionIndex].reponseCorrecte" 
+                    name="correctAnswer" class="mt-1 p-2 w-full border rounded">
+              <option value="1">Option 1</option>
+              <option value="2">Option 2</option>
+              <option value="3">Option 3</option>
+            </select>
+          </div>
+        </div>
+    
+        <!-- Boutons de navigation -->
+      <!-- Navigation des questions -->
+<div class="flex items-center space-x-2 mt-4">
+  <!-- Bouton Précédent -->
+  <button (click)="previousQuestion()" 
+          [disabled]="currentQuestionIndex === 0" 
+          class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+
+  <!-- Bouton Suivant -->
+  <button (click)="nextQuestion()" 
+          [disabled]="currentQuestionIndex >= currentOffre.questions.length - 1 || currentOffre.questions.length === 0" 
+          class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400">
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+
+
+</div>
+
+<!-- Liste des questions -->
+
+        
+        
+      </div>
+      <!-- Ajouter une nouvelle question -->
+      <div class="flex mt-[30px] justify-center">
+        <button (click)="cancelEdit()" class="py-2 px-4 mx-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+          Annuler
+        </button>
+        <button (click)="updateOffre()" class="py-2 px-4 mx-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          Modifier
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Boutons Modifier et Annuler -->
+
+</div>
+
+
+
+
 <!-- Modal de création de l'offre -->
 <div *ngIf="isOpenForm" class="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
   <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
@@ -59,10 +180,24 @@
     <div *ngIf="isFirstStep" class="flex flex-col space-y-4 items-center">
       <h2 class="text-2xl font-semibold mb-4 text-center">Créer une nouvelle offre</h2>
 
-      <!-- Titre -->
-      <div class="w-2/4 self-start">
-        <label for="title" class="block text-lg font-medium">Titre</label>
-        <input id="title" type="text" [(ngModel)]="offre.titre" class="mt-1 p-2 w-full border rounded" placeholder="Entrez le titre de l'offre" required />
+      
+    
+      <div class="flex justify-between w-full space-x-4"> <!-- Alignement en flex pour le titre et le champ -->
+        <!-- Titre -->
+        <div class="w-2/4 self-start">
+          <label for="title" class="block text-lg font-medium">Titre</label>
+          <input id="title" type="text" [(ngModel)]="offre.titre" class="mt-1 p-2 w-full border rounded" placeholder="Entrez le titre de l'offre" required />
+        </div>
+
+        <!-- Type de contrat -->
+        <div class="w-2/4 self-start">
+          <label for="contractType" class="block text-lg font-medium">Type de contrat</label>
+          <select id="contractType" [(ngModel)]="offre.typeContrat" class="mt-1 p-2 w-full border rounded" required>
+            <option value="CDD">CDD</option>
+            <option value="CDI">CDI</option>
+            <option value="Freelance">Stage</option>
+          </select>
+        </div>
       </div>
 
       <!-- Description -->

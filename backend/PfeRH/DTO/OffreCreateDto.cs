@@ -4,6 +4,7 @@
     {
         public string Titre { get; set; }
         public string Description { get; set; }
+        public string TypeContrat {  get; set; }
         public string Competences { get; set; }
         public String DateLimitePostulation { get; set; }
         

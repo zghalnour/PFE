@@ -54,6 +54,7 @@ namespace PfeRH.Controllers
                 Email = model.Email,
                 NomPrenom = model.NomPrenom,
                 Role = model.Role,
+                PhoneNumber=model.PhoneNumber,
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);

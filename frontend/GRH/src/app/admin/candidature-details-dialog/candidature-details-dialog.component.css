@@ -11,6 +11,12 @@
 .dialog-content::-webkit-scrollbar {
   display: none;  /* Cache la barre de défilement pour Chrome, Safari, Edge */
 }
+.icon {
+  width: 25px;  /* Ajuste selon tes besoins */
+  height: 25px;
+  vertical-align: middle;
+  margin-right: 5px;
+}
 
 .links-section {
   display: flex;
@@ -23,7 +29,7 @@
   font-size: 16px;
   color: #008c99;
 
-  text-decoration: underline;
+  text-decoration: none;
   display: flex;
   align-items: center;
 }

@@ -6,7 +6,7 @@
         public string? CVPath { get; set; }
         public string LinkedIn { get; set; }
        
-        public string Telephone { get; set; }
+        
 
 
         public List<string> CompetencesExtraites { get; set; }
@@ -17,7 +17,7 @@
             Candidatures = new List<Candidature>();
             CompetencesExtraites = new List<string>();
             LinkedIn = string.Empty;
-            Telephone = string.Empty;
+            
         }
 
         // Constructeur avec paramètres
@@ -26,7 +26,7 @@
         {
             CVPath = cvPath;
             LinkedIn = linkedIn;
-            Telephone = telephone;
+            
             Candidatures = new List<Candidature>();
             CompetencesExtraites = new List<string>();
         }

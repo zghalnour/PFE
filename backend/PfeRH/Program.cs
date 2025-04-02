@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PfeRH.Controllers;
@@ -26,7 +27,12 @@ builder.Services.AddIdentity<Utilisateur, IdentityRole<int>>()
     .AddRoles<IdentityRole<int>>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))); // Assurez-vous d'avoir une chaîne de connexion valide
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+
+    // Activer le log pour afficher les requêtes SQL dans la console
+    options.LogTo(Console.WriteLine, LogLevel.Information);
+});
 
 
 // Configurer JWT Authentication
@@ -72,6 +78,7 @@ app.UseCors(MyAllowSpecificOrigins);
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseStaticFiles(); // Permet l'accès aux fichiers dans wwwroot
 
 app.MapControllers();
 

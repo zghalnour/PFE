@@ -42,6 +42,10 @@
         <span (click)="toggleForm()">
           {{ isSignUp ? 'Déjà inscrit ? Connectez-vous' : 'Pas encore de compte ? Inscrivez-vous' }}
         </span>
+        <div class="continue-without-login" *ngIf="!isSignUp">
+          <span (click)="continueWithoutLogin()">Continuer sans connexion</span>
+        </div>
+        
       </div>
     </div>
   </div>

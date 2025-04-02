@@ -22,6 +22,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { CandidatureDetailsDialogComponent } from './candidature-details-dialog/candidature-details-dialog.component';
 import { HeaderComponent } from './header/header.component';
+import { DepartementsComponent } from './departements/departements.component';
+import { EmployesComponent } from './employes/employes.component';
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA] ,
   declarations: [
@@ -30,7 +32,9 @@ import { HeaderComponent } from './header/header.component';
     OffreComponent,
     CandidaturesComponent,
     CandidatureDetailsDialogComponent,
-    HeaderComponent
+    HeaderComponent,
+    DepartementsComponent,
+    EmployesComponent
   ],
   imports: [
     CommonModule,

@@ -127,3 +127,18 @@ button:hover {
 .toggle span:hover {
   text-decoration: underline;
 }
+.continue-without-login {
+  position: absolute;
+  bottom: 5px;
+  right: 20px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.continue-without-login span {
+  text-decoration: underline;
+}
+
+.continue-without-login span:hover {
+  color: #0056b3;
+}

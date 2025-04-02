@@ -5,30 +5,45 @@
   
     <div class="candidatures-list">
       <div *ngFor="let candidature of candidatures" class="candidature-card">
-        <h3 class="text-xl font-semibold">{{ candidature.name }}</h3>
+        <h3 class="text-sm text-gray-600">{{ candidature.name }}</h3>
         <div class="flex justify-between items-center">
-          <p><strong>Score AI:</strong> {{ candidature.scoreAI }}</p>
-          <p><strong>Test Score:</strong> {{ candidature.testScore }}</p>
+          <p>Score AI: <strong>{{ candidature.scoreAI }} </strong></p>
+          <p>Test Score: <strong>{{ candidature.testScore }}</strong></p>
         </div>
         
         <!-- Affichage de l'état de la candidature -->
         <div class="candidature-status mt-2">
           <strong>
           <span [ngClass]="{
-              'text-green-500': candidature.etat === 'accepte',
-              'text-red-500': candidature.etat === 'refuse',
-              'text-yellow-500': candidature.etat === 'en cours'
+              'text-green-500': candidature.etat === 'Accepte',
+              'text-red-500': candidature.etat === 'Refuse',
+              'text-yellow-500': candidature.etat === 'En cours'
           }">
-            {{ candidature.etat | titlecase }}
+            {{ candidature.etat }}
           </span>
         </strong> 
         </div>
 
-        <div class="actions mt-4">
+        <div class="actions mt-4 flex justify-between items-center"> <!-- Ajoute flex pour placer les actions à droite -->
+          <!-- Bouton Détails avec texte -->
           <button class="btn btn-primary" (click)="openDetails(candidature)">
-            Voir Détails
+             détails
           </button>
-        </div>
+          
+          <!-- Section pour les actions d'acceptation et de rejet, placée à droite -->
+          <div class="flex">
+            <!-- Icône alternative pour accepter : Check Circle -->
+            <button class="btn btn-success" (click)="acceptCandidate(candidature)">
+              <i class="fas fa-check-circle"></i> <!-- Icône Check Circle -->
+            </button>
+            
+            <!-- Icône alternative pour rejeter : Times Circle -->
+            <button class="btn btn-danger" (click)="rejectCandidate(candidature)">
+              <i class="fas fa-times-circle"></i> <!-- Icône Times Circle -->
+            </button>
+          </div>
+        </div>        
+        
       </div>
     </div>
   </div>

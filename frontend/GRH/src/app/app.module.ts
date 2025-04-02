@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { AuthComponent } from './auth/auth.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AdminModule } from './admin/admin.module';
+import { CondidatModule } from './condidat/condidat.module';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 
@@ -22,7 +23,8 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    AdminModule
+    AdminModule,
+    CondidatModule
   ],
   providers: [
     provideAnimationsAsync()

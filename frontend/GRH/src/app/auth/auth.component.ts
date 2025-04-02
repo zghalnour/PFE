@@ -85,6 +85,10 @@ export class AuthComponent {
         break;
     }
   }
+  continueWithoutLogin() {
+    this.router.navigate(['/candidat']);
+  }
+  
 
   
   

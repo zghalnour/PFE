@@ -12,9 +12,9 @@ namespace PfeRH.Models
 
         // Relation avec le chef de département
 
-        [ForeignKey("ChefDepartement")]
-        public int? ChefDepartementId { get; set; }
-        public GestionnaireRH ChefDepartement { get; set; } // Navigation vers le chef de département
+        [ForeignKey("Responsable")]
+        public int? ResponsableId { get; set; }
+        public Responsable Responsable { get; set; } // Navigation vers le chef de département
 
         // Relation avec les employés du département
         public ICollection<Employe> Employes { get; set; }

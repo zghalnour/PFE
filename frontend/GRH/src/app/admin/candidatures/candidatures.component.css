@@ -41,25 +41,68 @@
   color: #4a5568;
 }
 
-.actions button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  border-radius: 5px;
-  margin-top: 10px;
+/* Réduit la taille des boutons et l'espacement */
+/* Applique des styles pour le bouton Détails */
+.actions {
+  display: flex;
+  justify-content: space-between; /* Détails à gauche, icônes à droite */
+  align-items: center;
+  width: 100%;
+  margin-top: 16px; /* Espacement entre contenu et actions */
 }
 
+/* Style pour les boutons Détails */
 .actions .btn-primary {
-  background-color: #3498db;
-  color: white;
+
+  background-color: #3498db !important;
+  color: white !important;
+
+  font-size: 1.15rem;
+  border-radius: 5px;
+  cursor: pointer;
+ height: 40px;
+ width:80px;
 }
 
-.actions .btn-warning {
-  background-color: #f39c12;
-  color: white;
+/* Effet au survol */
+.actions .btn-primary:hover {
+opacity: 0.8; 
 }
 
-.actions button:hover {
-  opacity: 0.8;
+/* Conteneur des icônes (Accepter/Rejeter) */
+.actions .flex {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Supprime tout espace entre les icônes */
 }
+
+/* Boutons d'actions */
+.actions .btn {
+  border: none;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+}
+
+/* Icônes */
+.actions i {
+  font-size: 2.15rem; /* Ajuste la taille */
+
+  margin: 0;
+  padding: 0;
+}
+
+/* Couleurs des icônes */
+.actions .btn-success i {
+  color: #28a745;
+}
+
+.actions .btn-danger i {
+  color: #dc3545;
+}
+
+
 
 
