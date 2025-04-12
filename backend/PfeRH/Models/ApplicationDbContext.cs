@@ -16,7 +16,7 @@ namespace PfeRH.Models
         public DbSet<Question> Questions { get; set; }
         public DbSet<Departement> Departements { get; set; }
         public DbSet<Evaluation> Evaluations { get; set; }
-        public DbSet<Responsable> Responsables { get; set; }
+       
         public DbSet<Projet> Projets { get; set; }
         public DbSet<Entretien> Entretiens { get; set; }
         public DbSet<Candidature> Candidatures { get; set; }
@@ -92,12 +92,11 @@ namespace PfeRH.Models
        .WithOne(o => o.Test)  // Chaque Offre a un Test
        .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Departement>()
-           .HasOne(d => d.Responsable)
-           .WithOne(r => r.Departement)
-           .HasForeignKey<Departement>(d => d.ResponsableId)
-           .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Departement>()
+          .HasMany(d => d.Projets)
+          .WithOne() // Assurez-vous d'avoir une relation correcte avec Projet
+          .OnDelete(DeleteBehavior.Cascade);
 
 
         }

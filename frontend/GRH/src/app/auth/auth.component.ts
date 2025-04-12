@@ -3,7 +3,12 @@ import { HttpClient } from '@angular/common/http';
  import { Router } from '@angular/router';
  import { Observable } from 'rxjs';
  import { catchError, throwError, tap } from 'rxjs';
-
+ interface LoginResponse {
+  token: string;
+  role: string;
+  userId: number; // Assuming userId is a number
+  nomUtilisateur: string;
+}
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html',
@@ -52,11 +57,12 @@ export class AuthComponent {
   onLogin(email: string, password: string) {
     const loginData = { email: email, password: password };
 
-    this.http.post<{ token: string, role: string }>(`${this.apiUrl}/login`, loginData).subscribe({
+    this.http.post<LoginResponse>(`${this.apiUrl}/login`, loginData).subscribe({
       next: (response) => {
         localStorage.setItem('token', response.token);
         localStorage.setItem('role', response.role);
-        
+        localStorage.setItem('userName', response.nomUtilisateur);
+        localStorage.setItem('userId', response.userId.toString());
         console.log('Connexion réussie ! Rôle récupéré :', response.role);
         
         // ✅ Redirection immédiate après connexion
@@ -74,7 +80,7 @@ export class AuthComponent {
         this.router.navigate(['/admin']);
         break;
       case 'gestionnairerh':
-        this.router.navigate(['/chef-departement']);
+        this.router.navigate(['/gestionnaire-rh']);
         break;
       case 'employe':
         this.router.navigate(['/employe']);

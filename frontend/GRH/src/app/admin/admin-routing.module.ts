@@ -6,9 +6,11 @@ import { OffreComponent } from './offre/offre.component';
 import { CandidaturesComponent } from './candidatures/candidatures.component';
 import { DepartementsComponent } from './departements/departements.component';
 import { EmployesComponent } from './employes/employes.component';
+import { ParcoursCandidatComponent } from './parcours-candidat/parcours-candidat.component';
 const routes: Routes = [{ path: '', component: DashboardComponent }, { path: 'users', component: UserManagementComponent },
   {path:'offres',component:OffreComponent},  { path: 'candidatures/:titre', component: CandidaturesComponent },
-  { path: 'departements', component: DepartementsComponent },{ path: 'employes', component:EmployesComponent }];
+  { path: 'departements', component: DepartementsComponent },{ path: 'employes', component:EmployesComponent },
+  { path: 'candidat-parcours/:id', component: ParcoursCandidatComponent },]; // Nouvelle route];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

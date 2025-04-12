@@ -19,8 +19,8 @@ const routes: Routes = [
     canActivate: [AuthGuard] 
   },
   { 
-    path: 'chef-departement', 
-    loadChildren: () => import('./chef-departement/chef-departement.module').then(m => m.ChefDepartementModule),
+    path: 'gestionnaire-rh', 
+    loadChildren: () => import('./gestionnaire-rh/gestionnaire-rh.module').then(m => m.GestionnaireRHModule),
     canActivate: [AuthGuard] 
   },
   { 

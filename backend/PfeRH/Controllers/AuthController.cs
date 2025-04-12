@@ -115,7 +115,10 @@ namespace PfeRH.Controllers
             return Ok(new
             {
                 token = token,
-                role = role // Retourner le rôle dans la réponse
+                role = role ,
+                userId = user.Id,
+                // *** IMPORTANT: Replace 'NomPrenom' if your user property has a different name ***
+                nomUtilisateur = user.NomPrenom
             });
         }
 

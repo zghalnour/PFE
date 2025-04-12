@@ -1,0 +1,41 @@
+<app-header></app-header>
+<main class="content">
+  <div *ngIf="parcours$ | async as parcours; else loading">
+    <h2>Parcours du Candidat : {{ candidatNom }} (ID: {{ candidatureId }})</h2>
+
+    <div class="horizontal-timeline">
+      <div *ngFor="let etape of parcours; let i = index; let isLast = last"
+           class="timeline-step"
+           [ngClass]="getEtapeStatusClass(etape.statut)">
+
+        <!-- Ligne de connexion (sauf pour le dernier) -->
+        <div class="timeline-line" *ngIf="!isLast"></div>
+
+        <!-- Point/Icône de l'étape -->
+        <div class="timeline-point">
+          <!-- Optionnel: Icône différente selon l'étape/statut -->
+          <i class="fas fa-check-circle" *ngIf="getEtapeStatusClass(etape.statut) === 'completed'"></i>
+          <i class="fas fa-times-circle" *ngIf="getEtapeStatusClass(etape.statut) === 'failed'"></i>
+          <i class="fas fa-hourglass-half" *ngIf="getEtapeStatusClass(etape.statut) === 'in-progress'"></i>
+          <i class="far fa-circle" *ngIf="getEtapeStatusClass(etape.statut) === 'pending'"></i>
+        </div>
+
+        <!-- Contenu de l'étape -->
+        <div class="timeline-content">
+          <h4>{{ etape.etapeNom }}</h4>
+          <p><strong>Responsable:</strong> {{ etape.responsableNom }}</p>
+          <p *ngIf="etape.date"><strong>Date:</strong> {{ formatDate(etape.date) }}</p>
+          <p *ngIf="etape.statut"><strong>Statut:</strong> {{ etape.statut }}</p>
+          <p *ngIf="etape.commentaire" class="commentaire"><em>Notes: {{ etape.commentaire }}</em></p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <ng-template #loading>
+    <p>Chargement du parcours...</p>
+    <!-- Ou un spinner -->
+  </ng-template>
+</main>

@@ -1,0 +1,181 @@
+<app-header></app-header>
+<main class="content">
+  <div class="filter-container">
+    
+    <label for="offreFilter">Filtrer par offre :</label>
+    <select id="offreFilter" [(ngModel)]="selectedOffre" (change)="filterCandidatures()">
+      <option value="">Toutes les offres</option>
+      <option *ngFor="let offre of offres" [value]="offre">{{ offre }}</option>
+    </select>
+  </div>
+
+  <div class="card-container">
+    <table class="candidates-table">
+      <thead>
+        <tr>
+          <th>Nom & Prénom</th>
+          <th>Email</th>
+          <th>Téléphone</th>
+          <th>Statut</th>
+        
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let candidature of filteredCandidatures" (click)="openModal(candidature)">
+          <td>{{ candidature.nomPrenom }}</td>
+          <td>{{ candidature.email }}</td>
+          <td>{{ candidature.telephone }}</td>
+          <td [style.color]="getStatusColor(candidature.statut)">{{ candidature.statut }}</td>
+          <td> <button class="btn btn-warning" (click)="notifyAdmin(candidature)">
+            Notifier
+          </button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="modal" *ngIf="selectedCandidature">
+    <div class="modal-content">
+      <span class="close" (click)="closeModal()">&times;</span>
+      <h2>Entretiens pour {{ selectedCandidature.nomPrenom }}</h2>
+  
+      <!-- Formulaire de création d'entretien -->
+      <div class="form-container">
+        <h3>Créer un entretien</h3>
+      
+        <!-- Ligne 1: Type + Date -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="type">Type Entretien</label>
+            <input id="type" type="text" [(ngModel)]="nouvelEntretien.typeEntretien" placeholder="Ex: RH, Technique...">
+          </div>
+          <div class="form-group">
+            <label for="date">Date Entretien</label>
+            <input id="date" type="date" [(ngModel)]="nouvelEntretien.dateEntretien">
+          </div>
+        </div>
+      
+        <!-- Ligne 2: Responsable + Mode -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="responsableEntretien">Responsable Entretien</label>
+            <select id="responsableEntretien" [(ngModel)]="nouvelEntretien.responsableId" name="responsableId" required>
+              <option [ngValue]="null" disabled>Sélectionner un responsable</option>
+              <option *ngFor="let resp of responsables" [ngValue]="resp.id">
+                {{ resp.nomPrenom }} ({{ resp.poste }})
+              </option>
+            </select>
+          </div>
+      
+          <div class="form-group">
+            <label>Mode Entretien</label>
+            <div class="radio-group">
+              <label>
+                <input type="radio" name="mode" [(ngModel)]="nouvelEntretien.modeEntretien" value="Présentiel">
+                Présentiel
+              </label>
+              <label>
+                <input type="radio" name="mode" [(ngModel)]="nouvelEntretien.modeEntretien" value="En ligne">
+                En ligne
+              </label>
+            </div>
+          </div>
+        </div>
+      
+        <button class="btn-create" (click)="creerEntretien()">Créer</button>
+      </div>
+      
+      
+      
+  
+      <!-- Timeline des entretiens -->
+      <div class="timeline-container">
+        <div *ngFor="let entretien of entretiens[selectedCandidature.id] || []" class="timeline-wrapper">
+      
+          <!-- Ligne de timeline et bloc décision côte à côte -->
+          <div class="timeline-item-flex">
+      
+            <!-- Bloc de timeline (gauche) -->
+            <div class="timeline-item">
+              <div
+                class="timeline-circle"
+                [ngClass]="{
+                  'en-cours': entretien.statut === 'En cours',
+                  'failed': entretien.statut === 'Echoué',
+                  'passe': entretien.statut === 'Passé'
+                }">
+              </div>
+      
+              <div
+                class="timeline-line"
+                >
+              </div>
+      
+              <div class="timeline-content">
+                <p><strong>{{ entretien.typeEntretien }}</strong> - {{ formatDate(entretien.dateEntretien) }}</p>
+              
+                <div class="info-vertical">
+                  <span>
+                    <strong>Statut: </strong> 
+                    <span [ngClass]="{
+                      'text-red': entretien.statut === 'En cours' || entretien.statut === 'Echoué',
+                      'text-green': entretien.statut === 'Passé'
+                    }">{{ entretien.statut }}</span>
+                  </span>
+              
+                  <span>
+                    <strong>Mode: </strong> {{ entretien.modeEntretien }}
+                  </span>
+                  <span>
+                    <strong>Responsable: </strong> {{ getResponsableNom(entretien.responsableId) }}
+                  </span>
+                  <span class="decision-text" (click)="toggleDecision(entretien)">➤ Décision</span>
+              
+                  
+                </div>
+              
+                
+              </div>
+              
+            </div>
+      
+            <!-- Bloc décision (droite), visible uniquement si ouvert -->
+            <div *ngIf="entretien.showDecision " class="decision-side">
+  
+              <!-- SI showOnlyDecision === false (alors afficher textarea + boutons) -->
+              <div *ngIf="entretien.statut === 'En cours'">
+                <textarea [(ngModel)]="entretien.commentaire" placeholder="Ajouter un commentaire"></textarea>
+            
+                <div *ngIf="!entretien.decisionPrise" class="decision-buttons">
+                  <button class="btn-accept" (click)="updateEntretien(entretien, 'Passé')">Accepter</button>
+                  <button class="btn-reject" (click)="updateEntretien(entretien, 'Echoué')">Refuser</button>
+                </div>
+              </div>
+            
+              <!-- Résultat de la décision -->
+              <div *ngIf="entretien.statut !== 'En cours' " class="decision-result">
+                <p *ngIf="entretien.commentaire"><strong>Notes:</strong> {{ entretien.commentaire }}</p>
+                <strong>Décision :</strong>
+                <span [ngClass]="{
+                  'text-success': entretien.statut === 'Passé',
+                  'text-danger': entretien.statut === 'Echoué'
+                }">
+                  {{ entretien.statut === 'Passé' ? 'Accepté' : 'Refusé' }}
+                </span>
+              </div>
+            
+            </div>
+            
+      
+          </div>
+      
+        </div>
+      </div>
+      
+    
+    </div>
+  </div>
+  
+  
+  
+</main>

@@ -63,11 +63,11 @@ export class CandidaturesComponent implements OnInit {
     });
   }
   acceptCandidate(candidature: any) {
-    this.updateCandidatureState(candidature.id, 'Accepte');
+    this.updateCandidatureState(candidature.id, 'AcceptePreSelection');
   }
 
   rejectCandidate(candidature: any) {
-    this.updateCandidatureState(candidature.id, 'Refuse');
+    this.updateCandidatureState(candidature.id, 'RefusePreSelection');
   }
 
   // Mise à jour de l'état de la candidature

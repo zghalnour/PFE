@@ -7,9 +7,19 @@
   padding: 20px; /* Optionnel pour l'espacement */
   background-color: #eae8e889; /* Fond du content */
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 20px; 
 }
+.lists-container {
+  display: flex; /* Make this a flex container */
+  flex-direction: row; /* Arrange items horizontally */
+  gap: 40px; /* Space between the lists */
+  width: 100%; /* Take full width */
+}
+.text-custom-size {
+  font-size: 17px; /* Adjust the pixel value as needed */
+}
+
 ul::-webkit-scrollbar {
   display: none;
 }

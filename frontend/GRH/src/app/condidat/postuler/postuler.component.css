@@ -3,67 +3,72 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f0f8ff;
+  background-color: #f8f9fa; /* Light gray background */
+  font-family: 'Arial', sans-serif; /* Modern font */
 }
 
 .success-card {
-  background: white;
-  width: 50%;
-  max-width: 600px;
+  background-color: #ffffff; /* White card */
   padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 15px; /* More rounded corners */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Stronger shadow */
   text-align: center;
-  animation: fadeIn 0.6s ease-in-out;
+  max-width: 600px; /* Wider card */
+  width: 90%; /* Responsive width */
+  transition: transform 0.3s ease-in-out; /* Smooth transition */
+}
+
+.success-card:hover {
+  transform: translateY(-5px); /* Slight lift on hover */
 }
 
 .success-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
+  margin-bottom: 30px; /* More space */
 }
 
 .icon {
-  font-size: 50px;
+  font-size: 60px; /* Larger icon */
+  color: #28a745; /* Green color for success */
+  margin-right: 15px; /* More space */
+  animation: pulse 1.5s infinite; /* Add a subtle pulse animation */
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 h1 {
-  font-size: 20px;
-  font-weight: bold;
-  color: #4a4a4a;
+  font-size: 28px; /* Larger heading */
+  color: #343a40; /* Dark gray heading */
   margin: 0;
+  font-weight: 600; /* Semi-bold */
 }
 
 .message {
-  font-size: 18px;
-  color: #666;
-  margin: 20px 0;
+  color: #555;
+  margin-bottom: 30px; /* More space */
+  line-height: 1.7; /* Improved line height */
+  font-size: 18px; /* Larger font size */
 }
 
-button {
-  background: #6e8efb;
-  color: white;
-  border: none;
-  padding: 12px 24px;
+.redirect-message {
+  color: #777;
   font-size: 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
+  margin-top: 20px;
 }
 
-button:hover {
-  background: #5a7be6;
-  transform: scale(1.05);
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.countdown {
+  font-weight: bold;
+  color: #007bff; /* Blue color for countdown */
 }

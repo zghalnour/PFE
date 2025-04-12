@@ -1,12 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent {
+export class DashboardComponent implements AfterViewChecked {
 
+  isLoading: boolean = false;
   isModalOpen: boolean = false;
   currentStep: string = 'form';
 
@@ -37,10 +39,47 @@ export class DashboardComponent {
   
 
   jobs: any[] = [];
+  newMessage: string = '';
+  chatMessages: { message: string; isUser: boolean }[] = [];
+  @ViewChild('chatContainer') private chatContainer!: ElementRef;
+  isChatExpanded: boolean = false; 
 
+  constructor(private router: Router , private http: HttpClient) {}
 
-  constructor(private router: Router) {
+  ngOnInit() {
     this.fetchJobs();
+    this.scrollToBottom();
+    if (this.filteredJobs().length > 0) {
+      this.selectedJob = this.filteredJobs()[0];
+    }
+  }
+  ngAfterViewChecked() {
+    this.scrollToBottom();
+  
+  }
+  onFilterChange() {
+    // Quand un filtre est modifié, on met à jour le job sélectionné
+    const filtered = this.filteredJobs();
+    if (filtered.length > 0) {
+      this.selectedJob = filtered[0];
+    } else {
+      this.selectedJob = null;
+    }
+  }
+  
+  toggleChat(event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.isChatExpanded = !this.isChatExpanded;
+    if(this.isChatExpanded){
+      this.scrollToBottom();
+    }
+  }
+  scrollToBottom(): void {
+    try {
+      this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
+    } catch (err) { }
   }
   async fetchJobs() {
     try {
@@ -63,11 +102,35 @@ export class DashboardComponent {
           selectedOption: null
         }))
       }));
+      const filtered = this.filteredJobs();
+      if (filtered.length > 0) {
+        this.selectedJob = filtered[0];
+      }
     } catch (error) {
       console.error('Erreur lors du chargement des offres :', error);
     }
   }
+  sendMessage() {
+    if (this.newMessage.trim() === '') return;
 
+    this.chatMessages.push({ message: this.newMessage, isUser: true });
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'accept': '*/*'
+    });
+    this.http.post<{ reply: string }>('http://localhost:5053/api/Chatbot/send-message', `"${this.newMessage}"`, { headers })
+      .subscribe({
+        next: (response) => {
+          this.chatMessages.push({ message: response.reply, isUser: false });
+          this.newMessage = '';
+        },
+        error: (error) => {
+          console.error('Error sending message:', error);
+          this.chatMessages.push({ message: 'Error sending message', isUser: false });
+          this.newMessage = '';
+        },
+      });
+  }
 
   goToLogin() {
     this.router.navigate(['/login']);
@@ -116,7 +179,7 @@ export class DashboardComponent {
       alert('Veuillez remplir tous les champs obligatoires.');
       return;
     }
-  
+    this.isLoading = true;
     // Préparer les réponses au test sous forme de JSON
     const reponsesJson = JSON.stringify(this.selectedJob.testQuestions.map((q: any) => ({
       questionId: q.id,
@@ -150,6 +213,44 @@ export class DashboardComponent {
       .catch((error) => {
         console.error('Erreur lors de la soumission:', error);
         alert('Une erreur est survenue.');
+      });
+  }
+  submitSimpleApplication() {
+    if (!this.applicant.nomPrenom || !this.applicant.email || !this.applicant.telephone || !this.applicant.linkedin || !this.applicant.cv) {
+      alert('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+    this.isLoading = true;
+
+    const formData = new FormData();
+    formData.append('OffreId', String(this.selectedJob.id));
+    formData.append('NomPrenom', this.applicant.nomPrenom);
+    formData.append('Email', this.applicant.email);
+    formData.append('Telephone', this.applicant.telephone);
+    formData.append('LinkedIn', this.applicant.linkedin);
+
+    if (this.applicant.cv) {
+      formData.append('CVFile', this.applicant.cv, this.applicant.cv.name);
+    }
+
+    fetch('http://localhost:5053/api/Candidature/soumettre-candidature-simple', {
+      method: 'POST',
+      body: formData,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        this.isLoading = false;
+        this.router.navigate(['/postuler']);  
+      })
+      .catch((error) => {
+        this.isLoading = false;
+        console.error('Error:', error);
+        alert('Une erreur est survenue lors de la soumission de la candidature.');
       });
   }
   

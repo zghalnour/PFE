@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
           this.router.navigate(['/admin']);
           break;
         case 'gestionnairerh':
-          this.router.navigate(['/chef-departement']);
+          this.router.navigate(['/gestionnaire-rh']);
           break;
         case 'employe':
           this.router.navigate(['/employe']);

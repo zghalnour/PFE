@@ -12,9 +12,7 @@ namespace PfeRH.Models
         [Required]
         public string NomPrenom { get; set; }
 
-        [JsonIgnore]
-        public Departement Departement { get; set; } // Navigation vers le département
-
+       
         // Constructeur par défaut (nécessaire pour Entity Framework)
         public Responsable()
         {
@@ -28,12 +26,12 @@ namespace PfeRH.Models
         }
 
         // Constructeur avec navigation complète vers le département
-        public Responsable(int id, string nomPrenom, int departementId, Departement departement)
+        public Responsable(int id, string nomPrenom)
         {
             Id = id;
             NomPrenom = nomPrenom;
            
-            Departement = departement;
+            
         }
     }
 }

@@ -24,6 +24,7 @@ import { CandidatureDetailsDialogComponent } from './candidature-details-dialog/
 import { HeaderComponent } from './header/header.component';
 import { DepartementsComponent } from './departements/departements.component';
 import { EmployesComponent } from './employes/employes.component';
+import { ParcoursCandidatComponent } from './parcours-candidat/parcours-candidat.component';
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA] ,
   declarations: [
@@ -34,7 +35,8 @@ import { EmployesComponent } from './employes/employes.component';
     CandidatureDetailsDialogComponent,
     HeaderComponent,
     DepartementsComponent,
-    EmployesComponent
+    EmployesComponent,
+    ParcoursCandidatComponent
   ],
   imports: [
     CommonModule,

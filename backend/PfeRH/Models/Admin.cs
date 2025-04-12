@@ -10,14 +10,14 @@
         // Liste des départements gérés par l'admin
         public ICollection<Departement> Departements { get; set; }
 
-        public ICollection<Entretien> Entretiens { get; set; }
+        
 
         public Admin()
         {
             Candidatures = new List<Candidature>();
             Employes = new List<Employe>();
             Departements = new List<Departement>();
-            Entretiens = new List<Entretien>();
+            
 
         }
 
@@ -28,7 +28,7 @@
             Candidatures = new List<Candidature>();
             Employes = new List<Employe>();
             Departements = new List<Departement>();
-            Entretiens = new List<Entretien>();
+            
 
         }
     }

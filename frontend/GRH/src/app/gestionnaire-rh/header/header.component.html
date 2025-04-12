@@ -1,0 +1,47 @@
+<div class="admin-dashboard">
+  <!-- Barre supérieure -->
+  <header class="top-bar">
+    <!-- Menu et Logo à gauche -->
+    <div class="left-section">
+    
+      <img src="assets/logo.png" alt="Logo" class="logo">
+    </div>
+  
+
+  
+  
+    <!-- Nom utilisateur et icône utilisateur -->
+    <div class="user-info">
+      <i class="fas fa-user user-icon"></i>
+      <span class="username">Bienvenu, {{ nomUtilisateur }}</span>
+      
+    </div>
+  
+    <!-- Menu déroulant pour déconnexion -->
+    <div class="dropdown">
+      <div class="icons">
+        <i class="fas fa-bell notification-icon"></i>
+        <i class="fas fa-sign-out-alt logout-icon" (click)="logout()"></i>
+      </div>
+    </div>
+  </header>
+  
+
+<!-- Menu latéral -->
+<!-- Menu latéral -->
+<nav class="sidebar" >
+  <ul>
+    <li>
+      <a routerLink="/gestionnaire-rh" 
+         [class.active]="isActive('/gestionnaire-rh')" 
+         (click)="setActiveRoute('/gestionnaire-rh')">
+         <i class="fas fa-id-card-alt"></i>
+        <span>Candidatures</span>
+      </a>
+    </li>
+  
+  </ul>
+</nav>
+
+
+

@@ -8,15 +8,15 @@
         <h3 class="text-sm text-gray-600">{{ candidature.name }}</h3>
         <div class="flex justify-between items-center">
           <p>Score AI: <strong>{{ candidature.scoreAI }} </strong></p>
-          <p>Test Score: <strong>{{ candidature.testScore }}</strong></p>
+          <p *ngIf="candidature.testScore !== '0/0'">Test Score: <strong>{{ candidature.testScore }}</strong></p>
         </div>
         
         <!-- Affichage de l'état de la candidature -->
         <div class="candidature-status mt-2">
           <strong>
           <span [ngClass]="{
-              'text-green-500': candidature.etat === 'Accepte',
-              'text-red-500': candidature.etat === 'Refuse',
+              'text-green-500': candidature.etat === 'AcceptePreSelection',
+              'text-red-500': candidature.etat === 'RefusePreSelection',
               'text-yellow-500': candidature.etat === 'En cours'
           }">
             {{ candidature.etat }}

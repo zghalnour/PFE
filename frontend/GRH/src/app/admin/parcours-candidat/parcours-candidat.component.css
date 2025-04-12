@@ -1,0 +1,99 @@
+.horizontal-timeline {
+  display: flex;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding-bottom: 20px;
+  position: relative;
+}
+
+/* La ligne entre les étapes */
+.timeline-line {
+  position: absolute;
+  top: 30px; /* Alignée avec les points */
+  left: 0;
+  height: 4px;
+  background-color: #ccc;
+  width: 100%;
+  z-index: 0;
+}
+
+/* Chaque étape (point + contenu) */
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding: 10px;
+  min-width: 200px;
+  text-align: center;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+/* Le point circulaire */
+.timeline-point {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #ccc;
+  border: 3px solid white;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Texte et détails sous chaque point */
+.timeline-content {
+  margin-top: 5px;
+}
+
+/* Styles selon le statut */
+.timeline-point.completed {
+  background-color: #28a745; /* Vert */
+}
+
+.timeline-point.in-progress {
+  background-color: #17a2b8; /* Bleu */
+}
+
+.timeline-point.pending {
+  background-color: #ffc107; /* Jaune */
+  color: black;
+}
+
+.timeline-point.failed {
+  background-color: #dc3545; /* Rouge */
+}
+
+/* Ligne de statut (optionnel si vous colorez aussi la ligne entre les points) */
+.timeline-step.completed::after,
+.timeline-step.in-progress::after,
+.timeline-step.pending::after,
+.timeline-step.failed::after {
+  content: '';
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 4px;
+  width: 100%;
+  z-index: -1;
+}
+
+/* Ligne colorée selon statut */
+.timeline-step.completed::after {
+  background-color: #28a745;
+}
+.timeline-step.in-progress::after {
+  background-color: #17a2b8;
+}
+.timeline-step.pending::after {
+  background-color: #ffc107;
+}
+.timeline-step.failed::after {
+  background-color: #dc3545;
+}

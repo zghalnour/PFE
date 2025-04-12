@@ -178,9 +178,6 @@ namespace PfeRH.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AdminId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("CandidatId")
                         .HasColumnType("int");
 
@@ -204,8 +201,6 @@ namespace PfeRH.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AdminId");
 
                     b.HasIndex("CandidatId");
 
@@ -254,23 +249,14 @@ namespace PfeRH.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AdminId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Nom")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ResponsableId")
-                        .HasColumnType("int");
+                    b.Property<string>("NomResponsable")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AdminId");
-
-                    b.HasIndex("ResponsableId")
-                        .IsUnique()
-                        .HasFilter("[ResponsableId] IS NOT NULL");
 
                     b.ToTable("Departements");
                 });
@@ -283,9 +269,6 @@ namespace PfeRH.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AdminId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CandidatureId")
                         .HasColumnType("int");
 
@@ -293,7 +276,17 @@ namespace PfeRH.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("DateEntretien")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("ModeEntretien")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ResponsableId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Statut")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -303,9 +296,9 @@ namespace PfeRH.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AdminId");
-
                     b.HasIndex("CandidatureId");
+
+                    b.HasIndex("ResponsableId");
 
                     b.ToTable("Entretiens");
                 });
@@ -357,12 +350,21 @@ namespace PfeRH.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CandidatureId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Contenu")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DateCreation")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -372,6 +374,8 @@ namespace PfeRH.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CandidatureId");
 
                     b.HasIndex("UtilisateurId");
 
@@ -487,6 +491,9 @@ namespace PfeRH.Migrations
                     b.Property<int?>("DepartementId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("DepartementId2")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -501,6 +508,8 @@ namespace PfeRH.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DepartementId");
+
+                    b.HasIndex("DepartementId2");
 
                     b.HasIndex("GestionnaireRHId");
 
@@ -593,23 +602,6 @@ namespace PfeRH.Migrations
                     b.HasIndex("QuestionId");
 
                     b.ToTable("ReponseCandidats");
-                });
-
-            modelBuilder.Entity("PfeRH.Models.Responsable", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("NomPrenom")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Responsables");
                 });
 
             modelBuilder.Entity("PfeRH.Models.Tache", b =>
@@ -757,13 +749,6 @@ namespace PfeRH.Migrations
                     b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("PfeRH.Models.Admin", b =>
-                {
-                    b.HasBaseType("PfeRH.Models.Utilisateur");
-
-                    b.HasDiscriminator().HasValue("Admin");
-                });
-
             modelBuilder.Entity("PfeRH.Models.Condidat", b =>
                 {
                     b.HasBaseType("PfeRH.Models.Utilisateur");
@@ -786,9 +771,6 @@ namespace PfeRH.Migrations
                 {
                     b.HasBaseType("PfeRH.Models.Utilisateur");
 
-                    b.Property<int?>("AdminId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("DateEmbauche")
                         .HasColumnType("datetime2");
 
@@ -804,8 +786,6 @@ namespace PfeRH.Migrations
 
                     b.Property<double>("Salaire")
                         .HasColumnType("float");
-
-                    b.HasIndex("AdminId");
 
                     b.HasIndex("DepartementId");
 
@@ -889,10 +869,6 @@ namespace PfeRH.Migrations
 
             modelBuilder.Entity("PfeRH.Models.Candidature", b =>
                 {
-                    b.HasOne("PfeRH.Models.Admin", null)
-                        .WithMany("Candidatures")
-                        .HasForeignKey("AdminId");
-
                     b.HasOne("PfeRH.Models.Condidat", "Candidat")
                         .WithMany("Candidatures")
                         .HasForeignKey("CandidatId")
@@ -918,37 +894,21 @@ namespace PfeRH.Migrations
                     b.Navigation("Employe");
                 });
 
-            modelBuilder.Entity("PfeRH.Models.Departement", b =>
-                {
-                    b.HasOne("PfeRH.Models.Admin", null)
-                        .WithMany("Departements")
-                        .HasForeignKey("AdminId");
-
-                    b.HasOne("PfeRH.Models.Responsable", "Responsable")
-                        .WithOne("Departement")
-                        .HasForeignKey("PfeRH.Models.Departement", "ResponsableId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Responsable");
-                });
-
             modelBuilder.Entity("PfeRH.Models.Entretien", b =>
                 {
-                    b.HasOne("PfeRH.Models.Admin", "Admin")
-                        .WithMany("Entretiens")
-                        .HasForeignKey("AdminId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("PfeRH.Models.Candidature", "Candidature")
                         .WithMany("Entretiens")
                         .HasForeignKey("CandidatureId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Admin");
+                    b.HasOne("PfeRH.Models.Employe", "Responsable")
+                        .WithMany()
+                        .HasForeignKey("ResponsableId");
 
                     b.Navigation("Candidature");
+
+                    b.Navigation("Responsable");
                 });
 
             modelBuilder.Entity("PfeRH.Models.Evaluation", b =>
@@ -970,9 +930,17 @@ namespace PfeRH.Migrations
 
             modelBuilder.Entity("PfeRH.Models.Notification", b =>
                 {
+                    b.HasOne("PfeRH.Models.Candidature", "Candidature")
+                        .WithMany()
+                        .HasForeignKey("CandidatureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("PfeRH.Models.Utilisateur", "Utilisateur")
                         .WithMany()
                         .HasForeignKey("UtilisateurId");
+
+                    b.Navigation("Candidature");
 
                     b.Navigation("Utilisateur");
                 });
@@ -1007,8 +975,13 @@ namespace PfeRH.Migrations
             modelBuilder.Entity("PfeRH.Models.Projet", b =>
                 {
                     b.HasOne("PfeRH.Models.Departement", "Departement")
-                        .WithMany("Projets")
+                        .WithMany()
                         .HasForeignKey("DepartementId");
+
+                    b.HasOne("PfeRH.Models.Departement", null)
+                        .WithMany("Projets")
+                        .HasForeignKey("DepartementId2")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("PfeRH.Models.GestionnaireRH", null)
                         .WithMany("Projets")
@@ -1069,10 +1042,6 @@ namespace PfeRH.Migrations
 
             modelBuilder.Entity("PfeRH.Models.Employe", b =>
                 {
-                    b.HasOne("PfeRH.Models.Admin", null)
-                        .WithMany("Employes")
-                        .HasForeignKey("AdminId");
-
                     b.HasOne("PfeRH.Models.Departement", "Departement")
                         .WithMany("Employes")
                         .HasForeignKey("DepartementId");
@@ -1113,29 +1082,12 @@ namespace PfeRH.Migrations
                     b.Navigation("ReponseCandidats");
                 });
 
-            modelBuilder.Entity("PfeRH.Models.Responsable", b =>
-                {
-                    b.Navigation("Departement")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("PfeRH.Models.Test", b =>
                 {
                     b.Navigation("Offre")
                         .IsRequired();
 
                     b.Navigation("Questions");
-                });
-
-            modelBuilder.Entity("PfeRH.Models.Admin", b =>
-                {
-                    b.Navigation("Candidatures");
-
-                    b.Navigation("Departements");
-
-                    b.Navigation("Employes");
-
-                    b.Navigation("Entretiens");
                 });
 
             modelBuilder.Entity("PfeRH.Models.Condidat", b =>

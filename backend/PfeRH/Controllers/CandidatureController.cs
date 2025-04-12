@@ -131,7 +131,7 @@ namespace PfeRH.Controllers
                 double scoreAI = 0.0;
                 string competencesExtraites = "";
 
-                var responseObject = await _cvScoringController.ScoreCVPdf(candidatureDto.CVFile, offre.Description + " " + offre.Competences) as OkObjectResult;
+                var responseObject = await _cvScoringController.ScoreCVPdf(candidatureDto.CVFile, offre.Competences.ToLower()) as OkObjectResult;
 
                 // Vérifiez que la réponse contient une valeur
                 if (responseObject != null && responseObject.Value != null)
@@ -390,7 +390,7 @@ namespace PfeRH.Controllers
 
                 if (candidatureDto.CVFile != null)
                 {
-                    var responseObject = await _cvScoringController.ScoreCVPdf(candidatureDto.CVFile, offre.Description + " " + offre.Competences) as OkObjectResult;
+                    var responseObject = await _cvScoringController.ScoreCVPdf(candidatureDto.CVFile, offre.Competences.ToLower()) as OkObjectResult;
                     if (responseObject != null && responseObject.Value != null)
                     {
                         string jsonResponse = JsonConvert.SerializeObject(responseObject.Value, Formatting.Indented);
@@ -427,7 +427,109 @@ namespace PfeRH.Controllers
             }
         }
 
+        [HttpGet("getAllCandidatures")]
+        public async Task<ActionResult<IEnumerable<CandidatureDtoRH>>> GetAllCandidatures()
+        {
+            var candidatures = await _context.Candidatures
+                .Include(c => c.Offre)
+                .Include(c => c.Candidat)
+                .Include(c => c.Entretiens) // Ajout de l'inclusion des entretiens associés
+                .Select(c => new CandidatureDtoRH
+                {
+                    Id = c.Id,
+                    Statut = c.Statut,
+                    NomOffre = c.Offre.Titre,
+                    NomPrenom = c.Candidat.NomPrenom,
+                    Email = c.Candidat.Email,
+                    Telephone = c.Candidat.PhoneNumber,
+                    // Transformation des entretiens en une liste de DTO ou propriétés appropriées
+                    Entretiens = c.Entretiens.Select(e => new EntretienDto
+                    {
+                        Id = e.Id,
+                        DateEntretien = e.DateEntretien,
+                        Statut = e.Statut,
+                        Commentaire=e.Commentaire,
+                        TypeEntretien = e.TypeEntretien,
+                        ModeEntretien = e.ModeEntretien
+                    }).ToList()  // Retourner les entretiens associés sous forme de liste
+                })
+                .ToListAsync();
 
+            return Ok(candidatures);
+        }
+        [HttpGet("{candidatureId}/entretiens")]
+        public async Task<IActionResult> GetEntretiensParCandidature(int candidatureId)
+        {
+            try
+            {
+                var candidature = await _context.Candidatures
+                    .Include(c => c.Entretiens)
+                    .FirstOrDefaultAsync(c => c.Id == candidatureId);
+
+                if (candidature == null)
+                {
+                    return NotFound("Candidature non trouvée.");
+                }
+
+                var entretiensDto = candidature.Entretiens.OrderBy(e => e.DateEntretien).Select(e => new
+                {
+                    e.Id,
+                    e.TypeEntretien,
+                    e.DateEntretien,
+                    e.Statut, 
+                    e.Commentaire,
+                    e.ModeEntretien,
+                    e.ResponsableId
+                });
+
+                return Ok(entretiensDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur serveur : {ex.Message}");
+            }
+        }
+        [HttpGet("{id}/parcours")]
+        public async Task<IActionResult> GetParcoursEtapes(int id)
+        {
+            var candidature = await _context.Candidatures
+                .Include(c => c.Entretiens)
+                    .ThenInclude(e => e.Responsable)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (candidature == null)
+            {
+                return NotFound(new { Message = "Candidature non trouvée" });
+            }
+
+            var parcoursEtapes = new List<ParcoursEtape>();
+
+            // Étape 1 : Pré-sélection
+            bool hasEntretiens = candidature.Entretiens.Any();
+            parcoursEtapes.Add(new ParcoursEtape
+            {
+                EtapeNom = "Pré-sélection",
+                ResponsableNom = "Admin",
+                
+                Statut = hasEntretiens ? "Terminé" : "En attente",
+                Commentaire = hasEntretiens ? "Des entretiens ont été planifiés." : "En attente d'entretien."
+            });
+
+            // Étapes suivantes : Entretiens
+            foreach (var entretien in candidature.Entretiens.OrderBy(e => e.DateEntretien))
+            {
+                parcoursEtapes.Add(new ParcoursEtape
+                {
+                    EtapeNom = entretien.TypeEntretien,
+                    ResponsableNom = entretien.Responsable?.NomPrenom ?? "Responsable inconnu",
+                    DateEntretien = entretien.DateEntretien,
+                    Statut = entretien.Statut,
+                    Commentaire = entretien.Commentaire
+                });
+            }
+
+            return Ok(parcoursEtapes);
+        }
 
 
 
@@ -441,6 +543,33 @@ namespace PfeRH.Controllers
         public string Telephone { get; set; }
         public string LinkedIn { get; set; }
         public IFormFile CVFile { get; set; }
+    }
+    public class CandidatureDtoRH
+    {
+        public int Id { get; set; }
+        public string Statut { get; set; }
+        public string NomOffre { get; set; }
+        public string NomPrenom { get; set; }
+        public string Email { get; set; }
+        public string Telephone { get; set; }
+        public List<EntretienDto> Entretiens { get; set; }
+    }
+    public class EntretienDto
+    {  public int Id { get; set; }
+        public string TypeEntretien { get; set; }
+        public DateTime DateEntretien { get; set; }
+        public string ModeEntretien { get; set; }
+        public string Statut { get; set; }
+        public string Commentaire { get; set; }
+    }
+
+    public class ParcoursEtape
+    {
+        public string EtapeNom { get; set; }
+        public string ResponsableNom { get; set; }
+        public DateTime? DateEntretien { get; set; }
+        public string Statut { get; set; }
+        public string Commentaire { get; set; }
     }
 
 }

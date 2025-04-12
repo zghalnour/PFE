@@ -9,6 +9,7 @@ using PfeRH.Models;
 using PfeRH.services;
 using System;
 using System.Text;
+using PfeRH.Hubs;
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
@@ -18,7 +19,8 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("http://localhost:4200") // Autorise Angular
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         });
 });
 builder.Services.AddIdentity<Utilisateur, IdentityRole<int>>()
@@ -57,6 +59,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 // Add services to the container.
+builder.Services.AddSignalR();
 builder.Services.AddSingleton<DialogflowService>();
 
 builder.Services.AddControllers();
@@ -79,7 +82,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseStaticFiles(); // Permet l'accès aux fichiers dans wwwroot
-
+app.MapHub<NotificationHub>("/notificationHub");
 app.MapControllers();
 
 app.Run();

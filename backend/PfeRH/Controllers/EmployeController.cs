@@ -36,7 +36,7 @@ namespace PfeRH.Controllers
 
             if (departement == null)
             {
-                departement = new Departement { Nom = employeDto.DepartementNom };
+                departement = new Departement { Nom = employeDto.DepartementNom , NomResponsable = "Aucun" };
                 _context.Departements.Add(departement);
                 await _context.SaveChangesAsync(); // Sauvegarde pour générer l'ID
             }
@@ -122,6 +122,75 @@ namespace PfeRH.Controllers
 
             return Ok(employes);
         }
+        [HttpPut("updateEmByAdmin")]
+        public async Task<IActionResult> UpdateEmploye([FromBody] UpdateEmployeDto dto)
+        {
+            var employe = await _context.Users
+                                        .OfType<Employe>()
+                                        .Include(e => e.ObjectifsSmarts)
+                                        .FirstOrDefaultAsync(e => e.Id == dto.EmployeId);
+
+            if (employe == null)
+            {
+                return NotFound("Employé non trouvé.");
+            }
+
+            // Mettre à jour les champs simples
+            employe.Poste = dto.Poste;
+            employe.Salaire = dto.Salaire;
+
+            // Gérer le département
+            var departement = await _context.Departements
+                                            .FirstOrDefaultAsync(d => d.Nom == dto.DepartementNom);
+
+            if (departement == null)
+            {
+                departement = new Departement { Nom = dto.DepartementNom };
+                _context.Departements.Add(departement);
+                await _context.SaveChangesAsync();
+            }
+
+            employe.DepartementId = departement.Id;
+
+            // Supprimer les anciens objectifs SMART
+            _context.Objectifs.RemoveRange(employe.ObjectifsSmarts);
+
+            // Ajouter les nouveaux
+            employe.ObjectifsSmarts = dto.ObjectifsSmarts.Select(o => new ObjectifSmart
+            {
+                Description = o.Description,
+                Etat = o.Etat,
+                EmployeId = employe.Id
+            }).ToList();
+
+            await _context.SaveChangesAsync();
+
+            return Ok("Employé mis à jour avec succès.");
+        }
+        [HttpGet("getObjectifsSmart/{employeId}")]
+        public async Task<IActionResult> GetObjectifsSmartByEmploye(int employeId)
+        {
+            var employe = await _context.Users
+                                        .OfType<Employe>()
+                                        .Include(e => e.ObjectifsSmarts)
+                                        .FirstOrDefaultAsync(e => e.Id == employeId);
+
+            if (employe == null)
+            {
+                return NotFound("Employé non trouvé.");
+            }
+
+            var objectifs = employe.ObjectifsSmarts.Select(o => new
+            {
+                o.Id,
+                o.Description,
+                o.Etat
+            }).ToList();
+
+            return Ok(objectifs);
+        }
+
+
 
 
         public class EmployeDto
@@ -135,6 +204,21 @@ namespace PfeRH.Controllers
             public string DepartementNom { get; set; }
            
         }
+        public class UpdateEmployeDto
+        {
+            public int EmployeId { get; set; }
+            public string Poste { get; set; }
+            public double Salaire { get; set; }
+            public string DepartementNom { get; set; }
+            public List<ObjectifSmartDto> ObjectifsSmarts { get; set; }
+        }
+
+        public class ObjectifSmartDto
+        {
+            public string Description { get; set; }
+            public Boolean Etat { get; set; }
+        }
+
 
 
 

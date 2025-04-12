@@ -20,9 +20,31 @@
     <!-- Menu déroulant pour déconnexion -->
     <div class="dropdown">
       <div class="icons">
-        <i class="fas fa-bell notification-icon"></i>
+        <div class="notification-container" (click)="toggleDropdown()">
+          <i class="fas fa-bell notification-icon" [class.has-unread]="unreadCount > 0"></i>
+          <!-- Badge optionnel -->
+          <span *ngIf="unreadCount > 0" class="notification-badge">{{ unreadCount }}</span>
+        </div>
         <i class="fas fa-sign-out-alt logout-icon" (click)="logout()"></i>
       </div>
+  <!-- In header.component.html -->
+<div class="notification-dropdown" *ngIf="showDropdown">
+  <div *ngIf="notifications.length === 0" class="no-notifications">
+    Aucune nouvelle notification
+  </div>
+  <ul>
+    <!-- Corrected to use notif.contenu -->
+    <li *ngFor="let notif of notifications"
+        [class.unread]="!notif.isRead"
+        (click)="navigateTo(notif.link, notif.id)">
+      {{ notif.contenu }}  <!-- <<< CORRECTION: Use 'contenu' -->
+      <!-- Optional: Display date -->
+      <!-- <span class="notification-date">{{ formatDate(notif.dateCreation) }}</span> -->
+    </li>
+  </ul>
+  <!-- <a routerLink="/admin/notifications" class="view-all">Voir tout</a> -->
+</div>
+
     </div>
   </header>
   
@@ -53,7 +75,7 @@
          (click)="setActiveRoute('/offres')">
          <i class="fas fa-briefcase"></i>
 
-        <span>Postes</span>
+        <span>offres</span>
       </a>
     </li>
     <li>

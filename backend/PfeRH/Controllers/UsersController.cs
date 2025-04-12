@@ -67,6 +67,13 @@ namespace PfeRH.Controllers
                     // Supprimer les réponses aux candidatures
                     foreach (var candidature in candidatures)
                     {
+                        var entretiens = await _context.Entretiens
+                                  .Where(e => e.CandidatureId == candidature.Id)
+                                  .ToListAsync();
+                        if (entretiens.Any())
+                        {
+                            _context.Entretiens.RemoveRange(entretiens);
+                        }
                         var reponses = await _context.ReponseCandidats
                                                       .Where(r => r.CandidatureId == candidature.Id)
                                                       .ToListAsync();
