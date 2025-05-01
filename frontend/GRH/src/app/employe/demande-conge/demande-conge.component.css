@@ -1,0 +1,46 @@
+.content {
+  min-height: 100vh;
+  width: calc(100% - 260px);
+  margin-left: 240px;
+  margin-top: 25px;
+  margin-right: 20px;
+  padding: 20px;
+  background-color: #eae8e889;
+  display: flex;
+  flex-direction: column;
+}
+.full-width {
+  width: 100%;
+}
+
+.status-pill {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.custom-button {
+  background-color: #2196F3; /* Vert */
+  color: white; /* Texte blanc */
+  border: none; /* Pas de bordure */
+  padding: 10px 20px; /* Espace intérieur */
+  font-size: 15px; /* Taille du texte */
+  border-radius: 18px; /* Bords arrondis */
+  cursor: pointer; /* Curseur main */
+  font-weight: bold; /* Texte en gras */
+}
+
+.custom-button:hover {
+  transform: scale(1.05); /* Agrandit le bouton de 5% */
+  transition: transform 0.3s ease; 
+}
+.truncate-motif {
+  max-width: 200px; /* adapte la taille que tu veux */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer; /* pour montrer que c'est cliquable/survolable */
+}
+
+
+

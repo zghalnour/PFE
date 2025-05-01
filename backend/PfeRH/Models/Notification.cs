@@ -13,7 +13,7 @@ namespace PfeRH.Models
        
         public DateTime DateCreation { get; set; }
         public bool IsRead { get; set; } // Statut de lecture (vérifie si l'admin a lu la notification)
-        public string? Link { get; set; }
+       
 
         public string Type { get; set; } // Type de notification (Congé accepté, projet en retard, etc.)
 
@@ -34,7 +34,7 @@ namespace PfeRH.Models
             Type = type;
             UtilisateurId = utilisateurId;
             CandidatureId = candidatureId;
-            Link = link; // Lien vers les détails de la candidature ou autre
+           
         }
     }
 }

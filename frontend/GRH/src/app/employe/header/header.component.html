@@ -1,0 +1,56 @@
+<div class="admin-dashboard">
+  <!-- Barre supérieure -->
+  <header class="top-bar">
+    <!-- Menu et Logo à gauche -->
+    <div class="left-section">
+    
+      <img src="assets/logo.png" alt="Logo" class="logo">
+    </div>
+  
+
+  
+  
+    <!-- Nom utilisateur et icône utilisateur -->
+    <div class="user-info">
+      <i class="fas fa-user user-icon"></i>
+      <span class="username">Bienvenu, {{ nomUtilisateur }}</span>
+      
+    </div>
+  
+    <!-- Menu déroulant pour déconnexion -->
+    <div class="dropdown">
+      <div class="icons">
+        <i class="fas fa-bell notification-icon"></i>
+        <i class="fas fa-sign-out-alt logout-icon" (click)="logout()"></i>
+      </div>
+    </div>
+  </header>
+  
+
+<!-- Menu latéral -->
+<!-- Menu latéral -->
+<nav class="sidebar" >
+  <ul>
+    <li>
+      <a routerLink="/employe" 
+         [class.active]="isActive('/employe')" 
+         (click)="setActiveRoute('/employe')">
+         <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/employe/demande-conge" 
+         [class.active]="isActive('/employe/demande-conge')" 
+         (click)="setActiveRoute('/employe/demande-conge')">
+         <i class="fas fa-user-clock"></i>
+        <span>Mes congés</span>
+      </a>
+    </li>
+  
+  </ul>
+</nav>
+
+
+
+

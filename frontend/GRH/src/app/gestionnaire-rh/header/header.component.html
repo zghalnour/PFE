@@ -39,6 +39,33 @@
         <span>Candidatures</span>
       </a>
     </li>
+    <li>
+      <a routerLink="/gestionnaire-rh/project-management" 
+      [class.active]="isActive('/gestionnaire-rh/project-management')" 
+      (click)="setActiveRoute('/gestionnaire-rh/project-management')">
+      <i class="fas fa-project-diagram"></i>
+      <span>Projets</span>
+   </a>
+   
+    </li>
+    <li>
+      <a routerLink="/gestionnaire-rh/traitement-conge" 
+      [class.active]="isActive('/gestionnaire-rh/traitement-conge')" 
+      (click)="setActiveRoute('/gestionnaire-rh/traitement-conge')">
+      <i class="fas fa-user-times"></i>
+      <span>Congés</span>
+   </a>
+   
+    </li>
+    <li>
+      <a routerLink="/gestionnaire-rh/absences" 
+      [class.active]="isActive('/gestionnaire-rh/absences')" 
+      (click)="setActiveRoute('/gestionnaire-rh/absences')">
+      <i class="fas fa-calendar-alt"></i>
+      <span>Absences</span>
+   </a>
+   
+    </li>
   
   </ul>
 </nav>

@@ -8,6 +8,7 @@ export interface Notification {
   contenu: string;
   link: string;
   isRead: boolean;
+  candidatureId:number
   // Add other relevant properties like createdAt if available
 }
 @Component({
@@ -17,7 +18,7 @@ export interface Notification {
 })
 export class HeaderComponent implements OnInit{
   constructor(private http:HttpClient, private router: Router) {this.currentRoute = this.router.url;}
-  nomUtilisateur: string = "Admin";
+  nomUtilisateur: string = "";
 
   currentRoute: string = '/users';
   activePage: string = "users";
@@ -34,6 +35,17 @@ export class HeaderComponent implements OnInit{
     this.loadInitialNotifications();
     this.startSignalRConnection();
     this.addSignalRListener();
+    this.loadUserData();
+  }
+
+  loadUserData(): void {
+    const storedName = localStorage.getItem('userName');
+  
+  
+    if (storedName) {
+      this.nomUtilisateur = storedName;
+    }
+  
   }
   startSignalRConnection = () => {
     this.hubConnection = new signalR.HubConnectionBuilder()
@@ -61,6 +73,7 @@ export class HeaderComponent implements OnInit{
         id: notificationData.id || Date.now(), // Use ID from backend or generate temporary one
         contenu: notificationData.contenu,
         link: notificationData.link,
+        candidatureId: notificationData.candidatureId,
         isRead: false // New notifications are unread
       };
 
@@ -116,7 +129,7 @@ export class HeaderComponent implements OnInit{
     }
 
     // 4. Construct the API URL now that we have a valid userId
-    const apiUrl = `${this.notificationApiBaseUrl}/getUnreadForUser/${1}`;
+    const apiUrl = `${this.notificationApiBaseUrl}/getAllForUser/${userId}`;
 
     // Make the HTTP GET request
     // Consider adding subscription management (like in the previous example) if needed
@@ -141,16 +154,21 @@ export class HeaderComponent implements OnInit{
       });
   }
 
-  navigateTo(link: string, notificationId: number): void {
-    this.router.navigateByUrl(link);
-    this.showDropdown = false; // Close dropdown
-    this.markAsRead(notificationId); // Mark the clicked notification as read
+  navigateTo(notificationId: number, candidatureId: number): void {
+    if (candidatureId) {
+      this.router.navigate(['/candidat-parcours', candidatureId]);
+      this.showDropdown = false;
+      this.markAsRead(notificationId);
+    } else {
+      console.warn('Aucun candidatureId trouvé pour cette notification.');
+    }
   }
+  
 
   markAsRead(notificationId: number): void {
     const notification = this.notifications.find(n => n.id === notificationId && !n.isRead);
     if (notification) {
-      // Replace with your actual endpoint to mark a notification as read
+      
       const apiUrl = `${this.notificationApiBaseUrl}/markAsRead/${notificationId}`; // <<< ADAPT THIS ENDPOINT
 
       this.http.put(apiUrl, {}).subscribe({ // Assuming PUT request with no body

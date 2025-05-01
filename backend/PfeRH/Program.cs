@@ -10,6 +10,7 @@ using PfeRH.services;
 using System;
 using System.Text;
 using PfeRH.Hubs;
+using Google.Api;
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
@@ -67,6 +68,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<CvScoringController>(); // Ajoutez cette ligne si manquante
+builder.Services.AddScoped<EmailService>();
+
 
 
 var app = builder.Build();

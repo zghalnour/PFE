@@ -134,6 +134,37 @@ loadOffres() {
     }
   );
 }
+creerOffreSansTest(): void {
+  const apiUrl = 'http://localhost:5053/api/Offre/ajouter-offre-sans-test';
+
+  // Assurez-vous que les données envoyées correspondent à ce que l'API attend
+  const offreData = { ...this.offre };
+
+  this.http.post<{ message: string, offreId: number }>(apiUrl, offreData)
+    .subscribe({
+      next: (response) => {
+        console.log('Offre ajoutée:', response);
+      
+          this.cancelForm();
+        // Optionnel : Rafraîchir la liste des offres
+          this.loadOffres();
+          this.offre = {
+            titre: '',
+            typeContrat:'',
+            description: '',
+            competences: '',
+            dateLimitePostulation: ''
+        };
+        // Ou ajouter la nouvelle offre à la liste locale (si l'API ne renvoie pas l'offre complète)
+          this.offres.push({ id: response.offreId, ...offreData });
+      },
+      error: (error) => {
+        console.error('Erreur lors de la création de l\'offre:', error);
+        const errorMessage = error?.error?.message || 'Une erreur est survenue lors de l\'ajout de l\'offre.';
+      
+      }
+    });
+}
 
   nextStep() {
     this.isFirstStep = false;

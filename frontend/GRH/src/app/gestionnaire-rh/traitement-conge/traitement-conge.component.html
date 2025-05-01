@@ -1,0 +1,127 @@
+<app-header></app-header>
+<main class="content">
+  <div class="container mx-auto p-4">
+    <mat-card-content>
+        <form [formGroup]="filterForm" class="filter-form grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+  
+          <mat-form-field appearance="fill">
+            <mat-label>Nom de l'employé</mat-label>
+            <input matInput formControlName="nomEmploye" placeholder="Rechercher par nom...">
+          </mat-form-field>
+  
+          <mat-form-field appearance="fill">
+            <mat-label>Statut</mat-label>
+            <mat-select formControlName="statut">
+              <mat-option value="">Tous</mat-option>
+              <mat-option *ngFor="let statut of statuts" [value]="statut">{{ statut }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+  
+        
+  
+          
+        </form>
+      </mat-card-content>
+    
+  
+    <!-- Tableau des Demandes -->
+    <div class="mat-elevation-z8 overflow-auto">
+      <table mat-table [dataSource]="dataSource" matSort class="w-full">
+  
+        <!-- Colonne Nom Complet -->
+        <ng-container matColumnDef="nomComplet">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Employé </th>
+          <td mat-cell *matCellDef="let element"> {{element.nomEmploye}}  </td>
+        </ng-container>
+  
+        <!-- Colonne Date Début -->
+        <ng-container matColumnDef="dateDebut">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Début </th>
+          <td mat-cell *matCellDef="let element"> {{element.dateDebut | date:'dd/MM/yyyy'}} </td>
+        </ng-container>
+  
+        <!-- Colonne Date Fin -->
+        <ng-container matColumnDef="dateFin">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Fin </th>
+          <td mat-cell *matCellDef="let element"> {{element.dateFin | date:'dd/MM/yyyy'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="nbJours">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Nb Jours </th>
+          <td mat-cell *matCellDef="let demande">
+            {{ calculerNbJours(demande.dateDebut, demande.dateFin) }}
+          </td>
+        </ng-container>
+  
+        <!-- Colonne Type Congé -->
+        <ng-container matColumnDef="typeConge">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
+          <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+        </ng-container>
+        <ng-container matColumnDef="raison">
+          <th mat-header-cell *matHeaderCellDef>Motif</th>
+          <td mat-cell *matCellDef="let demande">
+            <div 
+              class="truncate-motif"
+              matTooltip="{{ demande.raison }}" 
+              matTooltipPosition="above"
+              matTooltipShowDelay="300"
+              matTooltipHideDelay="100">
+              {{ demande.raison || '—' }}
+            </div>
+          </td>
+        </ng-container>
+  
+        <!-- Colonne Statut -->
+        <ng-container matColumnDef="statut">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Statut </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="status-chip" [ngClass]="{
+              'status-approved': element.statut === 'Approuvée',
+              'status-rejected': element.statut === 'Refusée',
+              'status-pending': element.statut === 'En Attente'
+            }">
+              {{element.statut}}
+            </span>
+             <!-- Afficher le motif si rejeté -->
+             <mat-icon *ngIf="element.statut === 'Refusée' && element.motif"
+                       [matTooltip]="element.motif!"
+                       class="ml-1 text-sm align-middle cursor-help">info_outline</mat-icon>
+          </td>
+        </ng-container>
+  
+        <!-- Colonne Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let element">
+            <ng-container *ngIf="element.statut === 'En Attente'">
+              <button mat-icon-button class="btn-green" aria-label="Approuver la demande" (click)="approuverDemande(element)" matTooltip="Approuver">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" aria-label="Rejeter la demande" (click)="rejeterDemande(element)" matTooltip="Rejeter">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </ng-container>
+             <!-- Optionnel: Bouton pour voir les détails ou annuler une décision -->
+             <button *ngIf="element.statut !== 'En Attente'" mat-icon-button aria-label="Voir détails" matTooltip="Détails (à implémenter)">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+  
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  
+        <!-- Ligne affichée quand il n'y a pas de données correspondantes -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell text-center p-4" [attr.colspan]="displayedColumns.length">
+            Aucune demande ne correspond aux filtres.
+          </td>
+        </tr>
+      </table>
+  
+    
+    </div>
+  </div>
+  
+  
+</main>

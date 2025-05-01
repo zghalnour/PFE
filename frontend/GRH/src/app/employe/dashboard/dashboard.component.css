@@ -1,0 +1,691 @@
+.content {
+  height: 1550px;
+  width: calc(100% - 260px);
+  margin-left: 240px;
+  margin-top: 25px;
+  margin-right: 20px;
+  padding: 20px;
+  background-color: #eae8e889;
+  display: flex;
+  flex-direction: column;
+}
+.dashboard-header {
+
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+  border-bottom: 3px solid rgba(3, 98, 149, 0.534);
+}
+.dashboard-header .employee-details
+ {
+  margin-left: 45px; /* Ajustez cette valeur selon le décalage souhaité */
+}
+.employee-details {
+  display: flex;
+  align-items: center; /* Centre verticalement les éléments */
+  flex-wrap: wrap; /* Permet le passage à la ligne */
+  gap: 15px; /* Espace entre le nom et les groupes département/poste */
+  margin-bottom: 8px; /* Espace avant la date */
+}
+
+/* Style pour le nom de l'employé */
+.employee-name {
+  font-size: 1.7em; /* Légèrement plus grand */
+  font-weight: 600;
+  color: #2c3e50; /* Couleur plus foncée */
+  margin-right: 10px; /* Espace après le nom */
+}
+
+/* Conteneur pour chaque groupe (label + valeur) */
+.detail-group {
+  display: flex;
+  align-items: baseline; /* Aligne label et valeur sur la ligne de base */
+  gap: 5px; /* Petit espace entre label et valeur */
+  background-color: #f8f9fa; /* Fond très léger pour distinguer les groupes */
+  padding: 8px 10px; /* Padding intérieur */
+  border-radius: 15px; /* Bords arrondis pour un look "badge" */
+  border: 1px solid #e9ecef; /* Bordure subtile */
+}
+
+/* Style pour les labels (Département :, Poste :) */
+.detail-label {
+  font-size: 0.95em; /* Plus petit */
+  font-weight: 600;
+  color: #343a40; /* Couleur grise */
+}
+
+/* Style pour les valeurs (le département et le poste réels) */
+.detail-value {
+  font-size: 0.85em;
+  font-weight: 550;
+  color: #6c757d; /* Couleur de texte standard */
+}
+
+/* Grid Layout for Cards */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+  gap: 25px; /* Space between cards */
+}
+
+/* Card Styling */
+.dashboard-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.dashboard-card h2 {
+  font-size: 1.3rem;
+  color: #34495e;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between icon and text */
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.dashboard-card h2 i { /* Font Awesome Icons */
+    color: #3498db; /* Example icon color */
+}
+
+/* Specific Card Content Styling */
+
+/* dashboard.component.css / scss */
+
+.projects-card .stat-summary .stat-item {
+  margin-bottom: 8px; /* Add space between stat lines */
+  font-size: 0.95em;
+}
+
+.projects-card .project-list {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 15px;
+}
+
+.projects-card .project-list-item {
+  border: 1px solid #eee;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  overflow: hidden; /* Contain background */
+}
+
+.projects-card .project-header {
+  background-color: #f8f9fa;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  display: flex; /* Helps align icon */
+  justify-content: space-between; /* Pushes icon to the right */
+  align-items: center;
+}
+
+.projects-card .project-header:hover {
+  background-color: #e9ecef;
+}
+
+.projects-card .project-header h3 {
+  margin: 0;
+  font-size: 1.1em;
+  flex-grow: 1; /* Allows h3 to take available space */
+  margin-right: 10px; /* Space before icon */
+}
+
+.projects-card .project-header .task-count {
+  font-weight: normal;
+  font-size: 0.9em;
+  color: #555;
+}
+.projects-card .project-header .status-label {
+   font-weight: normal;
+   font-size: 0.9em;
+   margin-left: 5px; /* Space after task count */
+}
+.projects-card .project-header .status-incomplete {
+   color: #dc3545; /* Red */
+}
+ .projects-card .project-header .status-complete {
+   color: #28a745; /* Green */
+}
+
+.projects-card .project-header i.fas { /* Style the chevron icon */
+   color: #6c757d;
+   font-size: 0.9em;
+}
+
+
+.projects-card .task-sublist {
+  list-style: none;
+  padding: 10px 15px 15px 30px; /* Indent tasks */
+  margin: 0;
+  background-color: #fff;
+  border-top: 1px solid #eee; /* Separator line */
+}
+
+ .projects-card .task-sublist .no-tasks {
+   color: #6c757d;
+   font-style: italic;
+ }
+
+.projects-card .task-item {
+  padding: 5px 0;
+  display: flex;
+  align-items: center;
+}
+
+.projects-card .task-item input[type="checkbox"] {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+ .projects-card .task-item label {
+   cursor: pointer;
+   flex-grow: 1;
+ }
+
+.projects-card .task-item.completed label {
+  text-decoration: line-through;
+  color: #6c757d;
+}
+.no-items-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centre horizontalement son propre contenu */
+  justify-content: center; /* Centre verticalement son propre contenu */
+  text-align: center;
+  color: #888;
+  padding: 20px;
+  /* IMPORTANT: Ne pas mettre flex-grow ici si la carte parente centre */
+}
+
+.no-items-placeholder .placeholder-icon {
+  font-size: 3em;
+  margin-bottom: 15px;
+  color: #ccc;
+}
+
+.no-items-placeholder .placeholder-text {
+  font-size: 1.1em;
+  font-weight: 500;
+  color: #777;
+}
+
+/* --- Styles spécifiques quand il N'Y A PAS de projets --- */
+.projects-card.no-projects {
+  /* Centre verticalement et horizontalement les enfants directs */
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+
+.meetings-card .meeting-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 300px; /* Example max height */
+  overflow-y: auto; /* Add scroll if list is long */
+  padding-right: 5px; /* Space for scrollbar */
+}
+
+.meetings-card .meeting-item {
+  padding: 12px 5px; /* Add padding */
+  border-bottom: 1px solid #eee; /* Separator line */
+  transition: background-color 0.2s ease-in-out;
+}
+
+.meetings-card .meeting-item:last-child {
+  border-bottom: none; /* Remove border from last item */
+}
+
+.meetings-card .meeting-item:hover {
+  background-color: #f9f9f9; /* Subtle hover effect */
+}
+
+.meetings-card .meeting-title {
+  display: block; /* Make title take full width */
+  font-weight: 600; /* Slightly bolder title */
+  color: #333;
+  margin-bottom: 6px; /* Space below title */
+}
+
+.meetings-card .meeting-details {
+  display: flex;
+  flex-direction: column; /* Stack details vertically */
+  gap: 4px; /* Space between date and location */
+  font-size: 0.9em; /* Slightly smaller font for details */
+  color: #555;
+}
+
+.meetings-card .detail-item {
+  display: flex;
+  align-items: center; /* Align icon and text vertically */
+  gap: 6px; /* Space between icon and text */
+}
+
+.meetings-card .detail-icon {
+  color: #007bff; /* Or use specific colors like var(--primary-color) */
+  width: 14px; /* Fixed width for alignment */
+  text-align: center;
+}
+.meetings-card .detail-item:nth-child(2) .detail-icon { /* Specific color for location */
+   color: #28a745; /* Green for location */
+}
+
+
+.meetings-card .meeting-location {
+  white-space: nowrap; /* Prevent location text wrapping */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Add ellipsis (...) if text is too long */
+  max-width: 250px; /* Adjust max-width as needed */
+  display: inline-block; /* Needed for text-overflow */
+}
+
+
+/* Styling for the 'No Meetings' placeholder */
+.meetings-card .no-meetings-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  text-align: center;
+  color: #888;
+  min-height: 150px; /* Ensure it takes some space */
+}
+
+.meetings-card .placeholder-icon {
+  font-size: 3rem; /* Larger icon */
+  color: #ccc; /* Lighter color for the icon */
+  margin-bottom: 15px;
+}
+
+.meetings-card .placeholder-text {
+  font-size: 1.1em;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.meetings-card .placeholder-subtext {
+  font-size: 0.9em;
+  color: #999;
+}
+
+/* Custom scrollbar (optional, if you have one defined elsewhere) */
+.meetings-card .meeting-list::-webkit-scrollbar {
+  width: 6px;
+}
+.meetings-card .meeting-list::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
+}
+.meetings-card .meeting-list::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+/* Goals Card */
+/* dashboard.component.css / scss */
+
+.goals-card .goal-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 250px; /* Example max height */
+  overflow-y: auto; /* Add scroll if list is long */
+  padding-right: 5px; /* Space for scrollbar */
+}
+
+.goals-card .goal-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 5px;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.goals-card .goal-item:last-child {
+  border-bottom: none;
+}
+
+.goals-card .goal-item:hover {
+  background-color: #f9f9f9;
+}
+
+.goals-card .goal-item input[type="checkbox"] {
+  margin-right: 12px; /* More space between checkbox and label */
+  cursor: pointer;
+  /* Optional: Style checkbox appearance */
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary-color, #007bff); /* Use your primary color */
+}
+
+.goals-card .goal-item label {
+  flex-grow: 1;
+  cursor: pointer;
+  color: #444;
+  font-size: 0.95em;
+  transition: color 0.2s ease-in-out, text-decoration 0.2s ease-in-out;
+}
+
+.goals-card .goal-item.completed label {
+  text-decoration: line-through;
+  color: #999; /* Dim completed goals */
+}
+
+/* Styling for the 'No Goals' placeholder */
+.goals-card .no-goals-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  text-align: center;
+  color: #888;
+  min-height: 150px; /* Ensure it takes some space */
+  border: 2px dashed #e0e0e0; /* Dashed border for visual separation */
+  border-radius: 8px; /* Rounded corners */
+  margin: 10px; /* Add some margin */
+}
+
+.goals-card .placeholder-icon {
+  font-size: 2.8rem; /* Slightly smaller than meetings icon */
+  color: #007bff; /* Use a theme color */
+  margin-bottom: 15px;
+  opacity: 0.8;
+}
+
+.goals-card .placeholder-text {
+  font-size: 1.05em;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.goals-card .placeholder-subtext {
+  font-size: 0.9em;
+  color: #777;
+  margin-bottom: 15px; /* Space before optional button */
+}
+
+/* Optional button styling */
+.goals-card .no-goals-placeholder button {
+  margin-top: 10px;
+}
+
+/* Custom scrollbar (optional, consistent with meetings card) */
+.goals-card .goal-list::-webkit-scrollbar {
+  width: 6px;
+}
+.goals-card .goal-list::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
+}
+.goals-card .goal-list::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+
+/* Complaint Card */
+.fab-complaint {
+  position: fixed; /* Position relative to the viewport */
+  bottom: 5px;    /* Distance from bottom */
+  right: 10px;     /* Distance from right */
+  width: 55px;     /* Button size */
+  height: 55px;    /* Button size */
+  background-color: #dc3545; /* Example color (danger red) */
+  color: white;
+  border: none;
+  border-radius: 50%; /* Make it circular */
+  font-size: 24px;   /* Icon size */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow */
+  cursor: pointer;
+  z-index: 1000; /* Ensure it's above other content */
+  transition: background-color 0.3s ease;
+}
+.fab-complaint:hover {
+  background-color: #c82333; /* Darker shade on hover */
+}
+
+/* Complaint Modal Styles */
+.complaint-modal-overlay {
+  position: fixed; /* Cover the whole screen */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050; /* Ensure it's above the FAB */
+}
+.complaint-modal-content {
+  background-color: #fff;
+  padding: 25px 30px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: 90%; /* Responsive width */
+  max-width: 500px; /* Maximum width */
+  position: relative; /* Needed for absolute positioning of close button */
+  animation: fadeIn 0.3s ease-out; /* Simple fade-in animation */
+}
+
+.complaint-modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 1.4em;
+  display: flex;
+  align-items: center;
+}
+
+.complaint-modal-content h2 i {
+  margin-right: 10px;
+  color: #dc3545; /* Match icon color */
+}
+
+.complaint-modal-content textarea {
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+  resize: vertical; /* Allow vertical resizing */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.complaint-modal-content .btn-submit {
+  background-color: #007bff; /* Example submit button color */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+  float: right; /* Position button to the right */
+}
+
+.complaint-modal-content .btn-submit:hover {
+  background-color: #0056b3;
+}
+
+/* Optional Close Button */
+.close-modal-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  color: #aaa;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.close-modal-btn:hover {
+  color: #333;
+}
+
+/* Simple Fade-in Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Clear floats after form elements if needed */
+.complaint-modal-content form::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+/* Styles existants pour .dashboard-grid, .dashboard-card etc. */
+
+/* Styles spécifiques pour les nouvelles cartes (optionnel) */
+.performance-gauge-card,
+.performance-trend-card,
+.task-distribution-card {
+  /* Styles communs si nécessaire */
+  min-height: 250px; /* Assurer une hauteur minimale pour les graphiques */
+  display: flex;
+  flex-direction: column;
+}
+
+.performance-gauge-card h2,
+.performance-trend-card h2,
+.task-distribution-card h2 {
+   margin-bottom: 15px; /* Espace sous le titre */
+}
+
+/* Assurer que le canvas prend la place disponible */
+.performance-gauge-card div,
+.performance-trend-card div,
+.task-distribution-card div {
+  flex-grow: 1; /* Permet au div contenant le canvas de grandir */
+  position: relative; /* Nécessaire pour que le canvas s'adapte bien */
+}
+
+/* Styles pour le canvas lui-même (géré par les options 'responsive' et 'maintainAspectRatio') */
+canvas {
+  max-width: 100%;
+  height: auto; /* Laisse Chart.js gérer la hauteur basée sur le ratio ou le conteneur */
+}
+
+/* Ajustement spécifique pour la jauge si nécessaire */
+.performance-gauge-card div {
+  display: flex; /* Centrer le canvas horizontalement */
+  justify-content: center;
+  align-items: center; /* Centrer verticalement */
+  flex-direction: column; /* Pour empiler canvas et texte */
+}
+/* Styles existants pour .content, .dashboard-header, .dashboard-card, etc. */
+
+/* Nouvelle section pour le graphique de tendance */
+.performance-trend-section {
+  background-color: #fff; /* Fond blanc comme les cartes */
+  padding: 20px;
+  margin-bottom: 20px; /* Espace avant la grille des cartes */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%; /* Prend toute la largeur du conteneur parent (.content) */
+  box-sizing: border-box; /* Inclut padding dans la largeur */
+}
+
+.trend-header {
+  display: flex;
+  justify-content: space-between; /* Espace entre titre et filtre */
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap; /* Permet au filtre de passer en dessous sur petit écran */
+}
+
+.trend-header h2 {
+  margin: 0; /* Enlève la marge par défaut du h2 */
+  color: #333;
+  font-size: 1.3em;
+  display: flex;
+  align-items: center;
+}
+
+.trend-header h2 i {
+  margin-right: 10px;
+  color: #007bff; /* Couleur de l'icône */
+}
+
+.year-filter label {
+  margin-right: 8px;
+  font-weight: 500;
+  color: #555;
+}
+
+.year-filter select {
+  padding: 5px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.95em;
+}
+
+/* Conteneur pour le canvas pour gérer la hauteur */
+.chart-container {
+  position: relative; /* Nécessaire pour Chart.js responsive */
+  height: 300px; /* Hauteur fixe pour le graphique */
+  width: 100%;
+}
+
+/* Styles pour le graphique KPI (si besoin d'ajustement) */
+.performance-gauge-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centrer le contenu */
+  justify-content: center;
+}
+
+.gauge-container {
+  width: 180px; /* Ajustez la taille du conteneur de la jauge */
+  height: 90px; /* Hauteur (environ la moitié de la largeur pour un demi-cercle) */
+  margin: 10px auto; /* Centrer et espacer */
+  position: relative; /* Pour le canvas */
+}
+
+.kpi-value {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.4em; /* Taille de la valeur KPI */
+  margin-top: 5px; /* Espace après la jauge */
+  color: #333;
+}
+
+/* Indicateur de chargement simple */
+.loading-indicator {
+  text-align: center;
+  padding: 40px;
+  color: #777;
+  font-style: italic;
+}
+
+/* Ajustement de la grille si le graphique pleine largeur est au-dessus */
+.dashboard-grid {
+  /* La grille reste comme avant, mais elle est maintenant sous la section de tendance */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Ou votre configuration existante */
+  gap: 20px;
+}
+
+
+

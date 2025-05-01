@@ -16,7 +16,7 @@
       
     </div>
     <div class="offres-list">
-      <div class="card bg-white w-96 shadow-xl rounded-lg" *ngFor="let offre of filteredOffres()">
+      <div class="card bg-white shadow-xl rounded-lg" *ngFor="let offre of filteredOffres()">
         <!-- Upper part: Job details (Title, Skills, Applications) -->
         <div class="card-body border-b p-4">
           <h2 class="text-2xl font-semibold text-gray-800">{{ offre.titre }}</h2>
@@ -54,15 +54,16 @@
 <!-- Formulaire avec 'ngIf' basé sur la variable isOpenForm -->
 <!-- Modal de modification de l'offre -->
 <div *ngIf="isEditing" class="modal fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
-  <div class="bg-white p-8 rounded-lg shadow-lg w-3/4 h-auto flex">
-    
+  <div class="bg-white p-8 rounded-lg shadow-lg h-auto flex"
+  [ngClass]="currentOffre?.questions?.length > 0 ? 'w-3/4' : 'w-1/2'">
+
     <!-- Partie gauche : Modifier l'offre -->
-    <div class="w-1/2 p-4">
+    <div [ngClass]="currentOffre?.questions?.length > 0 ? 'w-1/2' : 'w-full'" class="p-4">
       <h2 class="text-2xl font-semibold mb-4 text-center">Modifier l'offre</h2>
       <form (ngSubmit)="updateOffre()">
-        
+
         <!-- Titre -->
-        <div class="w-full mb-4">
+        <div class="w-1/2 mb-4">
           <label for="titre" class="block text-lg font-medium">Titre</label>
           <input id="titre" type="text" [(ngModel)]="currentOffre.titre" name="titre" class="mt-1 p-2 w-full border rounded" required />
         </div>
@@ -80,95 +81,83 @@
         </div>
 
         <!-- Date limite -->
-        <div class="w-full mb-4">
+        <div class="w-1/2 mb-4">
           <label for="dateLimite" class="block text-lg font-medium">Date limite</label>
           <input id="dateLimite" type="text" [(ngModel)]="currentOffre.dateLimite" name="dateLimite" class="mt-1 p-2 w-full border rounded" required />
         </div>
 
         <!-- Description du test -->
-        <div class="w-full mb-4">
+        <div *ngIf="currentOffre?.questions?.length > 0" class="w-full mb-4">
           <label for="testDescription" class="block text-lg font-medium">Description du test</label>
           <textarea id="testDescription" [(ngModel)]="currentOffre.descTest" name="testDescription" class="mt-1 p-2 w-full border rounded" required></textarea>
         </div>
 
       </form>
-    </div>
-    
-    <!-- Séparation (petit trait) -->
-    <div class="w-0.5 bg-gray-400 mx-4"></div>
 
-    <!-- Partie droite : Modifier les questions -->
-    <div class="w-1/2 p-4">
-    
-      <div *ngIf="currentOffre.questions.length > 0">
-        <div *ngIf="currentOffre.questions[currentQuestionIndex]">
-          <div>
-            <label class="block text-lg font-medium">Énoncé des questions</label>
-            <input type="text" [(ngModel)]="currentOffre.questions[currentQuestionIndex].intitule" 
-                   name="questionTitle" class="mt-1 p-2 w-full border rounded" />
-          </div>
-    
-          <div>
-            <label class="block text-lg font-medium mt-2">Options</label>
-            <input type="text" [(ngModel)]="currentOffre.questions[currentQuestionIndex].option1" 
-                   name="option1" class="mt-1 p-2 w-full border rounded" placeholder="Option 1" />
-            <input type="text" [(ngModel)]="currentOffre.questions[currentQuestionIndex].option2" 
-                   name="option2" class="mt-1 p-2 w-full border rounded" placeholder="Option 2" />
-            <input type="text" [(ngModel)]="currentOffre.questions[currentQuestionIndex].option3" 
-                   name="option3" class="mt-1 p-2 w-full border rounded" placeholder="Option 3" />
-          </div>
-    
-          <div>
-            <label class="block text-lg font-medium mt-2">Réponse correcte</label>
-            <select [(ngModel)]="currentOffre.questions[currentQuestionIndex].reponseCorrecte" 
-                    name="correctAnswer" class="mt-1 p-2 w-full border rounded">
-              <option value="1">Option 1</option>
-              <option value="2">Option 2</option>
-              <option value="3">Option 3</option>
-            </select>
-          </div>
-        </div>
-    
-        <!-- Boutons de navigation -->
-      <!-- Navigation des questions -->
-<div class="flex items-center space-x-2 mt-4">
-  <!-- Bouton Précédent -->
-  <button (click)="previousQuestion()" 
-          [disabled]="currentQuestionIndex === 0" 
-          class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400">
-    <mat-icon>chevron_left</mat-icon>
-  </button>
-
-  <!-- Bouton Suivant -->
-  <button (click)="nextQuestion()" 
-          [disabled]="currentQuestionIndex >= currentOffre.questions.length - 1 || currentOffre.questions.length === 0" 
-          class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400">
-    <mat-icon>chevron_right</mat-icon>
-  </button>
-
-
-</div>
-
-<!-- Liste des questions -->
-
-        
-        
-      </div>
-      <!-- Ajouter une nouvelle question -->
-      <div class="flex mt-[30px] justify-center">
-        <button (click)="cancelEdit()" class="py-2 px-4 mx-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+      <!-- Boutons visibles dans tous les cas -->
+      <div class="flex mt-6 justify-center">
+        <button (click)="cancelEdit()" class="btn-create mx-4">
           Annuler
         </button>
-        <button (click)="updateOffre()" class="py-2 px-4 mx-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+        <button (click)="updateOffre()" class="btn-cancel">
           Modifier
         </button>
       </div>
     </div>
+
+    <!-- Séparation -->
+    <div *ngIf="currentOffre?.questions?.length > 0" class="w-0.5 bg-gray-400 mx-4"></div>
+
+    <!-- Partie droite : Modifier les questions -->
+    <div *ngIf="currentOffre?.questions?.length > 0" class="w-1/2 p-4">
+
+      <div *ngIf="currentOffre.questions[currentQuestionIndex]">
+        <div>
+          <label class="block text-lg font-medium">Énoncé des questions</label>
+          <input type="text" [(ngModel)]="currentOffre.questions[currentQuestionIndex].intitule" 
+                 name="questionTitle" class="mt-1 p-2 w-full border rounded" />
+        </div>
+
+        <div>
+          <label class="block text-lg font-medium mt-2">Options</label>
+          <input type="text" [(ngModel)]="currentOffre.questions[currentQuestionIndex].option1" 
+                 name="option1" class="mt-1 p-2 w-full border rounded" placeholder="Option 1" />
+          <input type="text" [(ngModel)]="currentOffre.questions[currentQuestionIndex].option2" 
+                 name="option2" class="mt-1 p-2 w-full border rounded" placeholder="Option 2" />
+          <input type="text" [(ngModel)]="currentOffre.questions[currentQuestionIndex].option3" 
+                 name="option3" class="mt-1 p-2 w-full border rounded" placeholder="Option 3" />
+        </div>
+
+        <div>
+          <label class="block text-lg font-medium mt-2">Réponse correcte</label>
+          <select [(ngModel)]="currentOffre.questions[currentQuestionIndex].reponseCorrecte" 
+                  name="correctAnswer" class="mt-1 p-2 w-full border rounded">
+            <option value="1">Option 1</option>
+            <option value="2">Option 2</option>
+            <option value="3">Option 3</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Navigation des questions -->
+      <div class="flex items-center space-x-2 mt-4">
+        <button (click)="previousQuestion()" 
+                [disabled]="currentQuestionIndex === 0" 
+                class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        <button (click)="nextQuestion()" 
+                [disabled]="currentQuestionIndex >= currentOffre.questions.length - 1" 
+                class="py-2 px-3 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </div>
+
   </div>
-
-  <!-- Boutons Modifier et Annuler -->
-
 </div>
+
 
 
 
@@ -177,10 +166,27 @@
 <div *ngIf="isOpenForm" class="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
   <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
     <!-- Partie 1 : Saisie des informations de l'offre -->
-    <div *ngIf="isFirstStep" class="flex flex-col space-y-4 items-center">
-      <h2 class="text-2xl font-semibold mb-4 text-center">Créer une nouvelle offre</h2>
+    <div class="flex justify-between items-center mb-4 pb-2 border-b border-gray-200">
+      <h2 class="text-xl md:text-2xl font-semibold">
+         <!-- Titre dynamique basé sur l'étape -->
+         {{ isFirstStep ? 'Créer une nouvelle offre' : 'Création du test associé' }}
+      </h2>
+      <!-- Bouton de fermeture (remplace le span) -->
+      <button
+      (click)="cancelForm()"
+      type="button"
+      class="text-black bg-transparent hover:scale-110 transform transition-transform duration-200 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
 
+      aria-label="Close modal"
+    >
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+    </button>
+    </div>
+    <div *ngIf="isFirstStep" class="flex flex-col space-y-4 items-center">
       
+    
+
+    
     
       <div class="flex justify-between w-full space-x-4"> <!-- Alignement en flex pour le titre et le champ -->
         <!-- Titre -->
@@ -221,13 +227,13 @@
       <!-- Bouton suivant -->
       <div class="flex justify-end gap-x-4 mt-4 w-3/4 ">
         <!-- Bouton Précédent -->
-        <button (click)="cancelForm()" class="py-2 px-4 w-30 bg-gray-500 text-white rounded hover:bg-gray-600 ">
-          Annuler
+        <button (click)="creerOffreSansTest()" class="btn-cancel" >
+          Créer
         </button>
         
         <!-- Bouton Soumettre -->
-        <button (click)="nextStep()" class="py-2 px-4 w-30 bg-blue-500 text-white rounded hover:bg-blue-600 ">
-          Suivant
+        <button (click)="nextStep()" class="btn-create" >
+          Ajouter Test
         </button>
       </div>
       
@@ -235,7 +241,7 @@
 
     <!-- Partie 2 : Création des questions -->
     <div *ngIf="!isFirstStep" class="flex flex-col space-y-4 items-center">
-      <h2 class="text-2xl font-semibold mb-4 text-center">Création du test associé</h2>
+    
       <div class="w-full">
         <label for="testDescription" class="block text-lg font-medium">Description du test</label>
         <textarea 
@@ -297,13 +303,13 @@
         <!-- Déplacement du conteneur des boutons ici -->
         <div class="flex justify-end gap-x-4 mt-4 w-3/4 ">
           <!-- Bouton Précédent -->
-          <button (click)="previousStep()" class="py-2 px-4 w-30 bg-gray-500 text-white rounded hover:bg-gray-600 ">
+          <button (click)="previousStep()" class="btn-create">
             Précédent
           </button>
           
           <!-- Bouton Soumettre -->
-          <button (click)="submitForm()" class="py-2 px-4 w-30 bg-blue-500 text-white rounded hover:bg-blue-600 ">
-            Soumettre
+          <button (click)="submitForm()" class="btn-cancel">
+            Créer
           </button>
         </div>
     </div>

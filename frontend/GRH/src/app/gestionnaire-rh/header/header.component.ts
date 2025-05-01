@@ -9,11 +9,22 @@ import { HttpClient } from '@angular/common/http';
 })
 export class HeaderComponent implements OnInit{
   constructor(private http:HttpClient, private router: Router) {this.currentRoute = this.router.url;}
-  nomUtilisateur: string = "GestionnaireRH";
+  nomUtilisateur: string = "";
 
   currentRoute: string = '';
   activePage: string = "";
-  ngOnInit() {}
+  ngOnInit() {
+    this.loadUserData();
+  }
+  loadUserData(): void {
+    const storedName = localStorage.getItem('userName');
+  
+  
+    if (storedName) {
+      this.nomUtilisateur = storedName;
+    }
+  
+  }
   setActivePage(page: string) {
     this.activePage = page;
   }

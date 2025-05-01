@@ -13,6 +13,7 @@
     <PackageReference Include="Grpc.Core" Version="2.46.6" />
     <PackageReference Include="Grpc.Net.Client" Version="2.67.0" />
     <PackageReference Include="itext7" Version="9.1.0" />
+    <PackageReference Include="Mailjet.Api" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />

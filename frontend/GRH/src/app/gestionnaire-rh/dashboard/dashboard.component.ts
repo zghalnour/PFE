@@ -9,6 +9,8 @@ export interface Candidature {
   email: string;
   telephone: string;
   entretiens: Entretien[]; // Add entretiens
+  nbEntretiens?: number | null;
+  nbFixe?: boolean;
 }
 
 // In a file like entretien.model.ts or in your dashboard.ts if you don't have a separate model file
@@ -21,6 +23,7 @@ export interface Entretien {
   commentaire: string;
   modeEntretien: string;
   responsableId?: number | null;
+  responsableNom: string;
   showDecision?: boolean;
   decisionPrise?: boolean;
 
@@ -48,13 +51,19 @@ export class DashboardComponent implements OnInit {
   searchTerm: string = '';
   responsables: Responsable[] = [];
   nouvelEntretien: Partial<Entretien> = { typeEntretien: '', dateEntretien: new Date() ,modeEntretien: '',responsableId: null};
+  
+  nombreEntretiens: number | null = null;// Total à planifier
+nombreEntretiensPlanifies: number = 0; // Compteur de ceux terminés
+ 
 
 
   constructor(private http: HttpClient,private snackbar: MatSnackBar) {}
 
   ngOnInit(): void {
+  
     this.loadCandidatures();
     this.loadResponsables();
+    this.loadEntretiensForAllCandidatures();
   }
   loadResponsables(): void {
     this.http.get<Responsable[]>('http://localhost:5053/api/Employe/getAllEmployes').subscribe({
@@ -69,11 +78,48 @@ export class DashboardComponent implements OnInit {
       }
     });
   }
+  genererFormulaires() {
+    
+    this.nombreEntretiensPlanifies = 0;
+    const apiUrl = `http://localhost:5053/api/Candidature/updateNbEntretiens/${this.selectedCandidature!.id}/${this.nombreEntretiens}`;
+  
+    this.http.put(apiUrl, {}).subscribe({
+      next: (response) => {
+        // ... other success logic ...
+        if (this.selectedCandidature) {
+          this.selectedCandidature.nbEntretiens = this.nombreEntretiens;
+          // Update nbFixe based on the new value
+          this.selectedCandidature.nbFixe = (this.nombreEntretiens !== null && this.nombreEntretiens > 0);
+        }
+        // Update the main list as well
+        const index = this.candidatures.findIndex(c => c.id === this.selectedCandidature!.id);
+        if (index > -1) {
+           this.candidatures[index].nbEntretiens = this.nombreEntretiens;
+           this.candidatures[index].nbFixe = (this.nombreEntretiens !== null && this.nombreEntretiens > 0);
+        }
+        // ...
+      },
+      // ... error handling ...
+    }
+    );
+  
+    this.loadCandidatures();
+
+    
+  
+  }
   loadCandidatures(): void {
 
     this.http.get<Candidature[]>('http://localhost:5053/api/Candidature/getAllCandidatures').subscribe({
       next: (data) => {
-        this.candidatures = data.filter(candidature => candidature.statut!=='RefusePreSelection');
+        const filteredData = data.filter(candidature => candidature.statut !== 'RefusePreSelection');
+
+        // 2. Map over the FILTERED data to add nbFixe
+        this.candidatures = filteredData.map(c => ({
+          ...c, // Copy existing properties
+          // Set nbFixe based on nbEntretiens value
+          nbFixe: (c.nbEntretiens !== null && c.nbEntretiens !== undefined && c.nbEntretiens > 0)
+        }));
         this.extractOffres();
         this.filterCandidatures();
         this.loadEntretiensForAllCandidatures();
@@ -89,6 +135,14 @@ export class DashboardComponent implements OnInit {
       this.loadEntretiens(candidature.id);
     });
   }
+  get FnombreEntretiensPlanifies(): number {
+    if (!this.selectedCandidature) {
+      return 0;
+    }
+    const entretiensCandidature = this.entretiens[this.selectedCandidature.id] || [];
+    return entretiensCandidature.filter(e => e.statut === 'Passé' || e.statut === 'Echoué').length;
+  }
+  
 
   loadEntretiens(candidatureId: number): void {
     this.http
@@ -103,12 +157,23 @@ export class DashboardComponent implements OnInit {
             
           
           }));
+          if (this.selectedCandidature?.id === candidatureId) {
+            
+            // Recalculate the count of planned/completed interviews for the selected candidate
+            this.nombreEntretiensPlanifies = this.entretiens[this.selectedCandidature!.id]
+            .filter((e: any) => e.statut !== 'En cours')
+            .length;
+            console.log(this.nombreEntretiensPlanifies);
+          
+          }
+
         },
         error: (error) => {
           console.error(`Error fetching entretiens for candidature ${candidatureId}:`, error);
         },
       });
   }
+
 
 
 
@@ -122,6 +187,8 @@ export class DashboardComponent implements OnInit {
     });
   }
   creerEntretien(): void {
+    console.log('ID Responsable sélectionné avant création:', this.nouvelEntretien.responsableId); // <-- AJOUTE CECI
+
     if (!this.selectedCandidature || !this.nouvelEntretien.typeEntretien || !this.nouvelEntretien.dateEntretien) return;
 
   
@@ -147,11 +214,15 @@ export class DashboardComponent implements OnInit {
           );
           this.nouvelEntretien = { typeEntretien: '', dateEntretien: new Date(), modeEntretien: 'présentiel',responsableId: null };
           
+        
         },
         error: (error) => {
           console.error('Error creating entretien:', error);
         },
       });
+    
+  
+    
   }
 
   updateEntretien(entretien: Entretien, status: 'Passé' | 'Echoué'): void {
@@ -183,6 +254,9 @@ export class DashboardComponent implements OnInit {
         console.error('Error updating entretien:', error);
       },
     });
+    this.nombreEntretiensPlanifies = this.entretiens[this.selectedCandidature!.id]
+    .filter((e: any) => e.statut === 'Passé' || e.statut === 'Echoué')
+    .length;
   }
 
   updateCandidatureStatus(candidatureId: number, newStatus: string): void {
@@ -207,17 +281,15 @@ export class DashboardComponent implements OnInit {
         },
       });
   }
-  getResponsableNom(responsableId: number | null | undefined): string {
-    if (!responsableId) {
-      return 'Non assigné'; // Ou une autre valeur par défaut
-    }
-    const responsable = this.responsables.find(resp => resp.id === responsableId);
-    return responsable ? responsable.nomPrenom : 'Inconnu'; // Retourne le nom ou 'Inconnu' si non trouvé
-  }
+
 
   openModal(candidature: Candidature): void {
     this.selectedCandidature = candidature;
+    this.nombreEntretiens = candidature.nbEntretiens ?? null;
+    this.loadCandidatures();
+
   }
+
 
   closeModal(): void {
     this.selectedCandidature = null;
@@ -268,13 +340,19 @@ export class DashboardComponent implements OnInit {
           console.log('Notification envoyée avec succès. Réponse serveur:', response);
           // Optionnel : Afficher un message de succès à l'utilisateur (ex: Snackbar)
            const successMessage = response?.message || 'Notification envoyée à l\'administrateur.';
-           this.snackbar.open(successMessage, 'OK', { duration: 3000 });
+           this.snackbar.open(`✔️ ${successMessage}`, 'OK', { // Ou utilisez une icône mat-icon si vous créez un composant snackbar personnalisé
+            duration: 3500, // Durée légèrement augmentée
+            panelClass: ['success-snackbar'] // Utilise la classe CSS de succès
+           });
         },
         error: (error) => {
           console.error('Erreur lors de l\'envoi de la notification:', error);
           // Optionnel : Afficher un message d'erreur plus détaillé
            const errorMessage = error?.error?.message || 'Erreur lors de l\'envoi de la notification.';
-           this.snackbar.open(errorMessage, 'Fermer', { duration: 5000 });
+           this.snackbar.open(`❌ ${errorMessage}`, 'Fermer', {
+            duration: 5000,
+            panelClass: ['error-snackbar'] // Utilise la classe CSS d'erreur
+           });
         }
       });
   }

@@ -9,6 +9,43 @@
   display: flex;
   flex-direction: column;
 }
+.interview-progress-display {
+  background-color: #f0f9ff; /* Example: Light sky blue background */
+  border: 1px solid #bae6fd; /* Example: Sky blue border */
+  color: #0369a1; /* Example: Sky blue text */
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin-bottom: 1.5rem; /* Space below */
+  font-size: 0.95rem;
+  display: flex; /* Use flexbox for alignment */
+  align-items: center;
+  gap: 8px; /* Space between elements */
+}
+
+.interview-progress-display .label {
+  font-weight: 500; /* Medium weight */
+}
+
+.interview-progress-display .progress-values {
+  font-weight: 700; /* Bold numbers */
+  background-color: #e0f2fe; /* Slightly darker background for numbers */
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+
+.interview-progress-display .separator {
+  margin: 0 2px;
+  opacity: 0.7;
+}
+
+
+
+.interview-progress-display .status-text {
+  font-size: 0.8em;
+  opacity: 0.8;
+}
+
 
 .filter-container {
   display: flex;
@@ -48,10 +85,33 @@
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
-
-.candidates-table th {
-  background-color: #f0f0f0;
+.no-candidatures-message {
+  text-align: center;
+  padding: 40px 20px; /* Add some padding */
+  color: #6c757d; /* A muted color */
+  border: 1px dashed #ced4da; /* Optional border */
+  border-radius: 8px; /* Optional rounded corners */
+  margin-top: 20px; /* Add some space above */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
+
+.no-candidatures-message .icon {
+  font-size: 48px; /* Make icon larger */
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px; /* Space between icon and text */
+  color: #adb5bd; /* Lighter color for icon */
+}
+
+.no-candidatures-message p {
+  font-size: 1.1rem; /* Slightly larger text */
+  margin: 0;
+}
+
+
 
 .view-btn {
   background-color: #4CAF50;
@@ -81,7 +141,7 @@
   padding: 20px;
   border-radius: 8px;
   width: 50%;
-  max-width: 600px;
+  max-width: 650px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   position: relative;
   max-height: 580px; /* hauteur fixe */
@@ -94,9 +154,14 @@
   position: absolute;
   top: 10px;
   right: 15px;
-  font-size: 24px;
+  font-size: 28px;
   cursor: pointer;
 }
+.close:hover {
+  transform: scale(1.08);
+}
+
+
 
 /* Formulaire */
 .form-container {
@@ -178,6 +243,26 @@ textarea {
 
   transform: scale(1.05);
 }
+.btn-cancel {
+  
+  padding: 10px 24px;
+  margin-top: 20px;
+  margin-left: 190px;
+  background: linear-gradient(to right, #888888, #aaaaaa); /* dégradé gris */
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 120px;
+}
+
+.btn-cancel:hover {
+  transform: scale(1.05);
+}
+
 .decision-text {
   display: inline-block;
   margin-top: 10px;
@@ -187,6 +272,38 @@ textarea {
   transition: all 0.3s ease;
 }
 
+.all-interviews-complete-message {
+  background-color: #e6f4ea; /* Light green background */
+  border: 1px solid #b8dfc5; /* Green border */
+  color: #1e4620; /* Dark green text */
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-top: 1.5rem; /* Space above */
+  margin-bottom: 1.5rem; /* Space below */
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Space between icon and text */
+}
+
+.all-interviews-complete-message .icon {
+  font-size: 2.5rem; /* Larger icon */
+  width: 40px;
+  height: 40px;
+  color: #34a853; /* Google green */
+}
+
+.all-interviews-complete-message .message-content h4 {
+  margin-top: 0;
+  margin-bottom: 5px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.all-interviews-complete-message .message-content p {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
 
 
 
@@ -464,7 +581,29 @@ textarea {
   border-radius: 5px;
 }
 
+.success-snackbar {
+  background-color: #28a745; /* Vert succès */
+  color: white;
+  border-radius: 8px; /* Coins arrondis */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ombre portée */
+}
+.success-snackbar .mat-simple-snackbar-action { /* Style du bouton OK/Fermer */
+    color: white !important;
+    font-weight: bold;
+}
 
+
+/* Style pour le snackbar d'erreur */
+.error-snackbar {
+  background-color: #dc3545; /* Rouge erreur */
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.error-snackbar .mat-simple-snackbar-action { /* Style du bouton OK/Fermer */
+    color: white !important;
+    font-weight: bold;
+}
 
 
 

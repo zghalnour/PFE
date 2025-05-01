@@ -49,8 +49,8 @@ namespace PfeRH.Controllers
                 contenu: $"Une nouvelle candidature pour le poste de {candidature.Offre.Titre} a été traité.",
                 type: "Parcours Candidature ", // Type de notification
                 utilisateurId: request.UtilisateurId,
-                candidatureId: request.CandidatureId,
-                link: $"/candidatures/{request.CandidatureId}" // Lien vers la page des détails de la candidature
+                candidatureId: request.CandidatureId
+               
             );
 
             // Ajouter la notification à la base de données
@@ -61,7 +61,7 @@ namespace PfeRH.Controllers
             await _hubContext.Clients.All.SendAsync("ReceiveNotification", new
             {
                 message = notification.Contenu,
-                link = notification.Link
+               
             });
 
             return Ok(new { Message = "Notification envoyée avec succès !" });
@@ -76,7 +76,7 @@ namespace PfeRH.Controllers
 
             if (notifications == null || notifications.Count == 0)
             {
-                return NotFound(new { Message = "Aucune notification non lue trouvée pour cet utilisateur." });
+                return Ok(); 
             }
 
             return Ok(notifications);  // Retourne la liste des notifications non lues
@@ -98,6 +98,52 @@ namespace PfeRH.Controllers
 
             return Ok(new { Message = "Notification marquée comme lue." });
         }
+        [HttpDelete("deleteAllForUser/{utilisateurId}")]
+        public async Task<IActionResult> DeleteAllNotificationsForUser(int utilisateurId)
+        {
+            var notifications = await _context.Notifications
+                .Where(n => n.UtilisateurId == utilisateurId)
+                .ToListAsync();
+
+            if (!notifications.Any())
+            {
+                return NotFound(new { Message = "Aucune notification à supprimer." });
+            }
+
+            _context.Notifications.RemoveRange(notifications);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Toutes les notifications ont été supprimées." });
+        }
+        [HttpDelete("delete/{notificationId}")]
+        public async Task<IActionResult> DeleteNotification(int notificationId)
+        {
+            var notification = await _context.Notifications
+                .FirstOrDefaultAsync(n => n.Id == notificationId);
+
+            if (notification == null)
+            {
+                return NotFound(new { Message = "Notification non trouvée." });
+            }
+
+            _context.Notifications.Remove(notification);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Notification supprimée avec succès." });
+        }
+
+
+        [HttpGet("getAllForUser/{utilisateurId}")]
+        public async Task<IActionResult> GetAllForUser(int utilisateurId)
+        {
+            var notifications = await _context.Notifications
+                .Where(n => n.UtilisateurId == utilisateurId)
+                .OrderByDescending(n => n.DateCreation)
+                .ToListAsync();
+
+            return Ok(notifications);
+        }
+
 
 
     }

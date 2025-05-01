@@ -1,0 +1,99 @@
+.content {
+  min-height: 100vh;
+  width: calc(100% - 260px);
+  margin-left: 240px;
+  margin-top: 25px;
+  margin-right: 20px;
+  padding: 20px;
+  background-color: #eae8e889;
+  display: flex;
+  flex-direction: column;
+}
+/* Styles généraux pour le conteneur et les cartes */
+.container {
+  max-width: 1200px; /* Ou une autre largeur max souhaitée */
+}
+
+.filter-card {
+  background-color: #f9f9f9; /* Léger fond pour distinguer la zone de filtre */
+}
+
+/* Styles pour le formulaire de filtre */
+.filter-form {
+  padding-top: 16px; /* Espace au-dessus des champs */
+}
+
+.filter-actions {
+  /* Aligner les boutons à la fin si nécessaire sur certains écrans */
+  align-self: flex-end;
+  padding-bottom: 8px; /* Ajustement pour alignement vertical avec les form-fields */
+}
+
+/* Styles pour le tableau */
+table {
+  width: 100%;
+}
+
+th.mat-sort-header-sorted {
+  color: black;
+}
+
+/* Styles pour les puces de statut */
+.status-chip {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: 500;
+  display: inline-block;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+
+.status-pending {
+  background-color: #ffecb3; /* Jaune clair */
+  color: #7f6000; /* Texte foncé pour contraste */
+  border: 1px solid #ffe082;
+}
+
+.status-approved {
+  background-color: #c8e6c9; /* Vert clair */
+  color: #1b5e20; /* Texte foncé pour contraste */
+  border: 1px solid #a5d6a7;
+}
+
+.status-rejected {
+  background-color: #ffcdd2; /* Rouge clair */
+  color: #b71c1c; /* Texte foncé pour contraste */
+  border: 1px solid #ef9a9a;
+}
+
+/* Ajustements pour l'icône d'info */
+.mat-icon.ml-1 {
+  font-size: 16px; /* Taille de l'icône */
+  height: 16px;
+  width: 16px;
+  vertical-align: middle;
+}
+
+/* Assurer que les cellules d'action ne coupent pas */
+td.mat-cell:last-child, th.mat-header-cell:last-child {
+  white-space: nowrap;
+}
+
+/* Styles responsives optionnels */
+@media (max-width: 768px) {
+  .filter-form {
+    grid-template-columns: 1fr; /* Une colonne sur mobile */
+  }
+  .filter-actions {
+    justify-content: flex-start; /* Aligner les boutons au début sur mobile */
+    margin-top: 10px;
+  }
+}
+.btn-green mat-icon {
+  color: green;
+}
+
+

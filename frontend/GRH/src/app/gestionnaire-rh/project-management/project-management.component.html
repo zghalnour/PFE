@@ -1,0 +1,647 @@
+<app-header></app-header>
+<main class="content">
+   <!-- Section Titre et Filtres -->
+   <div class="flex flex-wrap gap-4 items-center">
+    <!-- Filtre par Équipe -->
+    <div class="w-1/3">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>Département</mat-label>
+        <mat-select [(ngModel)]="selectedDepartmentFilter" (selectionChange)="applyFilters()">
+          <mat-option value="">Tous les départements</mat-option>
+          <mat-option *ngFor="let dep of allDepartments" [value]="dep.nom">{{ dep.nom }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  
+    <!-- Recherche Employé -->
+    <div class="w-1/3">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>Rechercher un projet</mat-label>
+        <input matInput type="text" [(ngModel)]="searchTerm" (input)="applyFilters()" placeholder="Nom du projet..." />
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+    </div>
+  </div>
+  
+
+  <!-- Grille des Équipes -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
+
+    <!-- Card Équipe -->
+    <div *ngFor="let dept of filteredDepartments" class="bg-white rounded-lg shadow-lg overflow-hidden transition-shadow duration-300 hover:shadow-xl flex flex-col">
+      <!-- Header Équipe -->
+      <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4 text-white flex justify-between items-center">
+        <h2 class="text-xl font-semibold">{{ dept.nom }}</h2>
+        <span class="text-sm opacity-90 flex items-center">
+          <mat-icon class="mr-1 text-base">folder</mat-icon>
+          {{ dept.projets.length }} Projet(s)
+        </span>
+        
+      </div>
+
+      <!-- Liste des Membres (Scrollable) -->
+      <div class="p-4 space-y-3 flex-grow overflow-y-auto max-h-96 custom-scrollbar">
+        <div *ngIf="dept.projets.length > 0; else noProjects">
+          <div *ngFor="let projet of dept.projets" class="bg-white-50 p-3 rounded-md hover:bg-gray-100 transition-colors mb-2">
+            <div class="flex justify-between items-start">
+              <!-- Infos Employé -->
+              <div class="flex items-center gap-3 mb-2">
+            <!-- Container for the progress indicator -->
+                <div *ngIf="projet.progressPercentage !== undefined"
+              class="flex-shrink-0 relative w-[50px] h-[50px]"  
+              [matTooltip]="projet.progressPercentage === 0 ? 'Projet non démarré' : ('Progression: ' + projet.progressPercentage + '%')">
+<!-- w-10 h-10 corresponds to diameter 40px -->
+<!-- Added relative positioning and tooltip here -->
+
+              <mat-progress-spinner
+              [color]="'primary'"  
+           [mode]="'determinate'"
+           [value]="projet.progressPercentage"
+           [diameter]="50"> 
+   <!-- Changed color to 'primary' (adjust if needed) -->
+        </mat-progress-spinner>
+
+<!-- Percentage Text Overlay -->
+<div class="absolute inset-0 flex items-center justify-center"> 
+   <!-- Use absolute positioning to overlay -->
+   <span class="text-sm font-semibold text-gray-700"> 
+       <!-- Adjusted font size, weight, and color -->
+       {{ projet.progressPercentage }}%
+   </span>
+</div>
+</div>
+
+                
+                <div>
+                  <p class="font-medium text-gray-800">{{ projet.nom }}</p>
+                  <p class="text-xs text-gray-500">{{ projet.dateDebut | date:'dd/MM/yyyy' }} - {{ projet.dateFin | date:'dd/MM/yyyy' }}</p>
+                </div>
+              </div>
+              <!-- Bouton Assigner Projet -->
+              <div class="flex items-center gap-0 mt-1">
+                <!-- Edit Project Button -->
+                <button mat-icon-button  matTooltip="Modifier le projet" (click)="openEditProjectModal(projet, dept)">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <!-- Delete Project Button -->
+                <button matTooltip="Supprimer le projet" class="text-gray-500 hover:text-red-700" (click)="deleteProject(projet.id)">
+                  <i class="fas fa-trash-alt text-xl"></i>
+                </button>
+            </div>
+            
+            </div>
+
+            <!-- Employé Assignés -->
+            <div class="pl-2 border-l-2 border-blue-300 ml-1">
+              <!-- ✅ Employés assignés -->
+              
+                <h4 class="text-sm font-semibold text-black">Employés assignés :</h4>
+          
+            
+              <ul *ngIf="projet.employesAssignes && projet.employesAssignes.length > 0; else noEmployees" class="text-sm space-y-1">
+                <li *ngFor="let emp of projet.employesAssignes" class="text-gray-700 flex items-center gap-2 group"> <!-- Added gap-2 for spacing -->
+                  <mat-icon class="text-gray-500 text-base">person</mat-icon> <!-- Changed icon and color -->
+                  <span>{{ emp.nomPrenom }}</span>
+                </li>
+
+              </ul>
+              <ng-template #noEmployees>
+                <p class="text-xs text-gray-400 italic">Aucun employé assigné.</p>
+              </ng-template>
+            </div>
+            <div class="pl-2 border-l-2 border-blue-300 ml-1">
+              <!-- ✅ Réunions à venir -->
+              <div class="mt-4">
+                <div class="flex items-center justify-between mb-1">
+                  <h4 class="text-sm font-semibold text-black">Réunions à venir :</h4>
+                  <button  
+                    matTooltip="Planifier une réunion"
+                    (click)="openEvaluationModal(projet)"
+                    class="text-blue-800 transition-colors">
+                    <mat-icon>event</mat-icon>
+                  </button>
+                </div>
+                <ul *ngIf="projet.reunions && projet.reunions.length > 0; else noReunions" class="text-sm space-y-2 "> 
+                  <li *ngFor="let reu of projet.reunions" class="text-gray-700 flex flex-col sm:flex-col sm:items-start sm:justify-between group  pl-2 transition-colors duration-150 ease-in-out">
+                    <!-- Date Section -->
+                    <div class="flex items-center gap-2 mb-1 sm:mb-0">
+                      <mat-icon class="text-blue-500 text-base">calendar_today</mat-icon>
+                      <!-- Apply date pipe for formatting -->
+                      <span class="font-medium">{{ reu.dateEvaluation | date:'dd/MM/yyyy' }}</span>
+                    </div>
+                    <!-- Location Section (Check if lieu exists) -->
+                    <div *ngIf="reu.lieu" class="flex items-center  text-gray-600">
+                       <mat-icon class="text-green-500 text-base">location_on</mat-icon>
+                       <span class="text-xs italic truncate" >{{ reu.lieu }}</span> <!-- Added tooltip for potentially long locations -->
+                    </div>
+                  </li>
+                </ul>
+
+                <ng-template #noReunions>
+                  <p class="text-xs text-gray-400 italic">Aucune réunion programmée pour le moment</p>
+                </ng-template>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+         <ng-template #noProjects>
+            <div class="text-center text-gray-500 py-4">
+                <mat-icon class="text-4xl text-gray-300">person_off</mat-icon>
+                <p class="mt-2">Aucun projet pour ce département.</p>
+            </div>
+         </ng-template>
+      </div>
+
+    
+       <div class="p-3 bg-gray-50 border-t border-gray-200 text-center">
+        <button mat-stroked-button (click)="openAddProjectModal(dept)" class="w-full hover:bg-blue-500">
+          <mat-icon>add_circle_outline</mat-icon> Ajouter un Projet
+        </button>
+        
+       </div>
+    </div>
+
+    <div *ngIf="filteredDepartments.length === 0 && (selectedProjectFilter || searchTerm)"
+         class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-10 bg-white rounded-lg shadow">
+        <mat-icon class="text-6xl text-gray-400">search_off</mat-icon>
+        <p class="mt-4 text-lg text-gray-600">Aucune département ne correspond à vos critères de recherche.</p>
+    </div>
+
+  </div>
+
+  <!-- MODALS -->
+   
+  <!-- Modal: Ajouter un Projet -->
+<!-- Modal: Ajouter un Projet (Simplified Style) -->
+<div *ngIf="isAddProjectModalVisible"
+     class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 backdrop-blur-sm"
+     > 
+
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden "> <!-- Simplified shadow, added border -->
+
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50"> <!-- Simple background, border -->
+            <h2 class="text-lg font-medium text-gray-800"> <!-- Adjusted font size/weight -->
+                Ajouter un Projet au département {{ departmentForNewProject?.nom }}
+            </h2>
+            <button mat-icon-button (click)="closeAddProjectModal()" aria-label="Fermer" class="text-gray-500 hover:text-gray-700">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+
+        <!-- Modal Content (Scrollable) -->
+        <!-- Removed explicit form tag, ngSubmit can be on the button -->
+        <div [formGroup]="projectForm" class="flex-grow overflow-y-auto p-6 space-y-4 custom-scrollbar"> <!-- Use space-y for vertical spacing -->
+
+            <!-- Nom du Projet -->
+                    <!-- Nom du Projet (Standard HTML + Tailwind) -->
+                    <div class="w-1/2"> <!-- Use w-full if it shouldn't be half-width -->
+                      <label for="projectName" class="block text-sm font-medium text-black mb-1">Nom du Projet</label> <!-- Adjusted text size/color, added margin -->
+                      <input id="projectName"
+                             type="text"
+                             formControlName="nom"
+                             placeholder="Ex: Refonte site web"
+                             required
+                             class="mt-1 p-2 w-full border border-gray-500 rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300 sm:text-sm"
+                             [ngClass]="{'border-red-500': projectForm.get('nom')?.invalid && (projectForm.get('nom')?.dirty || projectForm.get('nom')?.touched)}"> <!-- Basic input styling + error border -->
+                      <!-- Error Message -->
+                      <div *ngIf="projectForm.get('nom')?.invalid && (projectForm.get('nom')?.dirty || projectForm.get('nom')?.touched)"
+                           class="mt-1 text-sm text-red-600">
+                          <span *ngIf="projectForm.get('nom')?.hasError('required')">
+                              Le nom est obligatoire.
+                          </span>
+                          <!-- Add other potential error messages here if needed -->
+                      </div>
+                  </div>
+      
+
+            <!-- Description -->
+            <div class="w-full">
+              <label for="projectDescription" class="block text-sm font-medium text-black mb-1">Description</label>
+              <textarea id="projectDescription"
+                        formControlName="description"
+                        placeholder="Décrivez brièvement le projet..."
+                        rows="3"
+                        class="mt-1 p-2 w-full border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300 sm:text-sm"
+                        [ngClass]="{'border-red-500': projectForm.get('description')?.invalid && projectForm.get('description')?.touched}"></textarea>
+        
+          </div>
+
+            <!-- Date Fields Row -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Date de Début -->
+                <mat-form-field  class="w-full">
+                    <mat-label>Date de Début</mat-label>
+                    <input matInput [matDatepicker]="pickerDebut" formControlName="dateDebut" required readonly>
+                    <mat-datepicker-toggle matSuffix [for]="pickerDebut"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerDebut></mat-datepicker>
+                    <mat-error *ngIf="projectForm.get('dateDebut')?.hasError('required')">
+                        Date début obligatoire.
+                    </mat-error>
+                </mat-form-field>
+
+                <!-- Date de Fin -->
+                <mat-form-field class="w-full">
+                    <mat-label>Date de Fin</mat-label>
+                    <input matInput [matDatepicker]="pickerFin" formControlName="dateFin" required readonly [min]="projectForm.get('dateDebut')?.value">
+                    <mat-datepicker-toggle matSuffix [for]="pickerFin"> </mat-datepicker-toggle>
+                    <mat-datepicker #pickerFin></mat-datepicker>
+                    <mat-error *ngIf="projectForm.get('dateFin')?.hasError('required')">
+                        Date fin obligatoire.
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <div class="border-t border-gray-200 pt-4 mt-4 space-y-3"> <!-- Add separator and spacing -->
+              <div class="flex justify-between items-center mb-2">
+                   <h3 class="text-md font-medium text-black">Tâches du Projet</h3>
+                   <button mat-stroked-button color="accent" type="button" (click)="addTask()">
+                       <mat-icon>add</mat-icon> Ajouter
+                   </button>
+              </div>
+      
+              <!-- Container for the list of tasks -->
+              <div formArrayName="taches" class="space-y-3"> <!-- Vertical spacing between tasks -->
+                  <!-- Iterate over each task FormGroup in the FormArray -->
+                  <div *ngFor="let taskGroup of taches.controls; let i=index"
+                       [formGroupName]="i"
+                       class="bg-white-50 p-3 rounded border border-gray-200 flex items-start gap-3"> <!-- Styling for each task row -->
+      
+                       <!-- Task Number/Indicator -->
+                       <span class="text-sm font-semibold text-gray-500 mt-2">{{ i + 1 }}.</span>
+      
+                       <!-- Task Fields -->
+                       <div class="flex-grow space-y-2">
+                           <!-- Task Name -->
+                           <div class="w-1/2">
+                            <label [for]="'taskName' + i" class="block text-xs font-medium text-black mb-1">Nom Tâche</label>
+                            <input [id]="'taskName' + i"
+                                   type="text"
+                                   formControlName="nom"
+                                   placeholder="Ex: Analyse des besoins"
+                                   required
+                                   class="p-2 w-full border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300 sm:text-sm"
+                                   [ngClass]="{'border-red-500': taskGroup.get('nom')?.invalid && taskGroup.get('nom')?.touched}">
+                            <div *ngIf="taskGroup.get('nom')?.invalid && taskGroup.get('nom')?.touched"
+                                 class="mt-1 text-xs text-red-600">
+                                <span *ngIf="taskGroup.get('nom')?.hasError('required')">
+                                    Nom requis
+                                </span>
+                            </div>
+                        </div>
+                           <!-- Task Description -->
+                           <div class="w-full">
+                            <label [for]="'taskDesc' + i" class="block text-xs font-medium text-black mb-1">Description Tâche</label>
+                            <textarea [id]="'taskDesc' + i"
+                                      formControlName="description"
+                                      placeholder="Détails de la tâche..."
+                                      rows="2"
+                                      class="p-2 w-full border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:border-blue-3000 sm:text-sm"></textarea>
+                        </div>
+                        <!-- Select Employé pour cette tâche -->
+<div class="w-full">
+  <label class="block text-xs font-medium text-black mb-1">Employé Responsable</label>
+  <mat-form-field class="w-full">
+    <mat-select formControlName="employeId" required>
+    
+      <mat-option *ngFor="let emp of departmentEmployeesForModal" [value]="emp.id">
+        {{ emp.nomPrenom }}
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="taskGroup.get('employeId')?.hasError('required')">
+      Employé requis
+    </mat-error>
+  </mat-form-field>
+</div>
+
+                       </div>
+      
+                       <!-- Remove Task Button -->
+                       <button mat-icon-button color="warn" type="button" (click)="removeTask(i)" matTooltip="Supprimer cette tâche" class="mt-1">
+                           <mat-icon>remove_circle_outline</mat-icon>
+                       </button>
+                  </div>
+              </div>
+               <!-- Message if no tasks added -->
+               <p *ngIf="taches.length === 0" class="text-sm text-gray-500 italic text-center py-2">
+                   Aucune tâche ajoutée pour le moment.
+               </p>
+          </div>
+
+        
+
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="flex justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50">
+            <button mat-stroked-button (click)="closeAddProjectModal()">Annuler</button>
+            <button mat-flat-button color="primary" (click)="submitAddProject()" [disabled]="isSubmittingProject || projectForm.invalid">
+                <span *ngIf="!isSubmittingProject" class="flex items-center gap-1">
+                    <mat-icon>save</mat-icon> Créer
+                </span>
+                <span *ngIf="isSubmittingProject" class="flex items-center gap-2">
+                    <mat-progress-spinner [diameter]="20" mode="indeterminate"></mat-progress-spinner>
+                    Création...
+                </span>
+            </button>
+        </div>
+    </div>
+</div>
+
+
+  <!-- Modal: Modifier un Projet -->
+  <div *ngIf="isEditProjectModalVisible"
+       class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 backdrop-blur-sm" >
+
+      <div class="bg-white rounded-lg shadow-lg w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
+
+          <!-- Modal Header -->
+          <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
+              <h2 class="text-lg font-medium text-gray-800">
+                  Modifier le Projet: {{ projectToEdit?.nom }}
+              </h2>
+              <button mat-icon-button (click)="closeEditProjectModal()" aria-label="Fermer" class="text-gray-700 hover:text-gray-500">
+                  <mat-icon>close</mat-icon>
+              </button>
+          </div>
+
+          <!-- Modal Content (Scrollable) -->
+          <form *ngIf="editProjectForm" [formGroup]="editProjectForm" class="flex-grow overflow-y-auto p-6 space-y-4 custom-scrollbar">
+
+              <!-- Nom du Projet -->
+              <div class="w-1/2"> <!-- Changed to w-full for consistency -->
+                  <label for="editProjectName" class="block text-sm font-medium text-black mb-1">Nom du Projet</label>
+                  <input id="editProjectName"
+                         type="text"
+                         formControlName="nom"
+                         placeholder="Ex: Refonte site web"
+                         required
+                         class="mt-1 p-2 w-full border border-gray-500 rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300 sm:text-sm"
+                         [ngClass]="{'border-red-500': editProjectForm.get('nom')?.invalid && editProjectForm.get('nom')?.touched}">
+              
+              </div>
+
+              <!-- Description (Readonly in this modal based on API, can be added if API supports it) -->
+              <!-- If description needs to be editable, add a formControl and input similar to 'nom' -->
+              <div class="w-full">
+                <label for="description" class="block text-sm font-medium text-black mb-1">
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  formControlName="description"
+                  rows="3"
+                  class="mt-1 p-2 w-full bg-white border border-gray-300 rounded shadow-sm sm:text-sm text-gray-700 focus:outline-none focus:ring focus:border-blue-300"
+                  placeholder="Entrez la description du projet"
+                ></textarea>
+              
+              </div>
+              
+
+
+              <!-- Date Fields Row -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <!-- Date de Début (Readonly - Usually not changed) -->
+                  <mat-form-field class="w-full">
+                      <mat-label>Date de Début (Info)</mat-label>
+                      <input matInput [matDatepicker]="pickerDebutEdit" [value]="projectToEdit?.dateDebut" readonly>
+                      <mat-datepicker-toggle matSuffix [for]="pickerDebutEdit" disabled></mat-datepicker-toggle>
+                      <mat-datepicker #pickerDebutEdit></mat-datepicker>
+                  </mat-form-field>
+
+                  <!-- Date de Fin (Editable) -->
+                  <mat-form-field class="w-full">
+                      <mat-label>Date de Fin</mat-label>
+                      <input matInput [matDatepicker]="pickerFinEdit" formControlName="dateFin" [min]="projectToEdit?.dateDebut">
+                      <mat-datepicker-toggle matSuffix [for]="pickerFinEdit"></mat-datepicker-toggle>
+                      <mat-datepicker #pickerFinEdit></mat-datepicker>
+                    
+                  </mat-form-field>
+              </div>
+
+              <!-- Tâches Section -->
+              <div class="border-t border-gray-200 pt-4 mt-4 space-y-3">
+                  <div class="flex justify-between items-center mb-2">
+                      <h3 class="text-md font-medium text-black">Tâches du Projet</h3>
+                      <button mat-stroked-button color="accent" type="button" (click)="addTaskToEditForm()">
+                          <mat-icon>add</mat-icon> Ajouter Tâche
+                      </button>
+                  </div>
+
+                  <!-- Container for the list of tasks -->
+                  <div formArrayName="taches" class="space-y-3">
+                      <!-- Iterate over each task FormGroup in the FormArray -->
+                      <div *ngFor="let taskGroup of editTaches.controls; let i=index"
+                           [formGroupName]="i"
+                           class="bg-white-50 p-3 rounded border border-gray-200 flex items-start gap-3 relative"> <!-- Added relative positioning -->
+
+                          <!-- Task Number/Indicator -->
+                          <span class="text-sm font-semibold text-gray-500 mt-2">{{ i + 1 }}.</span>
+
+                          <!-- Task Fields -->
+                          <div class="flex-grow space-y-2">
+                              <!-- Task Name -->
+                              <div class="w-full"> <!-- Adjusted width -->
+                                  <label [for]="'editTaskName' + i" class="block text-xs font-medium text-black mb-1">Nom Tâche</label>
+                                  <input [id]="'editTaskName' + i"
+                                         type="text"
+                                         formControlName="nom"
+                                         placeholder="Ex: Analyse des besoins"
+                                         required
+                                         class="p-2 w-full border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300 sm:text-sm"
+                                         [ngClass]="{'border-red-500': taskGroup.get('nom')?.invalid && taskGroup.get('nom')?.touched}">
+                                  <div *ngIf="taskGroup.get('nom')?.invalid && taskGroup.get('nom')?.touched"
+                                       class="mt-1 text-xs text-red-600">
+                                      <span *ngIf="taskGroup.get('nom')?.hasError('required')">
+                                          Nom requis
+                                      </span>
+                                  </div>
+                              </div>
+                              <!-- Task Description -->
+                              <div class="w-full">
+                                  <label [for]="'editTaskDesc' + i" class="block text-xs font-medium text-black mb-1">Description Tâche</label>
+                                  <textarea [id]="'editTaskDesc' + i"
+                                            formControlName="description"
+                                            placeholder="Détails de la tâche..."
+                                            rows="2"
+                                            class="p-2 w-full border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300 sm:text-sm"></textarea>
+                              </div>
+                              <!-- Select Employé pour cette tâche -->
+                              <div class="w-full">
+                                  <label class="block text-xs font-medium text-black mb-1">Employé Responsable</label>
+                                  <mat-form-field class="w-full">
+                                      <mat-select formControlName="employeId" required>
+                                          <!-- Populate options based on department employees -->
+                                          <mat-option *ngFor="let emp of departmentEmployeesForModal" [value]="emp.id">
+                                              {{ emp.nomPrenom }}
+                                          </mat-option>
+                                      </mat-select>
+                                      <mat-error *ngIf="taskGroup.get('employeId')?.hasError('required')">
+                                          Employé requis
+                                      </mat-error>
+                                  </mat-form-field>
+                              </div>
+                          </div>
+
+                          <!-- Remove Task Button -->
+                          <!-- Only show remove for NEW tasks (id=0) or consider API implications -->
+                           <button mat-icon-button color="warn" type="button"
+              
+                                  (click)="removeTaskFromEditForm(i)"
+                                  matTooltip="Supprimer cette tâche"
+                                  class="absolute top-1 right-1"> <!-- Positioned top-right -->
+                              <mat-icon>remove_circle_outline</mat-icon>
+                          </button>
+                      </div>
+                  </div>
+                  <!-- Message if no tasks -->
+                  <p *ngIf="editTaches.length === 0" class="text-sm text-gray-500 italic text-center py-2">
+                      Aucune tâche définie pour ce projet. Cliquez sur "Ajouter Tâche".
+                  </p>
+              </div>
+
+          </form>
+
+          <!-- Modal Actions -->
+          <div class="flex justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50">
+              <button mat-stroked-button (click)="closeEditProjectModal()">Annuler</button>
+              <button mat-flat-button color="primary" (click)="submitEditProject()" [disabled]="isSubmittingProject">
+                  <span *ngIf="!isSubmittingProject" class="flex items-center gap-1">
+                      <mat-icon>save</mat-icon> Enregistrer
+                  </span>
+                  <span *ngIf="isSubmittingProject" class="flex items-center gap-2">
+                      <mat-progress-spinner [diameter]="20" mode="indeterminate"></mat-progress-spinner>
+                      Sauvegarde...
+                  </span>
+              </button>
+          </div>
+      </div>
+  </div>
+
+<!-- Modal: Planifier Réunion d'Évaluation -->
+<form [formGroup]="evaluationForm">
+  <div *ngIf="isEvaluationModalVisible"
+       class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex justify-center items-center z-50 p-4 transition-opacity duration-300"
+       (click)="closeEvaluationModal()">
+
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden"
+         (click)="$event.stopPropagation()">
+
+      <!-- Header -->
+      <div class="flex justify-between items-center p-5 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <div class="flex items-center gap-3">
+          <mat-icon class="text-blue-600">event_available</mat-icon>
+          <h2 class="text-lg font-semibold text-gray-800">Planifier une Réunion d'Évaluation</h2>
+        </div>
+        <button mat-icon-button (click)="closeEvaluationModal()" aria-label="Fermer" class="text-gray-500 hover:text-gray-800">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- Content -->
+      <div class="flex-grow overflow-y-auto p-6 space-y-5 custom-scrollbar">
+        <p class="text-sm text-gray-600 mb-4">
+          Planifiez une réunion pour le projet : <strong class="text-gray-800">{{ projectForEvaluation?.nom }}</strong>
+        </p>
+
+        <!-- Date de réunion -->
+        <mat-form-field  class="w-[300px]">
+          <mat-label>Date de réunion</mat-label>
+          <input matInput [matDatepicker]="pickerDebut" formControlName="dateEvaluation">
+          <mat-datepicker-toggle matSuffix [for]="pickerDebut"></mat-datepicker-toggle>
+          <mat-datepicker #pickerDebut></mat-datepicker>
+          <mat-error *ngIf="evaluationForm.get('dateEvaluation')?.hasError('required') && evaluationForm.get('dateEvaluation')?.touched">
+            La date de réunion est obligatoire.
+          </mat-error>
+        </mat-form-field>
+  
+
+        <!-- Lieu -->
+        <div class="w-[300px]">
+          <label for="meetingLocation" class="block text-sm font-medium text-gray-700">Lieu</label>
+          <div class="relative">
+            <input id="meetingLocation"
+                   type="text"
+                   placeholder="Ex: Salle A1 / Lien Teams"
+                   formControlName="lieu"
+                   class="mt-1 p-2 w-full border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300 sm:text-sm"
+                   [ngClass]="{'border-red-500': evaluationForm.get('lieu')?.invalid && evaluationForm.get('lieu')?.touched}">
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <mat-icon class="text-gray-400">location_on</mat-icon>
+            </div>
+          </div>
+          <div *ngIf="evaluationForm.get('lieu')?.invalid && evaluationForm.get('lieu')?.touched" class="text-red-500 text-xs mt-1">
+            Le lieu est requis.
+          </div>
+        </div>
+        <div class="w-[300px]"> <!-- Use w-full for title -->
+          <label for="meetingTitle" class="block text-sm font-medium text-gray-700 mb-1">Titre de la réunion</label>
+          <input id="meetingTitle"
+                 type="text"
+                 placeholder="Ex: Point hebdomadaire projet X"
+                 formControlName="titre"
+                 required 
+                 class="mt-1 p-2 w-full border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300 sm:text-sm"
+                 [ngClass]="{'border-red-500': evaluationForm.get('titre')?.invalid && evaluationForm.get('titre')?.touched}">
+          <!-- Error Message for Title -->
+          <div *ngIf="evaluationForm.get('titre')?.invalid && evaluationForm.get('titre')?.touched" class="text-red-500 text-xs mt-1">
+             <span *ngIf="evaluationForm.get('titre')?.hasError('required')">
+                Le titre est obligatoire.
+             </span>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="w-full">
+          <label for="meetingNotes" class="block text-sm font-medium text-gray-700 mb-1">Points A discuter</label>
+          <textarea id="meetingNotes"
+                    rows="3"
+                    placeholder="Points à discuter..."
+                    formControlName="pointsADiscuter"
+                    class="mt-1 p-2 w-full border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300 sm:text-sm"
+                    [ngClass]="{'border-red-500': evaluationForm.get('pointsADiscuter')?.invalid && evaluationForm.get('pointsADiscuter')?.touched}"></textarea>
+          <div *ngIf="evaluationForm.get('pointsADiscuter')?.invalid && evaluationForm.get('pointsADiscuter')?.touched" class="text-red-500 text-xs mt-1">
+            Les notes sont obligatoires.
+          </div>
+        </div>
+
+        <!-- Participants -->
+        <div>
+          <h4 class="text-sm font-medium text-gray-700 mb-2">Participants</h4>
+          <div class="bg-gray-50 border border-gray-200 rounded-md p-3 max-h-40 overflow-y-auto custom-scrollbar">
+            <ul *ngIf="projectForEvaluation?.employesAssignes?.length > 0" class="space-y-1">
+              <li *ngFor="let emp of projectForEvaluation?.employesAssignes" class="text-sm text-gray-800 flex items-center gap-2">
+                <mat-icon class="text-xs text-gray-500">person</mat-icon>
+                <span>{{ emp.nomPrenom }}</span>
+              </li>
+            </ul>
+            <p *ngIf="!projectForEvaluation?.employesAssignes?.length" class="text-sm text-gray-500 italic">
+              Aucun employé assigné à ce projet.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="flex justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50">
+        <button mat-stroked-button (click)="closeEvaluationModal()">Annuler</button>
+        <button mat-flat-button color="primary"
+                (click)="submitEvaluationMeeting()"
+                [disabled]="isSubmittingEvaluation || evaluationForm.invalid">
+          <span *ngIf="!isSubmittingEvaluation" class="flex items-center gap-1">
+            <mat-icon>send</mat-icon> Planifier
+          </span>
+          <span *ngIf="isSubmittingEvaluation" class="flex items-center gap-2">
+            <mat-progress-spinner [diameter]="20" mode="indeterminate"></mat-progress-spinner>
+            Planification...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+
+
+  
+
+</main>

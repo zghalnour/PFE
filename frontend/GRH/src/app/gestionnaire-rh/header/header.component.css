@@ -78,7 +78,7 @@ html,body {
   background:rgb(250, 250, 250);
   padding-top: 30px;
   transition: left 0.3s ease;
-  box-shadow: 2px 2px 2px 2px rgba(2, 76, 115, 0.1);
+  box-shadow: 5px 5px 5px 5px rgba(2, 76, 115, 0.1);
 }
 
 .sidebar ul {
@@ -119,8 +119,8 @@ html,body {
 
 /* Élément actif */
 .sidebar ul li a.active {
-  border-left: 4px solid #1abc9c;
-  border-right: 4px solid #1abc9c;
+  border-left: 4px solid rgba(3, 98, 149, 0.534);
+  border-right: 4px solid rgba(3, 98, 149, 0.534);
   font-weight: bold;
   background: transparent;
 }

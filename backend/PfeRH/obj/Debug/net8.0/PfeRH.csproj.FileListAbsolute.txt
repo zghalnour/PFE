@@ -451,3 +451,6 @@ C:\Users\nourh\OneDrive\Documents\Terminal\PFE\PfeGit\PFE\backend\PfeRH\obj\Debu
 C:\Users\nourh\OneDrive\Documents\Terminal\PFE\PfeGit\PFE\backend\PfeRH\obj\Debug\net8.0\PfeRH.genruntimeconfig.cache
 C:\Users\nourh\OneDrive\Documents\Terminal\PFE\PfeGit\PFE\backend\PfeRH\obj\Debug\net8.0\ref\PfeRH.dll
 C:\Users\nourh\OneDrive\Documents\Terminal\PFE\PfeGit\PFE\backend\PfeRH\bin\Debug\net8.0\PfeRH.staticwebassets.runtime.json
+C:\Users\nourh\OneDrive\Documents\Terminal\PFE\PfeGit\PFE\backend\PfeRH\bin\Debug\net8.0\Mailjet.Client.dll
+C:\Users\nourh\OneDrive\Documents\Terminal\PFE\backend\PfeRH\bin\Debug\net8.0\PfeRH.staticwebassets.runtime.json
+C:\Users\nourh\OneDrive\Documents\Terminal\PFE\backend\PfeRH\bin\Debug\net8.0\Mailjet.Client.dll

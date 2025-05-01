@@ -1,0 +1,73 @@
+.content {
+  min-height: 100vh;
+  width: calc(100% - 260px);
+  margin-left: 240px;
+  margin-top: 25px;
+  margin-right: 20px;
+  padding: 20px;
+  background-color: #eae8e889;
+  display: flex;
+  flex-direction: column;
+}
+/* Styles pour une scrollbar plus discrète dans la liste des membres */
+  /* Custom scrollbar styles (optional) */
+  .custom-scrollbar::-webkit-scrollbar {
+    display: none; 
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    display: none; 
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    display: none; 
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    display: none; 
+  }
+  /* styles.css or styles.scss */
+
+/* Success Snackbar */
+.success-snackbar {
+  background-color: #4CAF50; /* Green */
+  color: white;
+}
+
+.success-snackbar .mat-mdc-button.mat-mdc-snack-bar-action {
+  color: white;}
+
+
+.error-snackbar {
+  background-color: #f44336; 
+  color: white;
+}
+.error-snackbar .mat-mdc-button.mat-mdc-snack-bar-action {
+  color: white;
+}
+
+.warn-snackbar {
+  background-color: #ff9800; /* Orange */
+  color: black;
+}
+
+.warn-snackbar .mat-mdc-button.mat-mdc-snack-bar-action {
+  color: black;
+}
+.floating-dialog  {
+  padding: 0;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+

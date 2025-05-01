@@ -16,11 +16,12 @@ namespace PfeRH.Models
         public ICollection<Employe> Employes { get; set; }
 
         // Relation avec les projets du département
-        public ICollection<Projet> Projets { get; set; }
+      
         public Departement()
         {
             Employes = new List<Employe>();
-            Projets = new List<Projet>();
+           
+         
         }
 
         // Constructeur avec paramètres
@@ -28,9 +29,9 @@ namespace PfeRH.Models
         {
             Id = id;
             Nom = nom;
-           
+          
             Employes = new List<Employe>(); // Initialisation des collections
-            Projets = new List<Projet>();
+           
         }
     }
 }

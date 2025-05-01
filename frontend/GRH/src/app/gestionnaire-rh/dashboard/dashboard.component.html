@@ -1,48 +1,78 @@
 <app-header></app-header>
 <main class="content">
-  <div class="filter-container">
-    
-    <label for="offreFilter">Filtrer par offre :</label>
-    <select id="offreFilter" [(ngModel)]="selectedOffre" (change)="filterCandidatures()">
-      <option value="">Toutes les offres</option>
-      <option *ngFor="let offre of offres" [value]="offre">{{ offre }}</option>
-    </select>
+  <div class="flex flex-wrap gap-4 items-center">
+    <!-- Filtre par Équipe -->
+    <div class="w-1/4">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>Offre</mat-label>
+        <mat-select [(ngModel)]="selectedOffre" (change)="filterCandidatures()">
+          <mat-option value="">Tous les offres</mat-option>
+          <mat-option *ngFor="let offre of offres" [value]="offre">{{ offre }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  
   </div>
-
+  
+  
   <div class="card-container">
     <table class="candidates-table">
       <thead>
         <tr>
-          <th>Nom & Prénom</th>
-          <th>Email</th>
-          <th>Téléphone</th>
-          <th>Statut</th>
+          <th style="text-align: center;">Nom & Prénom</th>
+          <th style="text-align: center;">Email</th>
+          <th style="text-align: center;">Téléphone</th>
+          <th style="text-align: center;">Offre</th>
+          <th style="text-align: center;">Statut</th>
         
-          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let candidature of filteredCandidatures" (click)="openModal(candidature)">
-          <td>{{ candidature.nomPrenom }}</td>
-          <td>{{ candidature.email }}</td>
-          <td>{{ candidature.telephone }}</td>
-          <td [style.color]="getStatusColor(candidature.statut)">{{ candidature.statut }}</td>
-          <td> <button class="btn btn-warning" (click)="notifyAdmin(candidature)">
-            Notifier
-          </button></td>
+          <td style="text-align: center;">{{ candidature.nomPrenom }}</td>
+          <td style="text-align: center;">{{ candidature.email }}</td>
+          <td style="text-align: center;">{{ candidature.telephone }}</td>
+          <td style="text-align: center;">{{ candidature.nomOffre }}</td>
+          <td style="text-align: center;" [ngStyle]="{ 'color': getStatusColor(candidature.statut), 'font-weight': 'bold' }">
+            {{ candidature.statut }}
+          </td>
+          
+        
         </tr>
       </tbody>
     </table>
+    <div *ngIf="!filteredCandidatures || filteredCandidatures.length === 0" class="no-candidatures-message">
+      <mat-icon class="icon">inbox</mat-icon> <!-- Optional: Add an icon -->
+      <p>Aucune candidature à traiter.</p>
+    </div>
   </div>
   <div class="modal" *ngIf="selectedCandidature">
     <div class="modal-content">
       <span class="close" (click)="closeModal()">&times;</span>
       <h2>Entretiens pour {{ selectedCandidature.nomPrenom }}</h2>
-  
-      <!-- Formulaire de création d'entretien -->
-      <div class="form-container">
-        <h3>Créer un entretien</h3>
+    
+      <div class="form-container" *ngIf="!selectedCandidature?.nbFixe">
+        <div class="form-group" >
+          <label for="nombre">Nombre d'entretiens à planifier</label>
+          <input id="nombre" type="number" [(ngModel)]="nombreEntretiens" min="1" placeholder="Ex: 3">
+        </div>
+        <button class="btn-create" (click)="genererFormulaires()" >Valider</button>
       
+      </div>
+      
+    
+      
+
+      <!-- Formulaire de création d'entretien -->
+          <!-- Formulaire de création d'entretien OU Message de fin d'entretiens -->
+      <!-- Vérifier si le nombre total est fixé ET si le nombre planifié est inférieur au total -->
+      <div class="form-container"  *ngIf="selectedCandidature?.nbFixe && nombreEntretiensPlanifies < (selectedCandidature?.nbEntretiens ?? 0)">
+        <div class="form-group">
+          <label>Progression des entretiens : {{ nombreEntretiensPlanifies }} / {{ selectedCandidature.nbEntretiens }}</label>
+        </div>
+        <br>
+        <h3>Créer Entretien</h3>
+
         <!-- Ligne 1: Type + Date -->
         <div class="form-row">
           <div class="form-group">
@@ -54,7 +84,7 @@
             <input id="date" type="date" [(ngModel)]="nouvelEntretien.dateEntretien">
           </div>
         </div>
-      
+
         <!-- Ligne 2: Responsable + Mode -->
         <div class="form-row">
           <div class="form-group">
@@ -66,7 +96,7 @@
               </option>
             </select>
           </div>
-      
+
           <div class="form-group">
             <label>Mode Entretien</label>
             <div class="radio-group">
@@ -81,9 +111,20 @@
             </div>
           </div>
         </div>
-      
+
         <button class="btn-create" (click)="creerEntretien()">Créer</button>
       </div>
+
+      <!-- Message affiché quand tous les entretiens sont terminés -->
+      <!-- Vérifier si le nombre total est fixé ET si le nombre planifié est >= au total -->
+      <div class="all-interviews-complete-message" *ngIf="selectedCandidature?.nbFixe && nombreEntretiensPlanifies >= (selectedCandidature?.nbEntretiens ?? 0)">
+        <mat-icon class="icon">check_circle_outline</mat-icon>
+        <div class="message-content">
+          <h4>Tous les entretiens sont terminés !</h4>
+          <p>La candidature a complété ses entretiens prévus. Une notification a été envoyée à l'administrateur pour la décision finale.</p>
+        </div>
+      </div>
+
       
       
       
@@ -108,7 +149,11 @@
       
               <div
                 class="timeline-line"
-                >
+                [ngClass]="{
+                  'en-cours': entretien.statut === 'En cours',
+                  'failed': entretien.statut === 'Echoué',
+                  'passe': entretien.statut === 'Passé'
+                }">
               </div>
       
               <div class="timeline-content">
@@ -127,7 +172,7 @@
                     <strong>Mode: </strong> {{ entretien.modeEntretien }}
                   </span>
                   <span>
-                    <strong>Responsable: </strong> {{ getResponsableNom(entretien.responsableId) }}
+                    <strong>Responsable: </strong> {{ entretien.responsableNom }}
                   </span>
                   <span class="decision-text" (click)="toggleDecision(entretien)">➤ Décision</span>
               
@@ -171,7 +216,11 @@
       
         </div>
       </div>
+      <div class="modal-footer">
+        <!-- Bouton Annuler à gauche -->
+        <button type="button" class="btn-cancel" (click)="closeModal()">Fermer</button>
       
+     </div>
     
     </div>
   </div>

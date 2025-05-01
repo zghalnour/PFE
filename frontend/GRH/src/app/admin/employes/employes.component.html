@@ -217,3 +217,120 @@
     </div>
   </div>
 </div>
+<!-- Modal de création de l'employé -->
+<div *ngIf="isOpenForm" class="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6 border-b pb-2">
+      <h2 class="text-2xl font-semibold">Ajouter un employé</h2>
+      <button
+        (click)="cancelForm()"
+        type="button"
+        class="text-black hover:scale-110 transition-transform duration-200 rounded-lg text-sm p-1.5"
+        aria-label="Fermer"
+      >
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"></path>
+        </svg>
+      </button>
+    </div>
+    <div *ngIf="formError" class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+      <i class="fas fa-exclamation-triangle mr-2"></i> {{ formError }}
+    </div>
+    <!-- Formulaires en 2 colonnes -->
+    <div class="flex flex-wrap gap-4">
+      <div class="w-full md:w-[48%]">
+        <label class="block text-lg font-medium">Nom & Prénom</label>
+        <input type="text" [(ngModel)]="employe.nomPrenom" class="mt-1 p-2 w-full border rounded" placeholder="Entrez le nom complet" />
+      </div>
+
+      <div class="w-full md:w-[48%]">
+        <label class="block text-lg font-medium">Téléphone</label>
+        <input type="text" [(ngModel)]="employe.phoneNumber" class="mt-1 p-2 w-full border rounded" placeholder="Entrez le numéro de téléphone" />
+      </div>
+
+      <div class="w-full md:w-[48%]">
+        <label class="block text-lg font-medium">Email</label>
+        <input type="email" [(ngModel)]="employe.email" class="mt-1 p-2 w-full border rounded" placeholder="Entrez l'adresse email" />
+      </div>
+
+      <div class="w-full md:w-[48%]">
+        <label class="block text-lg font-medium mb-1">Mot de passe</label>
+        <div class="relative"> 
+          <input
+            [type]="passwordVisible ? 'text' : 'password'" 
+            [(ngModel)]="employe.password"
+            class="p-2 w-full border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10" 
+            placeholder="Entrez le mot de passe" />
+          <button
+            type="button"
+            (click)="togglePasswordVisibility()"
+            class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700"
+            aria-label="Toggle password visibility">
+            <i class="fas" [ngClass]="passwordVisible ? 'fa-eye' : 'fa-eye-slash'"></i> 
+          </button>
+        </div>
+      </div>
+
+      <div class="w-full md:w-[48%]">
+        <label class="block text-lg font-medium">Poste</label>
+        <input type="text" [(ngModel)]="employe.poste" class="mt-1 p-2 w-full border rounded" placeholder="Entrez le poste" />
+      </div>
+
+      <div class="w-full md:w-[48%]">
+        <label class="block text-lg font-medium">Salaire</label>
+        <input type="number" [(ngModel)]="employe.salaire" class="mt-1 p-2 w-full border rounded" placeholder="Entrez le salaire" />
+      </div>
+
+        <!-- Département -->
+            <!-- Département -->
+            <div class="w-full md:w-[48%]">
+              <label class="block text-lg font-medium mb-1">Département</label>
+              <select
+                [(ngModel)]="employe.departementNom"
+                (ngModelChange)="onDepartementChange($event)" 
+                class="p-2 w-full border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white mb-2" 
+                required>
+      
+                <!-- Default placeholder option -->
+                <option [ngValue]="null" disabled selected>Sélectionnez un département</option>
+      
+                <!-- Options populated from the API -->
+                <!-- Assure-toi que 'departements' est bien le nom de la variable dans ton .ts -->
+                <option *ngFor="let nom of departements" [value]="nom">{{ nom }}</option>
+      
+                <!-- Option "Autre" -->
+                <option value="--AUTRE--">Autre...</option>
+      
+              </select>
+      
+              <!-- Champ de texte pour saisir un nouveau nom, affiché conditionnellement -->
+              <input
+                *ngIf="employe.departementNom === '--AUTRE--'"
+                type="text"
+                [(ngModel)]="employe.nouveauDepartementNom" 
+                class="mt-1 p-2 w-full border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Entrez le nom du nouveau département"
+                required /> <!-- Ajoute 'required' si la saisie est obligatoire quand "Autre" est choisi -->
+            </div>
+      
+  
+    </div>
+
+    <!-- Boutons -->
+    <div class="flex justify-end gap-x-4 mt-6">
+      <button (click)="submitEmploye()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Ajouter
+      </button>
+      <button (click)="cancelForm()" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">
+        Annuler
+      </button>
+    </div>
+  </div>
+</div>
+
+<button class="fab fab-new-employe" (click)="toggleForm()">
+  <i class="fas fa-plus"></i>
+</button>

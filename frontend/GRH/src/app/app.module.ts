@@ -11,16 +11,11 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 
 
 
-
-
 @NgModule({
   declarations: [
     AppComponent,
     AuthComponent,
-    
-  
-    
-  
+      
   ],
   imports: [
     BrowserModule,
@@ -28,7 +23,9 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     FormsModule,
     HttpClientModule,
     AdminModule,
-    CondidatModule
+    CondidatModule,
+  
+    
   ],
   providers: [
     provideAnimationsAsync()

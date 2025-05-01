@@ -16,7 +16,8 @@ namespace PfeRH.Models
         public DbSet<Question> Questions { get; set; }
         public DbSet<Departement> Departements { get; set; }
         public DbSet<Evaluation> Evaluations { get; set; }
-       
+        public DbSet<Affectation> Affectations { get; set; }
+        public DbSet<EvaluationProjet> EvaluationProjets { get; set; }
         public DbSet<Projet> Projets { get; set; }
         public DbSet<Entretien> Entretiens { get; set; }
         public DbSet<Candidature> Candidatures { get; set; }
@@ -93,10 +94,6 @@ namespace PfeRH.Models
        .OnDelete(DeleteBehavior.Cascade);
 
 
-            modelBuilder.Entity<Departement>()
-          .HasMany(d => d.Projets)
-          .WithOne() // Assurez-vous d'avoir une relation correcte avec Projet
-          .OnDelete(DeleteBehavior.Cascade);
 
 
         }

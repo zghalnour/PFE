@@ -1,41 +1,124 @@
 <app-header></app-header>
 <main class="content">
-  <div *ngIf="parcours$ | async as parcours; else loading">
-    <h2>Parcours du Candidat : {{ candidatNom }} (ID: {{ candidatureId }})</h2>
 
-    <div class="horizontal-timeline">
-      <div *ngFor="let etape of parcours; let i = index; let isLast = last"
-           class="timeline-step"
-           [ngClass]="getEtapeStatusClass(etape.statut)">
+  <div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold text-center mb-8">Parcours du Candidat : {{ candidatNom || 'Chargement...' }}</h2>
+  
+    <!-- Card Container -->
+    <div class="card w-full max-w-3xl bg-white shadow-xl mx-auto p-6">
+      <ul class="timeline">
+        <li *ngFor="let entretien of entretiens; let i = index; let isFirst = first; let isLast = last">
+  
+          <!-- Timeline Content Box -->
+          <div class="timeline-item">
+            <!-- Line connecting the items -->
+            <div *ngIf="!isFirst" class="timeline-line" [ngClass]="{
+              'bg-green-500': entretien.statut === 'Passé',
+              'bg-red-500': entretien.statut === 'Echoué'
+            }"></div>
 
-        <!-- Ligne de connexion (sauf pour le dernier) -->
-        <div class="timeline-line" *ngIf="!isLast"></div>
+            <!-- Step Number -->
+            <div class="timeline-number" [ngClass]="{
+              'bg-green-500': entretien.statut === 'Passé',
+              'bg-red-500': entretien.statut === 'Echoué'
+            }">
+              {{ i + 1 }}
+            </div>
+  
+            <!-- Timeline Content -->
+            <div>
+              <!-- Vérification du type d'entretien -->
+              <div *ngIf="entretien.typeEntretien !== 'Préselection'">
+                <time class="text-xs italic opacity-70">{{ formatDate(entretien.dateEntretien) }}</time>
+                <div class="text-lg font-semibold">
+                  Entretien {{ entretien.typeEntretien }}
+                  <span class="text-sm font-normal opacity-80">({{ entretien.modeEntretien }})</span>
+                </div>
+              </div>
+              <div *ngIf="entretien.typeEntretien === 'Préselection'" class="text-lg font-semibold">
+                 {{ entretien.typeEntretien }}
+              </div>
+            
+              <div class="text-sm mt-1">
+                <span class="font-medium">Responsable:</span> {{ entretien.responsableNom || 'N/A' }}
+              </div>
+            
+              <div *ngIf="entretien.commentaire" class="text-xs mt-2 italic border-t border-base-content border-opacity-20 pt-1">
+                {{ entretien.commentaire }}
+              </div>
+            </div>
+            
+  
+            <!-- Line connecting the items -->
+            <div *ngIf="!isLast" class="timeline-line" [ngClass]="{
+              'bg-green-500': entretien.statut === 'Passé',
+              'bg-red-500': entretien.statut === 'Echoué'
+            }"></div>
+          </div>
+  
+        </li>
+      </ul>
 
-        <!-- Point/Icône de l'étape -->
-        <div class="timeline-point">
-          <!-- Optionnel: Icône différente selon l'étape/statut -->
-          <i class="fas fa-check-circle" *ngIf="getEtapeStatusClass(etape.statut) === 'completed'"></i>
-          <i class="fas fa-times-circle" *ngIf="getEtapeStatusClass(etape.statut) === 'failed'"></i>
-          <i class="fas fa-hourglass-half" *ngIf="getEtapeStatusClass(etape.statut) === 'in-progress'"></i>
-          <i class="far fa-circle" *ngIf="getEtapeStatusClass(etape.statut) === 'pending'"></i>
-        </div>
+      <!-- Footer with Buttons -->
+    <!-- Bouton unique pour lancer la décision -->
+<!-- Bouton unique pour lancer la décision -->
+<div class="flex justify-end mt-6">
+  <button class="btn btn-primary" (click)="handleDecisionClick()" [disabled]="decisionResult !== null">Décision finale</button>
+</div>
 
-        <!-- Contenu de l'étape -->
-        <div class="timeline-content">
-          <h4>{{ etape.etapeNom }}</h4>
-          <p><strong>Responsable:</strong> {{ etape.responsableNom }}</p>
-          <p *ngIf="etape.date"><strong>Date:</strong> {{ formatDate(etape.date) }}</p>
-          <p *ngIf="etape.statut"><strong>Statut:</strong> {{ etape.statut }}</p>
-          <p *ngIf="etape.commentaire" class="commentaire"><em>Notes: {{ etape.commentaire }}</em></p>
-        </div>
 
-      </div>
-    </div>
 
+<!-- Dialog de décision (style simple ou avec une lib de modal si tu veux) -->
+<div *ngIf="showDecisionDialog" class="mt-4 border p-4 rounded bg-white shadow">
+  <p class="mb-4 font-semibold">Souhaitez-vous accepter ou refuser ce candidat ?</p>
+  <div class="flex justify-start space-x-4">
+    <button class="btn btn-success" (click)="finalDecision('accepter')">Accepter</button>
+    <button class="btn btn-danger" (click)="finalDecision('refuser')">Refuser</button>
+  </div>
+</div>
+
+<!-- Résultat de la décision -->
+<div *ngIf="decisionResult === 'accepter'" class="mt-4 p-6 bg-green-100 border border-green-300 rounded shadow-md">
+  <h3 class="text-lg font-semibold text-green-800 mb-3">Le candidat a été accepté !</h3>
+
+  <!-- Informations du candidat -->
+  <div class="mb-4 space-y-2 text-gray-700">
+    <p class="flex items-center">
+      <i class="fas fa-user mr-2 text-green-600"></i> <!-- Icône utilisateur -->
+      <strong>Nom:</strong>&nbsp; {{ candidatNom || 'Non disponible' }}
+    </p>
+    <p class="flex items-center">
+      <i class="fas fa-briefcase mr-2 text-green-600"></i> <!-- Icône utilisateur -->
+      <strong>Poste:</strong>&nbsp; {{ candidatPoste || 'Non disponible' }}
+    </p>
+    <p class="flex items-center">
+      <i class="fas fa-envelope mr-2 text-green-600"></i> <!-- Icône email -->
+      <strong>Email:</strong>&nbsp; {{ candidatEmail || 'Non disponible' }}
+    </p>
+    <p class="flex items-center">
+      <i class="fas fa-phone mr-2 text-green-600"></i> <!-- Icône téléphone -->
+      <strong>Téléphone:</strong>&nbsp; {{ candidatTlph || 'Non disponible' }}
+    </p>
   </div>
 
-  <ng-template #loading>
-    <p>Chargement du parcours...</p>
-    <!-- Ou un spinner -->
-  </ng-template>
+  <!-- Lien pour créer le compte -->
+  <p class="mt-4 border-t border-green-200 pt-3">
+    <a [routerLink]="['/admin/employes']"
+       [queryParams]="{ nom: candidatNom, email: candidatEmail, telephone: candidatTlph, poste: candidatPoste }"
+       class="text-blue-600 hover:text-blue-800 underline font-medium">
+      Cliquez ici pour créer le compte employé avec ces informations.
+    </a>
+  </p>
+</div>
+
+
+<div *ngIf="decisionResult === 'refuser'" class="mt-4 p-4 bg-red-100 border border-red-300 rounded">
+  Un email a été envoyé au candidat pour l’informer de la décision.
+</div>
+
+
+    </div> <!-- End card -->
+  
+  </div>
+  
 </main>

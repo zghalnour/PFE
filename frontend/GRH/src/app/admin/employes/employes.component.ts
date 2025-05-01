@@ -1,5 +1,8 @@
 import { Component,ViewChild, ElementRef } from '@angular/core';
 import { OnInit } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http'; // Importe depuis @angular/common/http
+import { ActivatedRoute, Router } from '@angular/router'; // Import ActivatedRoute et Router
+import { Subscription } from 'rxjs';
 interface Employe {
   id: number;
   nomPrenom: string;
@@ -32,7 +35,15 @@ interface Reclamation {
   description: string;
   dateReclamation: string; // Keep it as string for now
 }
-
+interface CreerEmployePayload {
+  nomPrenom: string;
+  email: string;
+  password: string;
+  phoneNumber: string;
+  poste: string;
+  salaire: number;
+  departementNom: string; // L'API attend le nom final ici
+}
 @Component({
   selector: 'app-employes',
   templateUrl: './employes.component.html',
@@ -56,12 +67,78 @@ export class EmployesComponent implements OnInit {
   searchTerm: string = '';
   selectedDepartement: string = '';
   selectedPoste: string = '';
-  constructor() { }
+  isOpenForm = false;
+  employe = { 
+    nomPrenom: '',
+    email: '',
+    password: '',
+    phoneNumber: '',
+    poste: '',
+    salaire: 0,
+    departementNom: null as string | null, 
+    nouveauDepartementNom: '' 
+  };
+  departementError: string | null = null;
+  formError: string | null = null; 
+  passwordVisible: boolean = false;
+  private queryParamsSubscription: Subscription | null = null; 
+
+  constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit(): void {
     this.fetchEmployes();
     this.fetchDepartements();
+    this.checkQueryParamsForNewEmploye();
   }
+  ngOnDestroy(): void {
+    this.queryParamsSubscription?.unsubscribe();
+  }
+
+  checkQueryParamsForNewEmploye(): void {
+    // S'abonne aux queryParams. Se désabonnera automatiquement si ngOnDestroy est implémenté
+    this.queryParamsSubscription = this.route.queryParams.subscribe(params => {
+      const nom = params['nom'];
+      const email = params['email'];
+      // Utilise la clé 'telephone' comme défini dans le queryParams du lien
+      const telephone = params['telephone'];
+      const poste= params['poste'];
+      
+
+      // Vérifie si les paramètres nécessaires sont présents
+      if (nom && email && telephone && poste) {
+        console.log('Query params reçus pour pré-remplissage:', { nom, email, telephone, poste });
+
+        // Pré-remplit le modèle du formulaire
+        this.employe.nomPrenom = nom;
+        this.employe.poste = poste;
+        this.employe.email = email;
+        this.employe.phoneNumber = telephone; // Utilise la bonne propriété du modèle
+
+        // Ouvre automatiquement le formulaire d'ajout
+        this.isOpenForm = true;
+
+        // Optionnel mais recommandé : Nettoie les queryParams de l'URL
+        // pour éviter que le formulaire ne se pré-remplisse à nouveau
+        // si l'utilisateur navigue ailleurs puis revient.
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: {}, // Supprime tous les queryParams actuels
+          replaceUrl: true // Remplace l'URL dans l'historique sans ajouter une nouvelle entrée
+        });
+      }
+    });
+  }
+  onDepartementChange(selectedValue: string | null): void { 
+    this.departementError = null;
+
+    if (selectedValue !== '--AUTRE--') {
+      
+      this.employe.nouveauDepartementNom = '';
+    }
+  
+  }
+
+  
   fetchDepartements() {
     fetch('http://localhost:5053/api/Departement/getAllDepartements', {
       method: 'GET',
@@ -344,6 +421,101 @@ export class EmployesComponent implements OnInit {
   deleteObjective(index: number) {
     this.currentEmploye.objectifs.splice(index, 1);
   }
+  toggleForm() {
+    this.isOpenForm = !this.isOpenForm;
+    if (!this.isOpenForm) {
+      this.resetForm(); // Reset form when closing
+    }
+  }
+  resetForm(): void {
+    this.employe = {
+      nomPrenom: '',
+      phoneNumber: '',
+      email: '',
+      password: '',
+      poste: '',
+      salaire: 0,
+      departementNom: null, // Reset to null
+      nouveauDepartementNom: '' // Reset the new property
+    };
+    this.passwordVisible = false; // Reset password visibility on form reset
+  }
+  togglePasswordVisibility(): void {
+    this.passwordVisible = !this.passwordVisible;
+  }
+  submitEmploye() {
+    this.departementError = null;
+    
+    let finalDepartementNom = this.employe.departementNom;
+    if (this.employe.departementNom === '--AUTRE--') {
+      // Si "Autre" est sélectionné, prendre la valeur de l'input
+      finalDepartementNom = this.employe.nouveauDepartementNom?.trim() || null; // Utilise trim() et gère le cas où c'est vide
+    } else {
+      // Sinon, prendre la valeur du select (si elle n'est pas null)
+      finalDepartementNom = this.employe.departementNom;
+    }
+
+    if (!finalDepartementNom) { // Vérifie si c'est null ou une chaîne vide après trim
+      console.error('Nom de département invalide.');
+      this.departementError = "Veuillez sélectionner ou saisir un nom de département valide.";
+      return; // Arrête l'exécution si invalide
+    }
+
+    // Prepare the data payload according to the API specification
+    const dataToSend : CreerEmployePayload = { 
+      nomPrenom: this.employe.nomPrenom,
+      email: this.employe.email,
+      password: this.employe.password,
+      phoneNumber: this.employe.phoneNumber,
+      poste: this.employe.poste,
+      salaire: this.employe.salaire,
+      departementNom: finalDepartementNom // Use the determined department name
+    };
+
+    console.log('Envoi des données de l\'employé :', dataToSend);
+
   
-}
+
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    this.http.post<any>('http://localhost:5053/api/Employe/add', dataToSend, { headers })
+      .subscribe({
+        next: (response) => {
+          console.log('Employé ajouté avec succès:', response);
+          // Rafraîchir la liste, afficher succès, fermer formulaire...
+          this.fetchEmployes(); // Exemple de rafraîchissement
+          this.cancelForm();
+        },
+        error: (errorResponse) => { // Renommé en errorResponse pour clarté
+          console.error('Erreur lors de l\'ajout de l\'employé:', errorResponse);
+
+          // Vérifie si c'est une erreur 400 et si le corps de l'erreur existe
+          if (errorResponse.status === 400 && errorResponse.error && Array.isArray(errorResponse.error)) {
+            // Recherche une erreur spécifique d'email dupliqué (les codes peuvent varier)
+            const duplicateEmailError = errorResponse.error.find(
+              (err: any) => err.code === 'DuplicateUserName' || err.code === 'DuplicateEmail' || (err.description && err.description.toLowerCase().includes('email') && err.description.toLowerCase().includes('already taken'))
+            );
+
+            if (duplicateEmailError) {
+              this.formError = `Un compte employé avec l'adresse email "${this.employe.email}" existe déjà.`;
+            } else {
+              // Affiche la première erreur de validation trouvée, ou un message générique
+              this.formError = errorResponse.error[0]?.description || "Erreur de validation. Veuillez vérifier les informations saisies.";
+            }
+          } else {
+            // Erreur réseau ou autre erreur serveur
+            this.formError = "Une erreur inattendue est survenue lors de l'ajout de l'employé.";
+          }
+        }
+      });
+  }
+
+  cancelForm() {
+    this.isOpenForm = false; 
+    this.resetForm();
+  }
+
+
+  }
+  
+
 

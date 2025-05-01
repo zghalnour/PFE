@@ -22,6 +22,8 @@ namespace PfeRH.Models
         public double ScoreAI { get; set; }
         public double? TestScore { get; set; }
         public string? CompetencesExtraites { get; set; }
+        public int? nbEntretiens { get; set; }
+       
 
         public virtual ICollection<ReponseCandidat>? ReponseCandidats { get; set; }
         public virtual ICollection<Entretien> Entretiens { get; set; }
@@ -35,6 +37,7 @@ namespace PfeRH.Models
             Statut = "En cours"; // Statut initial par défaut
             ScoreAI = 0.0;
             TestScore = 0.0;
+            nbEntretiens = 0;
             
         }
 
@@ -49,7 +52,8 @@ namespace PfeRH.Models
             Entretiens = new List<Entretien>();
             ReponseCandidats = new List<ReponseCandidat>();
             DateCandidature = DateTime.Now;
-          
+            nbEntretiens = 0;
+
         }
         public void CalculerTestScore(List<ReponseCandidat> reponsesCandidat)
         {

@@ -19,13 +19,15 @@ namespace PfeRH.Controllers
             _context = context;
         }
 
-       
+
         [HttpGet("getAllDepartements")]
         public async Task<IActionResult> GetAllDepartements()
         {
             var departements = await _context.Departements
-                .Include(d => d.Employes)    // Inclure les employés associés
-                .Include(d => d.Projets)     // Inclure les projets associés
+                .Include(d => d.Employes)
+                .ThenInclude(e => e.Affectations)
+                .ThenInclude(a => a.Projet)
+                .ThenInclude(p => p.Evaluations)
                 .Select(d => new
                 {
                     Id = d.Id,
@@ -38,72 +40,107 @@ namespace PfeRH.Controllers
                         e.Id,
                         e.NomPrenom,
                     }).ToList(),
-                    Projets = d.Projets.Select(p => new
-                    {
-                        p.Id,
-                        p.Nom,
-                        p.Description  // Ajoutez d'autres propriétés des projets que vous souhaitez renvoyer
-                    }).ToList()
+                    projets = d.Employes
+                        .SelectMany(e => e.Affectations)
+                        .Where(a => a.Projet != null)
+                        .GroupBy(a => a.Projet.Id) // Grouper les projets par leur Id
+                        .Select(g => new
+                        {
+                            id = g.Key,
+                            nom = g.FirstOrDefault().Projet.Nom,
+                            description = g.FirstOrDefault().Projet.Description,
+                            dateDebut = g.FirstOrDefault().Projet.DateDebut,
+                            dateFin = g.FirstOrDefault().Projet.DateFin,
+                            employesAssignes = g.Select(aff => new
+                            {
+                                aff.EmployeId,
+                                aff.Employe.NomPrenom
+                            }).ToList(),
+                            reunions = g.FirstOrDefault().Projet.Evaluations.Select(r => new
+                            {
+                                r.Id,
+                                r.DateEvaluation,
+                                r.Lieu,
+                                r.PointsADiscuter
+                            }).ToList()
+
+                        })
+                        .ToList()
                 })
                 .ToListAsync();
 
             return Ok(departements);
         }
+
+
         [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateDepartement(int id, [FromBody] UpdateDepartementRequest request)
-        {
-            if (string.IsNullOrEmpty(request.Nom))
-            {
-                return BadRequest("Le nom du département est requis.");
-            }
+public async Task<IActionResult> UpdateDepartement(int id, [FromBody] UpdateDepartementRequest request)
+{
+    if (string.IsNullOrWhiteSpace(request.Nom))
+    {
+        return BadRequest("Le nom du département est requis.");
+    }
 
-            // Chercher le département existant
-            var departement = await _context.Departements
-                .FirstOrDefaultAsync(d => d.Id == id);
+    var departement = await _context.Departements
+        .FirstOrDefaultAsync(d => d.Id == id);
 
-            if (departement == null)
-            {
-                return NotFound(new { message = "Département non trouvé." });
-            }
+    if (departement == null)
+    {
+        return NotFound(new { message = "Département non trouvé." });
+    }
 
-            // Mettre à jour uniquement le nom du département
-            departement.Nom = request.Nom;
+    bool isModified = false;
 
-            // Enregistrer les modifications
-            _context.Departements.Update(departement);
-            await _context.SaveChangesAsync();
+    // Mettre à jour le nom si différent de "string"
+    if (!string.Equals(request.Nom, "string", StringComparison.OrdinalIgnoreCase) &&
+        !string.Equals(departement.Nom, request.Nom, StringComparison.Ordinal))
+    {
+        departement.Nom = request.Nom;
+        isModified = true;
+    }
 
-            return Ok(new
-            {
-                Message = "Nom du département mis à jour avec succès",
-                DepartementId = departement.Id
-            });
-        }
+   
+
+    if (!isModified)
+    {
+        return Ok(new { message = "Aucune modification détectée." });
+    }
+
+    await _context.SaveChangesAsync();
+
+    return Ok(new
+    {
+        message = "Département mis à jour avec succès.",
+        DepartementId = departement.Id,
+        Nom = departement.Nom,
+       
+    });
+}
 
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteDepartement(int id)
         {
             var departement = await _context.Departements
-                .Include(d => d.Projets) // Inclure les projets associés
+                .Include(d => d.Employes)
                 .FirstOrDefaultAsync(d => d.Id == id);
 
             if (departement == null)
+                return NotFound("Département introuvable.");
+
+            // Détacher les employés
+            foreach (var employe in departement.Employes)
             {
-                return NotFound(new { message = "Département non trouvé." });
+                employe.DepartementId = null;
             }
 
-            // Supprimer explicitement les projets associés
-            _context.Projets.RemoveRange(departement.Projets);
-
-            // Supprimer le département
             _context.Departements.Remove(departement);
 
-            // Sauvegarder les changements
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Département et ses projets supprimés avec succès." });
+            return Ok("Département supprimé avec succès.");
         }
+      
 
 
         public class AddDepartementRequest
@@ -115,7 +152,9 @@ namespace PfeRH.Controllers
         public class UpdateDepartementRequest
         {
             public string Nom { get; set; }
-           
+          
         }
+       
+
     }
 }

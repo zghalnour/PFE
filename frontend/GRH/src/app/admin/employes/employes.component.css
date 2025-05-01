@@ -31,4 +31,20 @@ ul::-webkit-scrollbar {
   -ms-overflow-style: none;  /* Internet Explorer et Edge */
   scrollbar-width: none;  /* Firefox */
 }
+.fab.fab-new-employe {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #006c8a;
+  color: white;
+  border-radius: 50%;
+  padding: 15px;
+  font-size: 24px;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
 
+.fab.fab-new-employe:hover {
+background-color: rgb(1, 175, 201);
+}

@@ -33,12 +33,12 @@
           <!-- Section pour les actions d'acceptation et de rejet, placée à droite -->
           <div class="flex">
             <!-- Icône alternative pour accepter : Check Circle -->
-            <button class="btn btn-success" (click)="acceptCandidate(candidature)">
+            <button class="btn btn-success" (click)="acceptCandidate(candidature)"  [disabled]="candidature.etat !== 'En cours'">
               <i class="fas fa-check-circle"></i> <!-- Icône Check Circle -->
             </button>
             
             <!-- Icône alternative pour rejeter : Times Circle -->
-            <button class="btn btn-danger" (click)="rejectCandidate(candidature)">
+            <button class="btn btn-danger" (click)="rejectCandidate(candidature)"  [disabled]="candidature.etat !== 'En cours'">
               <i class="fas fa-times-circle"></i> <!-- Icône Times Circle -->
             </button>
           </div>

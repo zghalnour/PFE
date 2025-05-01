@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using PfeRH.Hubs;
 using PfeRH.Models;
 
 namespace PfeRH.Controllers
@@ -10,10 +12,12 @@ namespace PfeRH.Controllers
     public class EntretienController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public EntretienController(ApplicationDbContext context)
+        public EntretienController(ApplicationDbContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
         [HttpPost("add")]
         public async Task<ActionResult<Entretien>> AddEntretien([FromBody] EntretienCreateDto dto)
@@ -53,7 +57,10 @@ namespace PfeRH.Controllers
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateEntretien(int id, [FromBody] EntretienUpdateDto dto)
         {
-            var entretien = await _context.Entretiens.FindAsync(id);
+            var entretien = await _context.Entretiens
+     .Include(e => e.Candidature)
+         .ThenInclude(c => c.Offre)
+     .FirstOrDefaultAsync(e => e.Id == id);
             if (entretien == null)
             {
                 return NotFound($"Entretien avec ID {id} non trouvé.");
@@ -71,6 +78,36 @@ namespace PfeRH.Controllers
 
             _context.Entretiens.Update(entretien);
             await _context.SaveChangesAsync();
+            var candidatureId = entretien.CandidatureId;
+            var totalEntretiens = entretien.Candidature.nbEntretiens;
+            var totalTerminés = await _context.Entretiens
+    .Where(e => e.CandidatureId == candidatureId && e.Statut != "En cours")
+    .CountAsync();
+            if (totalEntretiens == totalTerminés)
+            {
+                var candidature = entretien.Candidature;
+
+                if (candidature != null && candidature.Offre != null)
+                {
+                    // Créer et envoyer la notification à l'admin (userId = 1)
+                    var notification = new Notification(
+                        contenu: $"Une nouvelle candidature pour le poste de {candidature.Offre.Titre} a été traitée.",
+                        type: "Parcours Candidature",
+                        utilisateurId: 1, // ID de l'administrateur
+                        candidatureId: candidature.Id
+                    );
+
+                    _context.Notifications.Add(notification);
+                    await _context.SaveChangesAsync();
+
+                    // Envoyer via SignalR
+                    await _hubContext.Clients.All.SendAsync("ReceiveNotification", new
+                    {
+                        message = notification.Contenu
+                    });
+                }
+            }
+
 
             return Ok(entretien); // Retourne l'objet entretien mis à jour
         }

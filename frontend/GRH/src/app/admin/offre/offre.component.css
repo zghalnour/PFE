@@ -11,28 +11,35 @@
   display: flex;
   flex-direction: column; /* Pour bien organiser les éléments */
 }
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  cursor: pointer;
+}
+.close:hover {
+  transform: scale(1.08);
+}
+
 .offres-list {
   display: flex;
   flex-wrap: wrap;
- gap:20px;
+ gap:30px;
 }
 .filters {
   display: flex;
   margin-bottom: 20px;
   
 }
-.offres-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
+
 
 .card {
   background-color: white;
   border-radius: 10px;
   width: 100%;
-  max-width: 450px;
-  max-height: 350px;
+  max-width: 550px;
+  max-height: 400px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -142,7 +149,43 @@ background-color: rgb(1, 175, 201);
   scrollbar-width: none;
 }
 
+.btn-cancel {
+  
+  padding: 10px 14px;
+  background: linear-gradient(to right, #3799b2, #01b9b9);
+ /* dégradé gris */
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 120px;
+}
 
+.btn-cancel:hover {
+  transform: scale(1.05);
+}
+.btn-create {
+   /* centrer horizontalement dans le conteneur flex */
+  padding: 10px 14px;
+
+  background: linear-gradient(to right, #888888, #aaaaaa); /* dégradé plus joli */
+  color: white;
+  border: none;
+  border-radius: 30px; /* arrondi élégant */
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 120px;
+}
+
+.btn-create:hover {
+
+  transform: scale(1.05);
+}
 
 
 

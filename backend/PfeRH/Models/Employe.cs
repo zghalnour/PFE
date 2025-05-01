@@ -15,7 +15,8 @@ namespace PfeRH.Models
         public Departement Departement { get; set; } // Navigation vers le département
 
         // Relation avec les projets
-        public ICollection<Projet> Projets { get; set; } // Navigation vers les projets
+        public ICollection<Affectation> Affectations { get; set; }
+      
 
         // Relation avec les demandes de congé
         public ICollection<DemandeConge> DemandesConge { get; set; }
@@ -28,7 +29,7 @@ namespace PfeRH.Models
         public Employe()
         {
             // Initialisation des collections pour éviter les nulls
-            Projets = new List<Projet>();
+            Affectations = new List<Affectation>();
             DemandesConge = new List<DemandeConge>();
             EvaluationsRecues = new List<Evaluation>();
             ObjectifsSmarts = new List<ObjectifSmart>();
@@ -44,7 +45,7 @@ namespace PfeRH.Models
             Poste = poste;
             DateEmbauche = dateEmbauche;
             DepartementId = departementId;
-            Projets = new List<Projet>(); // Initialisation des collections
+            Affectations = new List<Affectation>();// Initialisation des collections
             DemandesConge = new List<DemandeConge>();
             EvaluationsRecues = new List<Evaluation>();
             ObjectifsSmarts = new List<ObjectifSmart>();

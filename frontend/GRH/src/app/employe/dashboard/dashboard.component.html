@@ -1,2 +1,220 @@
-<p>dashboard employe works!</p>
-<button (click)="logout()">Déconnexion</button>
+<app-header></app-header>
+<main class="content">
+  <header class="dashboard-header">
+    <div class="employee-details">
+      <span class="detail-item employee-name">{{ employeeName }}</span>
+      <div class="detail-group">
+        <span class="detail-label">Département :</span>
+        <span class="detail-value employee-department">{{ employeeDepartment }}</span>
+      </div>
+      <div class="detail-group">
+        <span class="detail-label">Poste :</span>
+        <span class="detail-value employee-position">{{ employeePosition }}</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="performance-trend-section">
+    <div class="trend-header">
+      <h2><i class="fas fa-chart-line"></i> Tendance de Performance Mensuelle</h2>
+      <div class="year-filter">
+        <label for="yearSelect">Année :</label>
+        <select id="yearSelect" [(ngModel)]="selectedYear" (ngModelChange)="onYearChange()">
+          <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
+        </select>
+      </div>
+    </div>
+    <div class="chart-container"> <!-- Conteneur pour le canvas -->
+      <div *ngIf="isLoadingTrendData" class="loading-indicator">Chargement des données...</div>
+      <canvas baseChart *ngIf="!isLoadingTrendData"
+              [data]="performanceLineChartData"
+              [options]="performanceLineChartOptions"
+              [type]="'line'">
+      </canvas>
+    </div>
+  </div>
+  <div class="dashboard-grid">
+
+    <!-- Projects & Tasks Card -->
+  
+<div class="dashboard-card projects-card">
+  <h2><i class="fas fa-briefcase"></i> Projets & Tâches</h2>
+
+  <!-- Use *ngIf to check for projects -->
+  <div *ngIf="assignedProjects && assignedProjects.length > 0; else noProjectsTemplate">
+
+    <!-- Stats Section (Only shown if projects exist) -->
+    <div class="stat-summary">
+      <div class="stat-item">
+        <strong>{{ totalProjects }}</strong> Projet(s) Assigné(s)
+      </div>
+      <div class="stat-item">
+        <strong>{{ totalIncompleteTasks }}</strong> Tâche(s) à Compléter (Total)
+      </div>
+      <div class="stat-item">
+        <strong>{{ totalCompletedTasks }}</strong> Tâche(s) Terminées (Total)
+      </div>
+    </div>
+
+    <!-- Project List (Only shown if projects exist) -->
+    <ul class="project-list">
+      <!-- Use index 'i' or preferably project.projetId -->
+      <li *ngFor="let project of assignedProjects; let i = index" class="project-list-item">
+        <!-- Project Header (Clickable) -->
+        <!-- Using project.projetId || i for robustness -->
+        <div class="project-header" (click)="toggleProjectExpansion(project.projetId || i)">
+          <h3>
+            {{ project.nomProjet }} -
+            <span class="task-count">{{ project.nombreTachesCompletes + project.nombreTachesACompleter }} tâche(s)</span>
+            <br>
+            <span *ngIf="project.nombreTachesACompleter > 0" class="status-label status-incomplete"> (Non Terminé)</span>
+            <span *ngIf="project.nombreTachesACompleter === 0 && (project.nombreTachesCompletes + project.nombreTachesACompleter) > 0" class="status-label status-complete"> (Terminé)</span>
+            <i class="fas" [ngClass]="{'fa-chevron-down': expandedProjectIndex !== (project.projetId || i), 'fa-chevron-up': expandedProjectIndex === (project.projetId || i)}"></i>
+          </h3>
+        </div>
+
+        <!-- Task List (Conditional Display) -->
+        <!-- Using project.projetId || i for robustness -->
+        <ul class="task-sublist" *ngIf="expandedProjectIndex === (project.projetId || i)">
+           <li *ngIf="!project.taches || project.taches.length === 0" class="no-tasks">
+             Aucune tâche définie pour ce projet.
+           </li>
+           <li *ngFor="let task of project.taches" class="task-item" [class.completed]="task.statut === 'Terminée'">
+             <input
+               type="checkbox"
+               [checked]="task.statut === 'Terminée'"
+               (change)="toggleTaskCompletion(task)"
+               id="task-{{project.projetId}}-{{task.tacheId}}"> <!-- Ensure unique IDs -->
+             <label for="task-{{project.projetId}}-{{task.tacheId}}">{{ task.titre }}</label>
+           </li>
+        </ul>
+      </li>
+      <!-- The old <li> placeholder is removed from here -->
+    </ul>
+
+  </div> <!-- End of *ngIf block -->
+
+  <!-- Template for No Projects -->
+  <ng-template #noProjectsTemplate>
+    <div class="no-items-placeholder"> <!-- Reuse class or use 'no-projects-placeholder' -->
+      <i class="fas fa-folder-open placeholder-icon"></i> <!-- Icon for no projects -->
+      <p class="placeholder-text">Aucun projet pour le moment.</p>
+      
+    </div>
+  </ng-template>
+
+</div> <!-- End of projects-card -->
+
+    
+
+    
+
+    <!-- Upcoming Meetings Card -->
+    <div class="dashboard-card meetings-card">
+      <h2><i class="fas fa-calendar-alt"></i> Réunions à Venir</h2>
+
+      <!-- Check if there are meetings -->
+      <div *ngIf="upcomingMeetings && upcomingMeetings.length > 0; else noMeetingsTemplate">
+        <ul class="meeting-list">
+          <li *ngFor="let meeting of upcomingMeetings" class="meeting-item">
+            <!-- Meeting Title -->
+            <strong class="meeting-title">{{ meeting.titre }}</strong>
+
+            <!-- Meeting Details (Date & Location) -->
+            <div class="meeting-details">
+              <!-- Date/Time -->
+              <div class="detail-item">
+                <i class="fas fa-clock detail-icon"></i> <!-- Clock icon -->
+                <!-- Format the date and time -->
+                <span class="meeting-time">{{ meeting.dateEvaluation | date:'dd/MM/yyyy' }}</span>
+              </div>
+
+              <!-- Location (only if it exists) -->
+              <div *ngIf="meeting.lieu" class="detail-item">
+                <i class="fas fa-map-marker-alt detail-icon"></i> <!-- Location icon -->
+                <span class="meeting-location" [matTooltip]="meeting.lieu">{{ meeting.lieu }}</span> <!-- Add tooltip for potentially long locations -->
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Template for No Meetings -->
+      <ng-template #noMeetingsTemplate>
+        <div class="no-meetings-placeholder">
+          <i class="fas fa-calendar-check placeholder-icon"></i> <!-- Or use fas fa-calendar-times -->
+          <p class="placeholder-text">Votre agenda est libre !</p>
+        
+        </div>
+      </ng-template>
+    </div>
+
+
+    <!-- SMART Goals To-Do List Card -->
+    <div class="dashboard-card goals-card">
+      <h2><i class="fas fa-check-circle"></i> Objectifs SMART</h2>
+
+      <!-- Check if there are goals -->
+      <div *ngIf="smartGoals && smartGoals.length > 0; else noGoalsTemplate">
+        <ul class="goal-list">
+          <!-- Add a class to the list item for better styling -->
+          <li *ngFor="let goal of smartGoals" class="goal-item" [class.completed]="goal.etat">
+            <input type="checkbox"
+                   [checked]="goal.etat"
+                   (change)="toggleGoalCompletion(goal)"
+                   id="goal-{{goal.objectifId}}">
+            <label for="goal-{{goal.objectifId}}">{{ goal.description }}</label>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Template for No Goals -->
+      <ng-template #noGoalsTemplate>
+        <div class="no-goals-placeholder">
+          <i class="fas fa-bullseye placeholder-icon"></i> <!-- Target icon -->
+          <p class="placeholder-text">Aucun objectif SMART défini pour le moment.</p>
+      
+        </div>
+      </ng-template>
+    </div>
+
+
+
+    <div class="dashboard-card performance-gauge-card">
+      <h2><i class="fas fa-tachometer-alt"></i> Indice de Performance Clé (KPI)</h2>
+    
+       <div  class="gauge-container"> <!-- Conteneur pour le canvas -->
+        <canvas baseChart
+                [data]="kpiGaugeData"
+                [type]="'doughnut'"
+                [options]="kpiGaugeOptions">
+        </canvas>
+      </div>
+      
+    </div>
+
+    
+
+  </div>  
+</main>
+<button class="fab-complaint" (click)="toggleComplaintForm()">
+  <i class="fas fa-paper-plane"></i>
+</button>
+
+<!-- Complaint Form Modal/Popup -->
+<div class="complaint-modal-overlay" *ngIf="showComplaintForm" (click)="closeComplaintFormOnClickOutside($event)">
+  <div class="complaint-modal-content">
+    <button class="close-modal-btn" (click)="toggleComplaintForm()">&times;</button> <!-- Optional: Close button -->
+    <h2><i class="fas fa-exclamation-triangle"></i> Envoyer une Réclamation</h2>
+    <form (ngSubmit)="submitComplaint()">
+      <textarea
+        rows="5"
+        placeholder="Écrivez votre réclamation ici..."
+        [(ngModel)]="complaintText"
+        name="complaintText"
+        required>
+      </textarea>
+      <button type="submit" class="btn btn-submit">Envoyer</button>
+    </form>
+  </div>
+</div>

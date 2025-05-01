@@ -17,34 +17,37 @@
       
     </div>
   
-    <!-- Menu déroulant pour déconnexion -->
-    <div class="dropdown">
+    <div class="icons-container"> <!-- Conteneur pour les icônes et le dropdown -->
       <div class="icons">
+        <!-- Conteneur spécifique pour la notification et son badge -->
         <div class="notification-container" (click)="toggleDropdown()">
-          <i class="fas fa-bell notification-icon" [class.has-unread]="unreadCount > 0"></i>
-          <!-- Badge optionnel -->
-          <span *ngIf="unreadCount > 0" class="notification-badge">{{ unreadCount }}</span>
+          <i class="fas fa-bell notification-icon"></i>
+          <!-- Badge positionné sur l'icône -->
+          <span *ngIf="unreadCount > 0" class="notification-badge">{{ unreadCount > 9 ? '9+' : unreadCount }}</span> <!-- Limite l'affichage à 9+ -->
         </div>
         <i class="fas fa-sign-out-alt logout-icon" (click)="logout()"></i>
       </div>
-  <!-- In header.component.html -->
-<div class="notification-dropdown" *ngIf="showDropdown">
-  <div *ngIf="notifications.length === 0" class="no-notifications">
-    Aucune nouvelle notification
-  </div>
-  <ul>
-    <!-- Corrected to use notif.contenu -->
-    <li *ngFor="let notif of notifications"
-        [class.unread]="!notif.isRead"
-        (click)="navigateTo(notif.link, notif.id)">
-      {{ notif.contenu }}  <!-- <<< CORRECTION: Use 'contenu' -->
-      <!-- Optional: Display date -->
-      <!-- <span class="notification-date">{{ formatDate(notif.dateCreation) }}</span> -->
-    </li>
-  </ul>
-  <!-- <a routerLink="/admin/notifications" class="view-all">Voir tout</a> -->
-</div>
 
+      <!-- Menu déroulant des notifications -->
+      <div class="notification-dropdown" *ngIf="showDropdown">
+        <div class="dropdown-header">Notifications</div> <!-- Ajout d'un titre -->
+        <div *ngIf="notifications.length === 0" class="no-notifications">
+          Aucune nouvelle notification
+        </div>
+        <ul *ngIf="notifications.length > 0" class="notification-list">
+          <li *ngFor="let notif of notifications"
+              [class.unread]="!notif.isRead"
+              (click)="navigateTo(notif.id, notif.candidatureId)">
+            <div class="notification-content"> <!-- Conteneur pour le contenu -->
+               {{ notif.contenu }}
+            </div>
+             <!-- Optionnel: Afficher la date de manière plus discrète -->
+             <!-- <span class="notification-date">{{ formatDate(notif.dateCreation) }}</span> -->
+          </li>
+        </ul>
+         <!-- Optionnel: Lien "Voir tout" -->
+        <!-- <a routerLink="/admin/notifications" class="view-all" (click)="closeDropdown()">Voir tout</a> -->
+      </div>
     </div>
   </header>
   
@@ -68,6 +71,12 @@
      <i class="fas fa-users"></i>
      <span>Utilisateurs</span>
    </a>
+    </li>
+    <li *ngIf="isActive('/parcours-candidat')">
+      <a routerLink="/parcours-candidat" [class.active]="isActive('/parcours-candidat')" (click)="setActiveRoute('/parcours-candidat')">
+        <i class="fas fa-clipboard-list"></i>
+        <span>Parcours Candidat</span>
+      </a>
     </li>
     <li>
       <a routerLink="/offres" 

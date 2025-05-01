@@ -68,15 +68,15 @@ namespace PfeRH.Controllers
                     foreach (var candidature in candidatures)
                     {
                         var entretiens = await _context.Entretiens
-                                  .Where(e => e.CandidatureId == candidature.Id)
-                                  .ToListAsync();
+                                   .Where(e => e.CandidatureId == candidature.Id)
+                                   .ToListAsync();
                         if (entretiens.Any())
                         {
                             _context.Entretiens.RemoveRange(entretiens);
                         }
                         var reponses = await _context.ReponseCandidats
-                                                      .Where(r => r.CandidatureId == candidature.Id)
-                                                      .ToListAsync();
+                                                       .Where(r => r.CandidatureId == candidature.Id)
+                                                       .ToListAsync();
                         if (reponses.Any())
                         {
                             _context.ReponseCandidats.RemoveRange(reponses);
@@ -85,6 +85,14 @@ namespace PfeRH.Controllers
 
                     // Supprimer les candidatures après les réponses
                     _context.Candidatures.RemoveRange(candidatures);
+                    await _context.SaveChangesAsync();
+                }
+
+                // Supprimer les demandes de congé de l'utilisateur
+                var demandesConges = await _context.DemandesConge.Where(d => d.EmployeId == id).ToListAsync();
+                if (demandesConges.Any())
+                {
+                    _context.DemandesConge.RemoveRange(demandesConges);
                     await _context.SaveChangesAsync();
                 }
 
@@ -107,6 +115,7 @@ namespace PfeRH.Controllers
                 return StatusCode(500, new { message = "Une erreur est survenue", details = ex.Message });
             }
         }
+
 
         [HttpPut("modifier/{id}")]
         public async Task<IActionResult> EditUser(int id, [FromBody] EditUserDto updatedUser)

@@ -1,0 +1,99 @@
+<app-header></app-header>
+<main class="content "> <!-- Fond légèrement gris -->
+
+  <!-- Section Filtres -->
+  <mat-card class="mb-6 shadow-lg rounded-lg">
+    <mat-card-header class="border-b border-gray-200 px-6 py-4">
+      <mat-card-title class="text-xl font-medium text-gray-700">Filtrer les Absences</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="p-6">
+      <form [formGroup]="filterForm" class="filter-form flex flex-wrap gap-6 items-center">
+        <mat-form-field appearance="outline" class="w-full sm:w-auto flex-grow">
+          <mat-label>Période de congé</mat-label>
+          <mat-date-range-input [formGroup]="filterForm" [rangePicker]="picker">
+            <input matStartDate formControlName="dateDebut" placeholder="Date de début">
+            <input matEndDate formControlName="dateFin" placeholder="Date de fin">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+          <mat-error *ngIf="filterForm.controls['dateDebut']?.hasError('matStartDateInvalid')">Date début invalide.</mat-error>
+          <mat-error *ngIf="filterForm.controls['dateFin']?.hasError('matEndDateInvalid')">Date fin invalide.</mat-error>
+          <mat-error *ngIf="filterForm.hasError('matDateRangePickerParse')">Format invalide.</mat-error>
+        </mat-form-field>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Indicateur de Chargement -->
+  <div *ngIf="isLoading" class="flex flex-col justify-center items-center py-16 text-gray-500">
+    <mat-spinner diameter="50"></mat-spinner>
+    <span class="mt-4 text-lg font-medium">Chargement des absences...</span>
+  </div>
+
+  <!-- Conteneur du Calendrier -->
+  <div *ngIf="!isLoading" class="bg-white rounded-lg shadow-lg overflow-hidden">
+
+    <!-- En-tête du Calendrier (Navigation) -->
+    <div class="flex justify-between items-center px-5 py-4 border-b border-gray-200 bg-gray-50">
+      <div class="flex items-center space-x-2">
+        <button mat-icon-button color="primary" class="hover:bg-blue-100 rounded-full" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate" (viewDateChange)="refresh.next()" matTooltip="Mois précédent">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button mat-flat-button color="primary" class="font-medium" mwlCalendarToday [(viewDate)]="viewDate" (viewDateChange)="refresh.next()">
+          Aujourd'hui
+        </button>
+        <button mat-icon-button color="primary" class="hover:bg-blue-100 rounded-full" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate" (viewDateChange)="refresh.next()" matTooltip="Mois suivant">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+
+      <h3 class="text-xl font-semibold text-gray-800">
+        {{ viewDate | calendarDate:(view + 'ViewTitle'):'fr' }}
+      </h3>
+
+      <div class="w-28"></div> <!-- Alignement -->
+    </div>
+
+    <!-- Wrapper pour le Composant Calendrier -->
+    <div class="calendar-wrapper">
+      <!-- Template Personnalisé pour l'En-tête des Jours (Lun, Mar...) -->
+      <ng-template #customHeaderTemplate let-days="days" let-locale="locale" let-trackByTrackDate="trackByTrackDate">
+        <div class="cal-header grid grid-cols-7">
+            <div class="cal-header-cell" *ngFor="let day of days; trackBy: trackByTrackDate">
+                <span class="text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    {{ day.date | calendarDate:'monthViewColumnHeader':locale }}
+                </span>
+            </div>
+        </div>
+    </ng-template>
+
+      <!-- Composant Calendrier - SANS cellTemplate -->
+      <mwl-calendar-month-view
+        *ngIf="view === CalendarView.Month"
+        [viewDate]="viewDate"
+        [events]="events"
+        [refresh]="refresh"
+        (dayClicked)="dayClicked($event.day)"
+        (eventClicked)="eventClicked($event.event)" 
+        [locale]="'fr'"
+        [headerTemplate]="customHeaderTemplate">
+        <!-- L'attribut [cellTemplate] a été supprimé -->
+      </mwl-calendar-month-view>
+
+       <!-- Autres vues (Semaine/Jour) si nécessaire -->
+    </div>
+
+    <!-- Messages si Aucun Résultat -->
+    <div *ngIf="!isLoading && events.length === 0 && (filterForm.value.dateDebut && filterForm.value.dateFin)" class="text-center text-gray-500 py-12 px-6">
+      <mat-icon class="text-6xl text-gray-400 mb-3">event_busy</mat-icon>
+      <p class="text-xl font-medium mb-1">Aucune absence trouvée</p>
+      <p class="text-gray-400">Il n'y a pas d'absences approuvées pour la période sélectionnée.</p>
+    </div>
+    <div *ngIf="!isLoading && events.length === 0 && !(filterForm.value.dateDebut && filterForm.value.dateFin)" class="text-center text-gray-500 py-12 px-6">
+      <mat-icon class="text-6xl text-gray-400 mb-3">date_range</mat-icon>
+      <p class="text-xl font-medium mb-1">Sélectionnez une période</p>
+      <p class="text-gray-400">Choisissez une date de début et de fin pour voir les absences.</p>
+    </div>
+
+  </div>
+</main>

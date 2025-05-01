@@ -1,5 +1,21 @@
 ﻿<Project>
   <ItemGroup>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\001e9848-a3a1-4968-9e4a-b03a60200982_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/001e9848-a3a1-4968-9e4a-b03a60200982_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\001e9848-a3a1-4968-9e4a-b03a60200982_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\00677bb6-2a7f-4c41-a538-355ac63b2a2d_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
       <SourceId>PfeRH</SourceId>
@@ -47,6 +63,22 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\0119579a-0bbd-44a2-8b68-193133428546_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\0280fe42-2590-439a-8dec-d6dcb2097eb0_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/0280fe42-2590-439a-8dec-d6dcb2097eb0_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\0280fe42-2590-439a-8dec-d6dcb2097eb0_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\029bc868-654b-4f8d-9ecb-6dd3c75aff1c_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
@@ -240,6 +272,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\15bf4e7c-9c4c-4d9e-87d2-f5ba3d854508_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\15db5e39-e200-4a59-a1cd-478f9a7a2e19_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/15db5e39-e200-4a59-a1cd-478f9a7a2e19_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\15db5e39-e200-4a59-a1cd-478f9a7a2e19_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\19d5f557-d925-420c-a1db-bd9f47271881_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
       <SourceId>PfeRH</SourceId>
@@ -255,6 +303,22 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\19d5f557-d925-420c-a1db-bd9f47271881_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1bf66eaa-503d-4a40-9655-f587d6683c48_Hamden_SMAOUI_CV.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/1bf66eaa-503d-4a40-9655-f587d6683c48_Hamden_SMAOUI_CV.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1bf66eaa-503d-4a40-9655-f587d6683c48_Hamden_SMAOUI_CV.pdf))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1ce7fa01-7254-44b8-8b7b-2771230e1981_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
@@ -335,6 +399,38 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1fd7007d-f1cd-47e1-81a9-1e3225fae5df_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1ffbe24b-80fb-426b-adf4-8f531022b2d7_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/1ffbe24b-80fb-426b-adf4-8f531022b2d7_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1ffbe24b-80fb-426b-adf4-8f531022b2d7_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\205b1621-7a22-4c7e-be0a-b59bd42e8216_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/205b1621-7a22-4c7e-be0a-b59bd42e8216_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\205b1621-7a22-4c7e-be0a-b59bd42e8216_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\22252e25-d857-44a9-9bcb-6cb237412889_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
@@ -448,6 +544,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\31987566-e1da-48af-a235-4e0feb3d377f_CV (1).pdf))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\32447424-c921-4017-bb96-d7db9b081707_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/32447424-c921-4017-bb96-d7db9b081707_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\32447424-c921-4017-bb96-d7db9b081707_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\33393c42-87e0-47f2-b220-ba93c31db5ca_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
       <SourceId>PfeRH</SourceId>
@@ -512,6 +624,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\38ac6c4d-fb2f-4887-9ab8-30a1e761ee15_Emna_SAHNOUN_CV.pdf))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\3acda6fa-5f23-4e12-9e5d-1d28b70b1362_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/3acda6fa-5f23-4e12-9e5d-1d28b70b1362_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\3acda6fa-5f23-4e12-9e5d-1d28b70b1362_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\3cb2ef34-3170-4461-b7f5-03f73c08bd00_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
       <SourceId>PfeRH</SourceId>
@@ -544,6 +672,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\3d108a53-169c-4952-9b9f-5951c8fd8b6f_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\3e2a3c82-7043-4409-9e9a-35591d104911_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/3e2a3c82-7043-4409-9e9a-35591d104911_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\3e2a3c82-7043-4409-9e9a-35591d104911_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\3ebffd6c-432f-4050-9ad3-8dfa2aa3351d_CV (1).pdf))">
       <SourceType>Package</SourceType>
       <SourceId>PfeRH</SourceId>
@@ -559,6 +703,22 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\3ebffd6c-432f-4050-9ad3-8dfa2aa3351d_CV (1).pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\3f10f492-c448-48e6-818c-7af8d08c4366_Hamden_SMAOUI_CV.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/3f10f492-c448-48e6-818c-7af8d08c4366_Hamden_SMAOUI_CV.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\3f10f492-c448-48e6-818c-7af8d08c4366_Hamden_SMAOUI_CV.pdf))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\41e09dd3-e60e-4c7c-922c-bb7611849f57_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
@@ -592,6 +752,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4731739c-d956-4aae-8c7a-839c5a6f2cea_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\47c02e8a-58bb-4241-aee5-c92dd7ad08de_Hamden_SMAOUI_CV.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/47c02e8a-58bb-4241-aee5-c92dd7ad08de_Hamden_SMAOUI_CV.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\47c02e8a-58bb-4241-aee5-c92dd7ad08de_Hamden_SMAOUI_CV.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\49918548-b6f0-442d-9243-9995057f0691_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
       <SourceId>PfeRH</SourceId>
@@ -608,6 +784,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\49918548-b6f0-442d-9243-9995057f0691_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4ae59570-6926-49d1-97b6-6b47979063fc_Hamden_SMAOUI_CV.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/4ae59570-6926-49d1-97b6-6b47979063fc_Hamden_SMAOUI_CV.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4ae59570-6926-49d1-97b6-6b47979063fc_Hamden_SMAOUI_CV.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4affc20b-1078-4938-88d1-5df47f21fdb9_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
       <SourceId>PfeRH</SourceId>
@@ -623,6 +815,38 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4affc20b-1078-4938-88d1-5df47f21fdb9_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4d0b6d68-50c7-4e25-b6ae-9a065061e46d_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/4d0b6d68-50c7-4e25-b6ae-9a065061e46d_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4d0b6d68-50c7-4e25-b6ae-9a065061e46d_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4d95e5fb-3b88-4f06-a301-28dc88bca34a_Hamden_SMAOUI_CV.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/4d95e5fb-3b88-4f06-a301-28dc88bca34a_Hamden_SMAOUI_CV.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4d95e5fb-3b88-4f06-a301-28dc88bca34a_Hamden_SMAOUI_CV.pdf))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4f0fd413-54eb-45b2-ae72-8dd648d0208c_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
@@ -656,6 +880,38 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4f26e67b-6b16-409b-9758-c540825ed8ec_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4f77f611-2942-410f-b70a-243d4cb75570_Eya_Maazoun_cv.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/4f77f611-2942-410f-b70a-243d4cb75570_Eya_Maazoun_cv.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4f77f611-2942-410f-b70a-243d4cb75570_Eya_Maazoun_cv.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\5437ab9d-8fea-49a5-8d9d-44290ce406f2_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/5437ab9d-8fea-49a5-8d9d-44290ce406f2_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\5437ab9d-8fea-49a5-8d9d-44290ce406f2_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\580233a4-fadc-4d2c-8b5e-18d2665ee444_Eya_Maazoun_cv.pdf))">
       <SourceType>Package</SourceType>
       <SourceId>PfeRH</SourceId>
@@ -671,6 +927,38 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\580233a4-fadc-4d2c-8b5e-18d2665ee444_Eya_Maazoun_cv.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\598dbfe4-5805-45be-a131-52ce6183ba7c_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/598dbfe4-5805-45be-a131-52ce6183ba7c_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\598dbfe4-5805-45be-a131-52ce6183ba7c_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\5bf2cf68-5121-4882-a159-7bc2342c935f_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/5bf2cf68-5121-4882-a159-7bc2342c935f_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\5bf2cf68-5121-4882-a159-7bc2342c935f_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\5c9d3a56-6448-4ef8-815f-7b87f5d42dcc_CV (1).pdf))">
       <SourceType>Package</SourceType>
@@ -720,6 +1008,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\5d62cac2-5a18-4293-8632-cd70feec7214_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\5eb66737-6825-46ac-9418-60b1e90b3d94_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/5eb66737-6825-46ac-9418-60b1e90b3d94_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\5eb66737-6825-46ac-9418-60b1e90b3d94_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\5ebf6078-afb7-4b6f-b156-d329b3949d28_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
       <SourceId>PfeRH</SourceId>
@@ -735,6 +1039,22 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\5ebf6078-afb7-4b6f-b156-d329b3949d28_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\5fd0a895-b894-41b5-a0e7-fc657a708af7_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/5fd0a895-b894-41b5-a0e7-fc657a708af7_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\5fd0a895-b894-41b5-a0e7-fc657a708af7_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\6069a50b-d654-47e4-8452-1d5273a29637_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
@@ -800,6 +1120,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\64434337-6465-4a8b-a3cb-c68c053e2968_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\667898c3-963f-4d14-bf24-67d422d6f7d4_Emna_SAHNOUN_CV.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/667898c3-963f-4d14-bf24-67d422d6f7d4_Emna_SAHNOUN_CV.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\667898c3-963f-4d14-bf24-67d422d6f7d4_Emna_SAHNOUN_CV.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\678a4f42-144f-4dcd-bb69-9db10fd9ea94_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
       <SourceId>PfeRH</SourceId>
@@ -815,6 +1151,38 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\678a4f42-144f-4dcd-bb69-9db10fd9ea94_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\68a8d765-521a-41a0-858f-1cdb69acfb24_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/68a8d765-521a-41a0-858f-1cdb69acfb24_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\68a8d765-521a-41a0-858f-1cdb69acfb24_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\696fcfb6-4b0a-46c1-b004-0af352465f91_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/696fcfb6-4b0a-46c1-b004-0af352465f91_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\696fcfb6-4b0a-46c1-b004-0af352465f91_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\6b241a19-0c72-42c3-8262-d53fdcf33984_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
@@ -832,6 +1200,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\6b241a19-0c72-42c3-8262-d53fdcf33984_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\6e123b45-b125-4b00-9602-d680dd4a051f_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/6e123b45-b125-4b00-9602-d680dd4a051f_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\6e123b45-b125-4b00-9602-d680dd4a051f_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\6fc5e703-2a64-4e17-abd8-ccb6584ea5cd_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
       <SourceId>PfeRH</SourceId>
@@ -847,6 +1231,38 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\6fc5e703-2a64-4e17-abd8-ccb6584ea5cd_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\704e62b1-e777-47af-bd49-31d8cb34794d_Hamden_SMAOUI_CV.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/704e62b1-e777-47af-bd49-31d8cb34794d_Hamden_SMAOUI_CV.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\704e62b1-e777-47af-bd49-31d8cb34794d_Hamden_SMAOUI_CV.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\75459356-3bdd-46d5-948d-8d126aef994b_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/75459356-3bdd-46d5-948d-8d126aef994b_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\75459356-3bdd-46d5-948d-8d126aef994b_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\76a071c6-261a-4761-a334-09c2716023f0_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
@@ -1200,6 +1616,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\a4586915-0071-45e5-922d-ab59898bb390_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\a588a3d9-310c-4619-8626-c13420e8385a_Hamden_SMAOUI_CV.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/a588a3d9-310c-4619-8626-c13420e8385a_Hamden_SMAOUI_CV.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\a588a3d9-310c-4619-8626-c13420e8385a_Hamden_SMAOUI_CV.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\a74d40e4-8b45-4b88-be08-c36f250c1487_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
       <SourceId>PfeRH</SourceId>
@@ -1248,6 +1680,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\ab1e3ecb-a45a-4188-9724-3e74e1f2c880_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\abeb2a30-04f2-4491-9920-f6f821b50f42_CV (1).pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/abeb2a30-04f2-4491-9920-f6f821b50f42_CV (1).pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\abeb2a30-04f2-4491-9920-f6f821b50f42_CV (1).pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\accbc11a-daa6-4a0d-8230-f617611efb27_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
       <SourceId>PfeRH</SourceId>
@@ -1295,6 +1743,38 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\afe38972-0e0a-472c-8f93-acfe007ed6b4_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b0e85f25-f967-4310-99f4-eb009a870094_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/b0e85f25-f967-4310-99f4-eb009a870094_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b0e85f25-f967-4310-99f4-eb009a870094_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b3110f09-4d56-4eed-84a1-b4c7cd14c7e6_Eya_Maazoun_cv.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/b3110f09-4d56-4eed-84a1-b4c7cd14c7e6_Eya_Maazoun_cv.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b3110f09-4d56-4eed-84a1-b4c7cd14c7e6_Eya_Maazoun_cv.pdf))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b32faf32-d093-4b05-a604-bd8ec4695f2b_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
@@ -1632,6 +2112,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\d6aa0da5-6d3c-43da-a7fb-19f03e4bdbe1_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\d779b4fa-c2b8-439b-b764-a912ce64d8cd_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/d779b4fa-c2b8-439b-b764-a912ce64d8cd_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\d779b4fa-c2b8-439b-b764-a912ce64d8cd_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\da0b35eb-a590-4e7a-b882-bb47033caac4_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
       <SourceId>PfeRH</SourceId>
@@ -1744,6 +2240,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e05a1902-17b6-4243-bb55-079ca6dc3c11_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e26b879f-42f3-4798-8c01-3e37d43c53b5_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/e26b879f-42f3-4798-8c01-3e37d43c53b5_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e26b879f-42f3-4798-8c01-3e37d43c53b5_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e28393ff-b713-4eda-a6c9-9a954be0795c_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
       <SourceId>PfeRH</SourceId>
@@ -1776,6 +2288,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e2c6a4fb-f9be-4e05-98fa-1fdedaadce25_CV (1).pdf))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e3ea4d7d-5ba7-473a-bae1-ac9e54f84f96_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/e3ea4d7d-5ba7-473a-bae1-ac9e54f84f96_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e3ea4d7d-5ba7-473a-bae1-ac9e54f84f96_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e41fc6be-85c7-487b-a1f1-b500f6e99c9e_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
       <SourceId>PfeRH</SourceId>
@@ -1792,6 +2320,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e41fc6be-85c7-487b-a1f1-b500f6e99c9e_Nour-Resume.pdf))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e5514199-b608-437d-a18a-81aa7faf9320_Nour-Resume.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/e5514199-b608-437d-a18a-81aa7faf9320_Nour-Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e5514199-b608-437d-a18a-81aa7faf9320_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e7c2870b-d300-4c44-9620-1327d640ae53_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>
       <SourceId>PfeRH</SourceId>
@@ -1807,6 +2351,22 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e7c2870b-d300-4c44-9620-1327d640ae53_Nour-Resume.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e9af9a01-b6b8-4720-a5ea-0885775d5e4a_CV (1).pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>PfeRH</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/PfeRH</BasePath>
+      <RelativePath>uploads/e9af9a01-b6b8-4720-a5ea-0885775d5e4a_CV (1).pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e9af9a01-b6b8-4720-a5ea-0885775d5e4a_CV (1).pdf))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\ebd71ac4-85f3-4672-abe0-8bbbfa70ad5b_Nour-Resume.pdf))">
       <SourceType>Package</SourceType>

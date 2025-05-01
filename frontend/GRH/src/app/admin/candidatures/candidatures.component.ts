@@ -23,6 +23,8 @@ export class CandidaturesComponent implements OnInit {
     });
   }
 
+  
+
   fetchCandidatures(titreOffre: string) {
     const apiUrl = `http://localhost:5053/api/Offre/candidatures-par-offre-titre/${encodeURIComponent(titreOffre)}`;
     this.http.get<any>(apiUrl).subscribe(response => {

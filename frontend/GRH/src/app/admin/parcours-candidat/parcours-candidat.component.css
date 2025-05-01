@@ -1,99 +1,125 @@
-.horizontal-timeline {
-  display: flex;
-  align-items: flex-start;
-  overflow-x: auto;
-  padding-bottom: 20px;
-  position: relative;
-}
-
-/* La ligne entre les étapes */
-.timeline-line {
-  position: absolute;
-  top: 30px; /* Alignée avec les points */
-  left: 0;
-  height: 4px;
-  background-color: #ccc;
-  width: 100%;
-  z-index: 0;
-}
-
-/* Chaque étape (point + contenu) */
-.timeline-step {
+/* Global Timeline Style */
+.content {
+  min-height: 300vh;
+  width: calc(100% - 260px);
+  margin-left: 240px;
+  margin-top: 25px;
+  margin-right: 20px;
+  padding: 20px;
+  background-color: #eae8e889;
   display: flex;
   flex-direction: column;
-  align-items: center;
+}
+
+.timeline {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
   position: relative;
-  padding: 10px;
-  min-width: 200px;
-  text-align: center;
-  flex-shrink: 0;
-  z-index: 1;
 }
 
-/* Le point circulaire */
-.timeline-point {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background-color: #ccc;
-  border: 3px solid white;
-  z-index: 1;
+.timeline-item {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-weight: bold;
-  margin-bottom: 10px;
+  position: relative;
+  padding-left: 50px;
+  margin-bottom: 30px;
 }
 
-/* Texte et détails sous chaque point */
-.timeline-content {
+.timeline-line {
+  position: absolute;
+  top: 0;
+  left: 25px;
+  width: 2px;
+  height: 100%;
+  background-color: #ccc;
+  transition: background-color 0.3s ease;
+}
+
+/* Numéro de l'étape */
+.timeline-number {
+  position: absolute;
+  left: -40px;
+  top: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  transform: translateY(-10px);
+  transition: transform 0.3s ease;
+}
+
+/* Effet de survol */
+.timeline-number:hover {
+  transform: translateY(-15px);
+}
+
+/* Timeline Box */
+.timeline-box {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-box time {
+  font-size: 12px;
+  color: #777;
+}
+
+.timeline-box .text-sm {
   margin-top: 5px;
 }
 
-/* Styles selon le statut */
-.timeline-point.completed {
-  background-color: #28a745; /* Vert */
+.timeline-item:not(:first-child) .timeline-box {
+  box-shadow: 5px 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.timeline-point.in-progress {
-  background-color: #17a2b8; /* Bleu */
+/* Couleurs selon le statut */
+.bg-green-500 {
+  background-color: #48bb78;
 }
 
-.timeline-point.pending {
-  background-color: #ffc107; /* Jaune */
-  color: black;
+.bg-red-500 {
+  background-color: #f56565;
 }
 
-.timeline-point.failed {
-  background-color: #dc3545; /* Rouge */
+.bg-yellow-400 {
+  background-color: #ecc94b;
 }
 
-/* Ligne de statut (optionnel si vous colorez aussi la ligne entre les points) */
-.timeline-step.completed::after,
-.timeline-step.in-progress::after,
-.timeline-step.pending::after,
-.timeline-step.failed::after {
-  content: '';
-  position: absolute;
-  top: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 4px;
-  width: 100%;
-  z-index: -1;
+.bg-gray-400 {
+  background-color: #cbd5e0;
 }
 
-/* Ligne colorée selon statut */
-.timeline-step.completed::after {
-  background-color: #28a745;
+/* Footer Button Styles */
+.btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
-.timeline-step.in-progress::after {
-  background-color: #17a2b8;
+
+.btn-success {
+  background-color: #48bb78;
+  color: white;
 }
-.timeline-step.pending::after {
-  background-color: #ffc107;
+
+.btn-danger {
+  background-color: #f56565;
+  color: white;
 }
-.timeline-step.failed::after {
-  background-color: #dc3545;
+
+.btn-primary {
+  background-color: #3182ce;
+  color: white;
 }
+
+

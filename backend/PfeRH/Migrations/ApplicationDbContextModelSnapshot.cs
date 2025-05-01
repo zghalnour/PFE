@@ -22,21 +22,6 @@ namespace PfeRH.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("EmployeProjet", b =>
-                {
-                    b.Property<int>("EmployesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProjetsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("EmployesId", "ProjetsId");
-
-                    b.HasIndex("ProjetsId");
-
-                    b.ToTable("EmployeProjet");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
                 {
                     b.Property<int>("Id")
@@ -170,6 +155,32 @@ namespace PfeRH.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("PfeRH.Models.Affectation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateAffectation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EmployeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProjetId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeId");
+
+                    b.HasIndex("ProjetId");
+
+                    b.ToTable("Affectations");
+                });
+
             modelBuilder.Entity("PfeRH.Models.Candidature", b =>
                 {
                     b.Property<int>("Id")
@@ -200,6 +211,9 @@ namespace PfeRH.Migrations
                     b.Property<double?>("TestScore")
                         .HasColumnType("float");
 
+                    b.Property<int?>("nbEntretiens")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CandidatId");
@@ -220,6 +234,9 @@ namespace PfeRH.Migrations
                     b.Property<DateTime>("DateDebut")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("DateDemande")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("DateFin")
                         .HasColumnType("datetime2");
 
@@ -231,6 +248,10 @@ namespace PfeRH.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Statut")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -342,6 +363,39 @@ namespace PfeRH.Migrations
                     b.ToTable("Evaluations");
                 });
 
+            modelBuilder.Entity("PfeRH.Models.EvaluationProjet", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateEvaluation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Lieu")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PointsADiscuter")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProjetId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Titre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjetId");
+
+                    b.ToTable("EvaluationProjets");
+                });
+
             modelBuilder.Entity("PfeRH.Models.Notification", b =>
                 {
                     b.Property<int>("Id")
@@ -362,9 +416,6 @@ namespace PfeRH.Migrations
 
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Link")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -488,12 +539,6 @@ namespace PfeRH.Migrations
                     b.Property<DateTime>("DateFin")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("DepartementId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DepartementId2")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -506,10 +551,6 @@ namespace PfeRH.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DepartementId");
-
-                    b.HasIndex("DepartementId2");
 
                     b.HasIndex("GestionnaireRHId");
 
@@ -612,15 +653,15 @@ namespace PfeRH.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("DateDebut")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateFin")
+                    b.Property<DateTime?>("DateFinir")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("EmployeId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Nom")
                         .IsRequired()
@@ -634,6 +675,8 @@ namespace PfeRH.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmployeId");
 
                     b.HasIndex("ProjetId");
 
@@ -801,21 +844,6 @@ namespace PfeRH.Migrations
                     b.HasDiscriminator().HasValue("GestionnaireRH");
                 });
 
-            modelBuilder.Entity("EmployeProjet", b =>
-                {
-                    b.HasOne("PfeRH.Models.Employe", null)
-                        .WithMany()
-                        .HasForeignKey("EmployesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PfeRH.Models.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
@@ -865,6 +893,25 @@ namespace PfeRH.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("PfeRH.Models.Affectation", b =>
+                {
+                    b.HasOne("PfeRH.Models.Employe", "Employe")
+                        .WithMany("Affectations")
+                        .HasForeignKey("EmployeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PfeRH.Models.Projet", "Projet")
+                        .WithMany("Affectations")
+                        .HasForeignKey("ProjetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employe");
+
+                    b.Navigation("Projet");
                 });
 
             modelBuilder.Entity("PfeRH.Models.Candidature", b =>
@@ -928,6 +975,17 @@ namespace PfeRH.Migrations
                     b.Navigation("GestionnaireRh");
                 });
 
+            modelBuilder.Entity("PfeRH.Models.EvaluationProjet", b =>
+                {
+                    b.HasOne("PfeRH.Models.Projet", "Projet")
+                        .WithMany("Evaluations")
+                        .HasForeignKey("ProjetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Projet");
+                });
+
             modelBuilder.Entity("PfeRH.Models.Notification", b =>
                 {
                     b.HasOne("PfeRH.Models.Candidature", "Candidature")
@@ -974,20 +1032,9 @@ namespace PfeRH.Migrations
 
             modelBuilder.Entity("PfeRH.Models.Projet", b =>
                 {
-                    b.HasOne("PfeRH.Models.Departement", "Departement")
-                        .WithMany()
-                        .HasForeignKey("DepartementId");
-
-                    b.HasOne("PfeRH.Models.Departement", null)
-                        .WithMany("Projets")
-                        .HasForeignKey("DepartementId2")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("PfeRH.Models.GestionnaireRH", null)
                         .WithMany("Projets")
                         .HasForeignKey("GestionnaireRHId");
-
-                    b.Navigation("Departement");
                 });
 
             modelBuilder.Entity("PfeRH.Models.Question", b =>
@@ -1033,9 +1080,15 @@ namespace PfeRH.Migrations
 
             modelBuilder.Entity("PfeRH.Models.Tache", b =>
                 {
+                    b.HasOne("PfeRH.Models.Employe", "Employe")
+                        .WithMany()
+                        .HasForeignKey("EmployeId");
+
                     b.HasOne("PfeRH.Models.Projet", "Projet")
                         .WithMany("Taches")
                         .HasForeignKey("ProjetId");
+
+                    b.Navigation("Employe");
 
                     b.Navigation("Projet");
                 });
@@ -1063,8 +1116,6 @@ namespace PfeRH.Migrations
             modelBuilder.Entity("PfeRH.Models.Departement", b =>
                 {
                     b.Navigation("Employes");
-
-                    b.Navigation("Projets");
                 });
 
             modelBuilder.Entity("PfeRH.Models.Offre", b =>
@@ -1074,6 +1125,10 @@ namespace PfeRH.Migrations
 
             modelBuilder.Entity("PfeRH.Models.Projet", b =>
                 {
+                    b.Navigation("Affectations");
+
+                    b.Navigation("Evaluations");
+
                     b.Navigation("Taches");
                 });
 
@@ -1097,6 +1152,8 @@ namespace PfeRH.Migrations
 
             modelBuilder.Entity("PfeRH.Models.Employe", b =>
                 {
+                    b.Navigation("Affectations");
+
                     b.Navigation("DemandesConge");
 
                     b.Navigation("EvaluationsRecues");

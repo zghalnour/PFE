@@ -28,16 +28,191 @@ html,body {
   }
 }
 
-.notification-icon {
-  font-size: 20px;
-  cursor: pointer;
-
+/* Styles pour le conteneur global des icônes et du dropdown */
+.icons-container {
+  position: relative; /* Permet de positionner le dropdown absolument par rapport à ce conteneur */
+  display: flex; /* Ou autre selon votre layout existant */
+  align-items: center;
+  
+}
+.icons {
+  display: flex; 
+  align-items: center; 
+  
+  
 }
 .logout-icon {
-  font-size: 20px;
+  font-size: 1.4rem;
+  color: #333;
   cursor: pointer;
-  margin-right: 15px;
+  padding: 5px;
+  margin-right: 20px;
+  /* Assurez-vous qu'il n'y a pas de marge ajoutée spécifiquement ici non plus */
 }
+
+
+/* Règle générale pour les icônes - Supprimez ou commentez la marge */
+.icons i {
+ /* margin-left: 15px; */ /* <<< Supprimé ou commenté */
+  font-size: 20px; /* Gardez les autres styles si nécessaire */
+  cursor: pointer;
+}
+
+/* Styles pour le conteneur de l'icône de notification */
+.notification-container {
+  position: relative; /* Référence pour le positionnement absolu du badge */
+  cursor: pointer;
+  padding: 5px; /* Ajoute une petite zone cliquable autour de l'icône */
+
+}
+
+/* Style de l'icône de notification */
+.notification-icon {
+  font-size: 1.4rem; /* Ajustez la taille de l'icône */
+  color: #333; /* Couleur de l'icône */
+}
+
+/* Style du badge de notification */
+.notification-badge {
+  position: absolute;
+  top: 0px; /* Ajustez pour positionner verticalement */
+  right: -2px; /* Ajustez pour positionner horizontalement */
+  background-color: red; /* Couleur de fond du badge */
+  color: white; /* Couleur du texte */
+  border-radius: 50%; /* Pour un badge rond */
+  padding: 2px 5px; /* Espace intérieur */
+  font-size: 0.7rem; /* Taille de la police du nombre */
+  font-weight: bold;
+  line-height: 1; /* Assure que le texte est bien centré verticalement */
+  min-width: 16px; /* Largeur minimale pour les nombres à un chiffre */
+  text-align: center;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.3); /* Ombre légère optionnelle */
+}
+
+/* Style de l'icône de déconnexion */
+.logout-icon {
+  font-size: 1.4rem;
+  color: #333;
+  cursor: pointer;
+  padding: 5px;
+}
+
+/* Style du dropdown des notifications */
+.notification-dropdown {
+  position: absolute;
+  top: 100%; /* Positionne le dropdown juste en dessous du conteneur parent (.icons-container) */
+  right: 0; /* Aligne le dropdown à droite du conteneur parent */
+  margin-top: 10px; /* Petit espace entre l'icône et le dropdown */
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  width: 300px; /* Largeur du dropdown */
+  max-width: 90vw; /* Empêche d'être trop large sur petits écrans */
+  z-index: 1000; /* Assure qu'il est au-dessus des autres éléments */
+  overflow: hidden; /* Pour que le border-radius s'applique aux enfants */
+  animation: fadeInDown 0.3s ease-out; /* Animation d'apparition */
+}
+
+/* Titre du dropdown */
+.dropdown-header {
+  padding: 12px 15px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: #555;
+  border-bottom: 1px solid #eee;
+}
+
+/* Message "Aucune notification" */
+.no-notifications {
+  padding: 20px 15px;
+  text-align: center;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+/* Liste des notifications */
+.notification-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 400px; /* Hauteur maximale avant apparition du scroll */
+  overflow-y: auto; /* Ajoute une barre de défilement si nécessaire */
+}
+
+/* Style de chaque élément de la liste */
+.notification-list li {
+  padding: 12px 15px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.notification-list li:last-child {
+  border-bottom: none; /* Pas de bordure pour le dernier élément */
+}
+
+.notification-list li:hover {
+  background-color: #f8f8f8; /* Léger fond au survol */
+}
+
+/* Style pour les notifications non lues */
+.notification-list li.unread {
+  background-color: #eef5ff; /* Fond légèrement différent pour non lu */
+  font-weight: 500; /* Texte un peu plus gras */
+}
+.notification-list li.unread:hover {
+  background-color: #e0ecff; /* Fond au survol pour non lu */
+}
+
+/* Contenu de la notification */
+.notification-content {
+  font-size: 0.85rem;
+  color: #333;
+  line-height: 1.4;
+  /* Optionnel: Limiter le nombre de lignes et ajouter "..." */
+  /* display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis; */
+}
+
+/* Date de la notification (si vous l'ajoutez) */
+.notification-date {
+  display: block;
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 4px;
+}
+
+/* Lien "Voir tout" (si vous l'ajoutez) */
+.view-all {
+  display: block;
+  text-align: center;
+  padding: 10px 15px;
+  font-size: 0.85rem;
+  color: #007bff;
+  text-decoration: none;
+  border-top: 1px solid #eee;
+  transition: background-color 0.2s ease;
+}
+
+.view-all:hover {
+  background-color: #f8f8f8;
+}
+
+/* Animation simple d'apparition */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 .user-info {
   display: flex;
@@ -78,7 +253,7 @@ html,body {
   background:rgb(250, 250, 250);
   padding-top: 30px;
   transition: left 0.3s ease;
-  box-shadow: 2px 2px 2px 2px rgba(2, 76, 115, 0.1);
+  box-shadow: 5px 5px 5px 5px rgba(2, 76, 115, 0.1);
 }
 
 .sidebar ul {
@@ -119,8 +294,8 @@ html,body {
 
 /* Élément actif */
 .sidebar ul li a.active {
-  border-left: 4px solid #1abc9c;
-  border-right: 4px solid #1abc9c;
+  border-left: 4px solid rgba(3, 98, 149, 0.534);
+  border-right: 4px solid rgba(3, 98, 149, 0.534);
   font-weight: bold;
   background: transparent;
 }

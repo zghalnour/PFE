@@ -1,0 +1,163 @@
+/* Conservez les variables :host comme avant */
+.content {
+  min-height: 100vh;
+  width: calc(100% - 260px);
+  margin-left: 240px;
+  margin-top: 25px;
+  margin-right: 20px;
+  padding: 20px;
+  background-color: #eae8e889;
+  display: flex;
+  flex-direction: column;
+}
+:host {
+  --cal-border-color: #e5e7eb;
+  --cal-header-bg: #f9fafb;
+  --cal-cell-hover-bg: #f3f4f6;
+  --cal-today-bg: #eff6ff;
+  --cal-today-text: #1d4ed8;
+  --cal-day-number-color: #374151;
+  --cal-out-month-opacity: 0.4;
+  --cal-event-text-color: white;
+  --cal-event-default-bg: #3b82f6;
+  --cal-event-hover-brightness: 90%;
+}
+
+.calendar-wrapper {
+}
+
+/* En-tête des jours (Lun, Mar...) - Pas de changement */
+.cal-header {
+  border-bottom: 1px solid var(--cal-border-color);
+  background-color: var(--cal-header-bg);
+  padding: 0.75rem 0;
+}
+.cal-header .cal-header-cell {
+  text-align: center;
+}
+
+/* Grille principale du calendrier - Pas de changement */
+.cal-month-view {
+  border: none;
+}
+.cal-month-view .cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+/* Cellules de jour individuelles */
+.cal-day-cell {
+  min-height: 140px; /* Augmenter légèrement si besoin de place */
+  position: relative;
+  border-bottom: 1px solid var(--cal-border-color);
+  border-right: 1px solid var(--cal-border-color);
+  background-color: white;
+  transition: background-color 0.15s ease-in-out;
+  /* display: flex et flex-direction sont retirés, la structure interne gère */
+  padding: 0; /* Pas de padding sur la cellule elle-même */
+}
+
+.cal-day-cell:nth-child(7n) {
+  border-right: none;
+}
+
+/* Contenu cliquable de la cellule */
+.day-cell-content {
+  width: 100%;
+  height: 100%;
+  display: flex; /* Pour que la carte interne puisse grandir */
+  flex-direction: column;
+  cursor: pointer; /* Curseur pour indiquer cliquable */
+}
+.cal-day-cell:not(.cal-disabled):not(.cal-out-month) .day-cell-content:hover {
+   background-color: var(--cal-cell-hover-bg); /* Effet de survol */
+}
+
+
+/* La carte interne */
+.day-card {
+  flex-grow: 1; /* Prend toute la hauteur disponible */
+  display: flex;
+  flex-direction: column;
+  padding: 4px; /* Petit padding interne à la carte */
+  overflow: hidden; /* Cache le contenu qui dépasse */
+}
+
+/* Conteneur du numéro */
+.day-number-container {
+  text-align: right; /* Aligner le numéro à droite */
+  padding-bottom: 2px; /* Espace sous le numéro */
+  flex-shrink: 0; /* Ne pas rétrécir */
+}
+
+/* Style du numéro */
+.cal-day-number {
+  display: inline-block;
+  font-size: 0.8rem; /* Taille légèrement réduite */
+  font-weight: 500;
+  color: var(--cal-day-number-color);
+  line-height: 1;
+  padding: 2px 4px; /* Petit padding autour */
+}
+
+/* Liste des absences */
+.day-absences-list {
+  flex-grow: 1; /* Prend l'espace restant */
+  overflow-y: auto; /* Scroll si la liste est longue */
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 var(--cal-cell-hover-bg);
+}
+.day-absences-list::-webkit-scrollbar { width: 5px; }
+.day-absences-list::-webkit-scrollbar-track { background: transparent; } /* Fond transparent */
+.day-absences-list::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; }
+
+/* Style d'un élément d'absence dans la liste */
+.absence-item.cal-event { /* Combinaison pour spécificité */
+  color: var(--cal-event-text-color);
+  background-color: var(--cal-event-default-bg);
+  border-radius: 3px; /* Moins arrondi */
+  padding: 2px 5px; /* Padding plus petit */
+  font-size: 0.7rem; /* Texte plus petit */
+  margin-bottom: 3px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer; /* Curseur différent pour l'événement */
+  transition: filter 0.15s ease-in-out;
+}
+.absence-item.cal-event:hover {
+  filter: brightness(var(--cal-event-hover-brightness));
+}
+.absence-item.cal-event .cal-event-title {
+  vertical-align: middle;
+}
+
+
+/* Styles spécifiques aux états des cellules */
+.cal-day-cell.cal-out-month .day-card {
+  background-color: var(--cal-header-bg);
+  cursor: default;
+}
+.cal-day-cell.cal-out-month .cal-day-number {
+  opacity: var(--cal-out-month-opacity);
+}
+.cal-day-cell.cal-out-month .day-absences-list {
+  opacity: 0.6;
+}
+
+.cal-day-cell.cal-today .day-card {
+  /* Optionnel: léger fond différent pour la carte du jour */
+  /* background-color: var(--cal-today-bg); */
+}
+.cal-day-cell.cal-today .cal-day-number {
+  color: var(--cal-today-text);
+  font-weight: 700; /* Plus gras */
+  /* Optionnel: Cercle */
+  /* background-color: var(--cal-today-text); color: white; border-radius: 50%; */
+  /* width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; */
+}
+
+/* Retirer la classe .content du début si elle n'est pas nécessaire ici */
+/* .content { ... } */
+

@@ -131,7 +131,7 @@ namespace PfeRH.Controllers
                 double scoreAI = 0.0;
                 string competencesExtraites = "";
 
-                var responseObject = await _cvScoringController.ScoreCVPdf(candidatureDto.CVFile, offre.Competences.ToLower()) as OkObjectResult;
+                var responseObject = await _cvScoringController.ScoreCVPdf(candidatureDto.CVFile,offre.Description.ToLower()+" "+offre.Competences.ToLower()) as OkObjectResult;
 
                 // Vérifiez que la réponse contient une valeur
                 if (responseObject != null && responseObject.Value != null)
@@ -390,7 +390,7 @@ namespace PfeRH.Controllers
 
                 if (candidatureDto.CVFile != null)
                 {
-                    var responseObject = await _cvScoringController.ScoreCVPdf(candidatureDto.CVFile, offre.Competences.ToLower()) as OkObjectResult;
+                    var responseObject = await _cvScoringController.ScoreCVPdf(candidatureDto.CVFile,offre.Description.ToLower()+" "+offre.Competences.ToLower()) as OkObjectResult;
                     if (responseObject != null && responseObject.Value != null)
                     {
                         string jsonResponse = JsonConvert.SerializeObject(responseObject.Value, Formatting.Indented);
@@ -442,6 +442,7 @@ namespace PfeRH.Controllers
                     NomPrenom = c.Candidat.NomPrenom,
                     Email = c.Candidat.Email,
                     Telephone = c.Candidat.PhoneNumber,
+                    nbEntretiens=c.nbEntretiens,
                     // Transformation des entretiens en une liste de DTO ou propriétés appropriées
                     Entretiens = c.Entretiens.Select(e => new EntretienDto
                     {
@@ -457,13 +458,33 @@ namespace PfeRH.Controllers
 
             return Ok(candidatures);
         }
+        [HttpPut("updateNbEntretiens/{id}/{nbEntretiens}")]
+        public async Task<IActionResult> UpdateNbEntretiens(int id, int nbEntretiens)
+        {
+            var candidature = await _context.Candidatures.FindAsync(id);
+
+            if (candidature == null)
+            {
+                return NotFound(new { message = "Candidature non trouvée." });
+            }
+
+            candidature.nbEntretiens = nbEntretiens;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "nbEntretiens mis à jour avec succès." });
+        }
+
         [HttpGet("{candidatureId}/entretiens")]
         public async Task<IActionResult> GetEntretiensParCandidature(int candidatureId)
         {
             try
             {
+                // Récupérer la candidature avec les entretiens et le candidat
                 var candidature = await _context.Candidatures
+                    .Include(c => c.Offre)
+                    .Include(c => c.Candidat)  // Inclure le candidat pour récupérer son nom
                     .Include(c => c.Entretiens)
+                    .ThenInclude(e => e.Responsable)  // Inclure le responsable dans les entretiens
                     .FirstOrDefaultAsync(c => c.Id == candidatureId);
 
                 if (candidature == null)
@@ -471,15 +492,20 @@ namespace PfeRH.Controllers
                     return NotFound("Candidature non trouvée.");
                 }
 
+                // Créer le DTO avec l'ajout du nom du candidat
                 var entretiensDto = candidature.Entretiens.OrderBy(e => e.DateEntretien).Select(e => new
                 {
                     e.Id,
                     e.TypeEntretien,
                     e.DateEntretien,
-                    e.Statut, 
+                    e.Statut,
                     e.Commentaire,
                     e.ModeEntretien,
-                    e.ResponsableId
+                    ResponsableNom = e.Responsable != null ? e.Responsable.NomPrenom : "Non assigné", // Nom du responsable
+                    NomCandidat = candidature.Candidat != null ? candidature.Candidat.NomPrenom : "Candidat non trouvé",
+                    EmailCandidat = candidature.Candidat != null ? candidature.Candidat.Email : "Email non trouvé", 
+                    TelephoneCandidat = candidature.Candidat != null ? candidature.Candidat.PhoneNumber : "Téléphone non trouvé",
+                    Poste=candidature.Offre.Titre
                 });
 
                 return Ok(entretiensDto);
@@ -489,6 +515,8 @@ namespace PfeRH.Controllers
                 return StatusCode(500, $"Erreur serveur : {ex.Message}");
             }
         }
+
+
         [HttpGet("{id}/parcours")]
         public async Task<IActionResult> GetParcoursEtapes(int id)
         {
@@ -553,6 +581,7 @@ namespace PfeRH.Controllers
         public string Email { get; set; }
         public string Telephone { get; set; }
         public List<EntretienDto> Entretiens { get; set; }
+        public int? nbEntretiens { get; set; }
     }
     public class EntretienDto
     {  public int Id { get; set; }

@@ -2,49 +2,88 @@ import { Component ,OnInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-export interface ParcoursEtape {
-  etapeNom: string;
+export interface ParcourEntretien {
+  id: number;
+  typeEntretien: string;
+  dateEntretien: string;
+  statut: string;
+  commentaire: string;
+  modeEntretien: string;
   responsableNom: string;
-  date?: string | Date; // Date de l'entretien ou de l'étape
-  statut?: string; // Ex: 'Passé', 'Echoué', 'En cours', 'Terminé'
-  commentaire?: string; // Commentaire de l'entretien
+  nomCandidat?: string;
+  emailCandidat?: string;
+  telephoneCandidat?: string;
+  poste?:string
 }
+
 @Component({
   selector: 'app-parcours-candidat',
   templateUrl: './parcours-candidat.component.html',
   styleUrl: './parcours-candidat.component.css'
 })
 export class ParcoursCandidatComponent implements OnInit {
-  candidatureId: number | null = null;
-  parcours$: Observable<ParcoursEtape[]> | null = null; // Utiliser un Observable pour le template async
-  candidatNom: string = ''; // Pour afficher le nom
-
+  entretiens: ParcourEntretien[] = [];
+  candidatureId!: number;
+  
+  candidatNom: string = '';
+  candidatEmail: string = '';
+  candidatTlph: string = '';
+  candidatPoste: string = '';
+  showCreateAccountButton: boolean = false;
+  showDecisionDialog = false;
+  decisionResult: 'accepter' | 'refuser' | null = null;
+  
+  
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient
   ) {}
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    if (idParam) {
-      this.candidatureId = +idParam;
-      // Appel API pour récupérer les données du parcours ET le nom du candidat
-      this.parcours$ = this.http.get<ParcoursEtape[]>(`http://localhost:5053/api/candidatures/${this.candidatureId}/parcours`);
-
-      // Optionnel: Appel séparé pour les détails du candidat si non inclus dans l'API parcours
-      this.http.get<any>(`http://localhost:5053/api/Candidature/getCandidatureById/${this.candidatureId}`)
-         .subscribe(candidat => this.candidatNom = candidat.nomPrenom);
-    } else {
-      console.error("ID de candidature manquant dans l'URL");
-      // Gérer l'erreur, peut-être rediriger
-    }
+    this.route.paramMap.subscribe(params => {
+      const id = +params.get('id')!;
+      this.candidatureId = id;
+      this.loadEntretiens(this.candidatureId); // ou une autre méthode liée à ce parcours
+    });
   }
-
+  
+  
+  loadEntretiens(id: number): void {
+    this.http.get<ParcourEntretien[]>(`http://localhost:5053/api/Candidature/${id}/entretiens`)
+      .subscribe({
+        next: (data) => {
+          // Créer un entretien statique et l'ajouter au début de la liste
+          const entretienStatique: ParcourEntretien = {
+            id: 0,
+            typeEntretien: 'Préselection',
+            dateEntretien: new Date().toISOString(),
+            statut: 'Passé',
+            commentaire: 'L’administrateur a présélectionné ce candidat à l’aide du score IA du CV envoyé.',
+            modeEntretien: '',
+            responsableNom: 'Admin',
+            
+          };
+          
+          // Ajouter l'entretien statique au début de la liste
+          this.entretiens = [entretienStatique, ...data];
+          console.log('Entretiens:', this.entretiens);
+          this.candidatNom=data[0].nomCandidat || '';
+          this.candidatEmail=data[0].emailCandidat || '';
+          this.candidatTlph=data[0].telephoneCandidat || '';
+          this.candidatPoste=data[0].poste || '';
+          
+          
+        },
+        error: (err) => {
+          console.error('Erreur chargement entretiens:', err);
+        }
+      });
+  }
    // Fonction pour formater la date si nécessaire (similaire à celle du dashboard)
    formatDate(date: Date | string | undefined): string {
      if (!date) return '';
      const parsedDate = new Date(date);
      if (isNaN(parsedDate.getTime())) return '';
-     return parsedDate.toLocaleDateString('fr-FR') + ' ' + parsedDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+     return parsedDate.toLocaleDateString('fr-FR') ;
    }
 
    // Fonction pour obtenir une classe CSS basée sur le statut de l'étape
@@ -57,4 +96,22 @@ export class ParcoursCandidatComponent implements OnInit {
      return 'pending';
    }
 
+  openDecisionDialog() {
+    this.showDecisionDialog = true;
+    this.decisionResult = null;
+  }
+  handleDecisionClick() {
+    this.openDecisionDialog();
+  }
+  
+  finalDecision(choice: 'accepter' | 'refuser') {
+    this.showDecisionDialog = false;
+    this.decisionResult = choice;
+  
+    if (choice === 'refuser') {
+      // ici tu peux déclencher l'envoi d'email côté service si nécessaire
+      console.log("Email envoyé au candidat");
+    }
+  }
+  
 }
