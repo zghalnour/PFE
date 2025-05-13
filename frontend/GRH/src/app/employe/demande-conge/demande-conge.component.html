@@ -20,7 +20,7 @@
   </div>
   
 
-  <div *ngIf="!isLoading && !errorLoading">
+  <div *ngIf="!isLoading && !errorLoading && listeDemandes.length !== 0">
     <table mat-table [dataSource]="listeDemandes" matSort class="mat-elevation-z8">
   
       <!-- Type de congé -->
@@ -98,7 +98,12 @@
   
     </table>
   </div>
-  
+  <div *ngIf="!isLoading && !errorLoading && (!listeDemandes || listeDemandes.length === 0)" class="text-center py-10">
+  <mat-icon class="text-6xl text-gray-400 mb-4">inbox</mat-icon>
+  <p class="text-xl text-gray-600">Aucune demande de congé pour le moment.</p>
+  <p class="text-gray-500">Cliquez sur "+ Nouvelle Demande" pour en créer une.</p>
+</div>
+
 
 </main>
 <ng-template #confirmDialog let-dialogRef="dialogRef">

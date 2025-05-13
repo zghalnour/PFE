@@ -33,6 +33,18 @@ interface MonthlyTaskCompletion {
   mois: string; // Format "YYYY-MM"
   nombreTaches: number;
 }
+export interface ResourceSuggestion {
+  titre: string;
+  lien: string;
+  // Add other properties if your API returns more, e.g., description
+}
+
+// Interface for an item (task or goal) that has suggestions
+export interface ActionableItemSuggestion {
+  id: string | number; // Unique ID for the task or goal
+  description: string; // Description of the task or goal
+  suggestions: ResourceSuggestion[];
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -59,12 +71,20 @@ export class DashboardComponent implements OnInit {
 
   complaintText: string = '';
   showComplaintForm: boolean = false;
-  currentKpiValue: number = 75;
+  currentKpiValue: number = 0;
+  resourceSearchTerm: string = '';
+  suggestedResources: any | null = null;
+  isLoadingResources: boolean = false;
+  initialResourceSearchDone: boolean = false;
+   isLoadingAutomaticSuggestions: boolean = false;
+  actionableTaskSuggestions: ActionableItemSuggestion[] = [];
+  actionableGoalSuggestions: ActionableItemSuggestion[] = [];
   public kpiGaugeData: ChartConfiguration<'doughnut'>['data'] = {
     labels: ['Atteint', 'Restant'],
     datasets: [{
       data: [this.currentKpiValue, 100 - this.currentKpiValue],
-      backgroundColor: ['#28a745', '#e9ecef'], // Vert pour atteint, Gris pour restant
+      backgroundColor: ['#28a745', '#e9ecef'],
+      hoverBackgroundColor: ['#28a745', '#e9ecef'], 
       borderWidth: 0,
       circumference: 180, // Demi-cercle
       rotation: 270,      // Commence en bas
@@ -79,10 +99,38 @@ export class DashboardComponent implements OnInit {
     },
     cutout: '70%', // Crée l'effet de jauge
   };
+  fetchSuggestedResources(): void {
+    if (!this.resourceSearchTerm.trim()) {
+      // Optionally, clear results or show a message if search term is empty
+      // this.suggestedResources = null;
+      return;
+    }
+    this.isLoadingResources = true;
+    this.initialResourceSearchDone = true;
+    this.suggestedResources = null; // Clear previous results
+
+    const payload = {
+      task_description: this.resourceSearchTerm
+    };
+
+    this.http.post('http://localhost:5053/api/Ressource/rechercher', payload).subscribe({
+      next: (response: any) => {
+        this.suggestedResources = response;
+        this.isLoadingResources = false;
+        console.log('Suggested resources fetched:', response);
+      },
+      error: (err) => {
+        console.error('Error fetching suggested resources:', err);
+        this.suggestedResources = { tache: this.resourceSearchTerm, resultats: [] }; // Show "not found" for this search
+        this.isLoadingResources = false;
+        // Potentially set an error message to display to the user
+      }
+    });
+  }
   selectedYear: number=2025;
   availableYears: number[] = [];
   isLoadingTrendData: boolean = true;
-
+ 
   // 2. Tendance de Performance (Ligne)
   public performanceLineChartData: ChartConfiguration<'line'>['data'] = {
     // Labels fixes pour les 12 mois
@@ -134,8 +182,38 @@ export class DashboardComponent implements OnInit {
     this.loadUserData();
     this.fetchEmployeeData();
     this.fetchProjectsAndTasks();
-    this.fetchKpiData();
-  
+    
+  }
+   calculateAndSetKpi(): void {
+    const totalTasks = this.totalCompletedTasks + this.totalIncompleteTasks;
+    const taskCompletionRatio = totalTasks > 0 ? this.totalCompletedTasks / totalTasks : 0;
+
+    const completedSmartGoals = this.smartGoals.filter(goal => goal.etat === true).length;
+    const totalSmartGoals = this.smartGoals.length;
+    const smartGoalCompletionRatio = totalSmartGoals > 0 ? completedSmartGoals / totalSmartGoals : 0;
+
+    let kpiSum = 0;
+    let kpiComponents = 0;
+
+    if (totalTasks > 0) {
+      kpiSum += taskCompletionRatio;
+      kpiComponents++;
+    }
+
+    if (this.smartGoals && totalSmartGoals > 0) {
+      kpiSum += smartGoalCompletionRatio;
+      kpiComponents++;
+    }
+
+    this.currentKpiValue = kpiComponents > 0 ? Math.round((kpiSum / kpiComponents) * 100) : 0;
+    this.currentKpiValue = Math.max(0, Math.min(100, this.currentKpiValue)); // Ensure 0-100 range
+
+    // Update gauge data, re-assigning to ensure chart updates
+    this.kpiGaugeData = {
+      ...this.kpiGaugeData,
+      datasets: [{ ...this.kpiGaugeData.datasets[0], data: [this.currentKpiValue, 100 - this.currentKpiValue] }]
+    };
+    console.log('KPI calculated and gauge updated:', this.currentKpiValue);
   }
   loadUserData(): void {
     const storedName = localStorage.getItem('userName');
@@ -170,13 +248,78 @@ export class DashboardComponent implements OnInit {
           this.smartGoals=data.objectifsSmart;
           this.monthlyTaskCompletionData = data.nombreTachesCompletesParMois;
           this.calculateStatistics(); 
-
+          this.calculateAndSetKpi();
           this.processPerformanceTrendData(this.selectedYear);
+           this.fetchAutomaticSuggestions();
         },
         error: (err) => {
           console.error('Erreur lors de la récupération des projets et tâches', err);
         }
       });
+  }
+   fetchAutomaticSuggestions(): void {
+    if (this.isLoadingAutomaticSuggestions) {
+      return; // Prevent multiple simultaneous calls
+    }
+    this.isLoadingAutomaticSuggestions = true;
+    this.actionableTaskSuggestions = [];
+    this.actionableGoalSuggestions = [];
+
+    const taskSuggestionPromises: Promise<void>[] = [];
+    const goalSuggestionPromises: Promise<void>[] = [];
+
+    // 1. Get suggestions for incomplete tasks
+    this.assignedProjects.forEach(project => {
+      project.taches.forEach(task => {
+        if (task.statut !== 'Terminé' && task.statut !== 'Terminée') { // Check for various "incomplete" statuses
+          const payload = { task_description: task.titre || task.description }; // Use titre, fallback to description
+          const promise = this.http.post<any>('http://localhost:5053/api/Ressource/rechercher', payload)
+            .toPromise()
+            .then(response => {
+              if (response && response.resultats) {
+                this.actionableTaskSuggestions.push({
+                  id: task.tacheId,
+                  description: task.titre, // Or a more detailed description if available
+                  suggestions: response.resultats
+                });
+              }
+            })
+            .catch(error => {
+              console.error(`Error fetching suggestions for task "${task.titre}":`, error);
+              // Optionally add task with empty suggestions or an error message
+            });
+          taskSuggestionPromises.push(promise);
+        }
+      });
+    });
+
+    // 2. Get suggestions for unachieved SMART goals
+    this.smartGoals.forEach(goal => {
+      if (!goal.etat) { // etat is false for unachieved goals
+        const payload = { task_description: goal.description };
+        const promise = this.http.post<any>('http://localhost:5053/api/Ressource/rechercher', payload)
+          .toPromise()
+          .then(response => {
+            if (response && response.resultats) {
+              this.actionableGoalSuggestions.push({
+                id: goal.objectifId,
+                description: goal.description,
+                suggestions: response.resultats
+              });
+            }
+          })
+          .catch(error => {
+            console.error(`Error fetching suggestions for goal "${goal.description}":`, error);
+          });
+        goalSuggestionPromises.push(promise);
+      }
+    });
+
+    Promise.all([...taskSuggestionPromises, ...goalSuggestionPromises]).finally(() => {
+      this.isLoadingAutomaticSuggestions = false;
+      console.log('Automatic task suggestions:', this.actionableTaskSuggestions);
+      console.log('Automatic goal suggestions:', this.actionableGoalSuggestions);
+    });
   }
     // Renamed from fetchPerformanceTrendData
     processPerformanceTrendData(year: number): void {
@@ -245,31 +388,7 @@ export class DashboardComponent implements OnInit {
     // this.isLoadingGoals = false;
   }
 
-  fetchKpiData(): void {
-    
-    const employeeId = '123'; // Obtenir l'ID réel
-    // Simuler un appel API
-    setTimeout(() => {
-      this.currentKpiValue = Math.floor(Math.random() * (95 - 60 + 1)) + 60; // Valeur aléatoire pour démo
-      this.kpiGaugeData.datasets[0].data = [this.currentKpiValue, 100 - this.currentKpiValue];
-    
-      console.log('KPI fetched:', this.currentKpiValue);
-    }, 1200); // Simuler délai réseau
-    /*
-    this.http.get<{ kpiValue: number }>(`/api/employees/${employeeId}/kpi`)
-      .subscribe({
-        next: (response) => {
-          this.currentKpiValue = response.kpiValue;
-          this.kpiGaugeData.datasets[0].data = [this.currentKpiValue, 100 - this.currentKpiValue];
-          this.isLoadingKpi = false;
-        },
-        error: (err) => {
-          console.error('Error fetching KPI:', err);
-          this.isLoadingKpi = false;
-        }
-      });
-      */
-  }
+
 
 
 
@@ -303,21 +422,37 @@ export class DashboardComponent implements OnInit {
   
 
   submitComplaint(): void {
-    if (this.complaintText.trim()) {
-      // In a real app, you would send this complaint to the admin/backend
-      console.log('Réclamation envoyée:', this.complaintText);
-      alert('Votre réclamation a été envoyée.'); // Simple feedback
-      this.complaintText = ''; // Clear the textarea
-    } else {
+   const description = this.complaintText.trim();
+    if (!description) {
       alert('Veuillez écrire votre réclamation avant de l\'envoyer.');
+      return;
+    } 
+    if (!this.employeId) {
+      alert('Erreur: Impossible d\'identifier l\'employé. Veuillez vous reconnecter.');
+      console.error('Employee ID is missing for complaint submission.');
+      return;
     }
+     const complaintData = {
+      employeId: this.employeId,
+      description: description
+    };
+
+    this.http.post('http://localhost:5053/api/Reclamation/add', complaintData).subscribe({
+      next: (response: any) => {
+        console.log('Réclamation envoyée avec succès:', response);
+        alert(response.message || 'Votre réclamation a été envoyée avec succès.');
+        this.complaintText = ''; // Clear the textarea
+        this.showComplaintForm = false; // Optionally close the form
+      },
+      error: (err) => {
+        console.error('Erreur lors de l\'envoi de la réclamation:', err);
+        alert('Une erreur est survenue lors de l\'envoi de votre réclamation. Veuillez réessayer.');
+      }
+    });
   }
   toggleComplaintForm(): void {
     this.showComplaintForm = !this.showComplaintForm;
-    if (this.showComplaintForm) {
-      // Optional: Clear text when opening
-      // this.complaintText = '';
-    }
+  
   }
 
   // Optional: Method to close the modal when clicking the overlay background

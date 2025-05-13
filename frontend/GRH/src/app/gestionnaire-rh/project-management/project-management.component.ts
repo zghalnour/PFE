@@ -141,7 +141,7 @@ export class ProjectManagementComponent implements OnInit {
       dateEvaluation: ['', Validators.required],
       titre: ['', Validators.required],
       lieu: ['', Validators.required],
-      pointsADiscuter: ['', Validators.required]
+    
     });
     
   }
@@ -240,6 +240,7 @@ submitEvaluationMeeting(): void {
       }
     });
 }
+
 
 
 // --- Task Creation for Forms (Modify to handle existing tasks) ---
@@ -585,6 +586,7 @@ submitEditProject(): void {
                 ...proj, // Spread existing project properties
                 // Get progress from the map, default to 0 if not found (or handle as needed)
                 progressPercentage: progressMap.get(proj.id) ?? 0,
+              
                 reunions: proj.reunions?.filter(r => new Date(r.dateEvaluation) > new Date()) ?? []
               }))
             }));

@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace PfeRH.Models
 {
@@ -17,7 +19,8 @@ namespace PfeRH.Models
         public DateTime DateDemande { get; set; }
 
         public string Raison { get; set; } // Motif de la demande de congé (optionnel)
-        public string Type { get; set; }
+
+        public TypeConge Type { get; set; }
         public string Statut { get; set; } // Statut de la demande : "En Attente", "Acceptée", "Refusée"
 
         // Constructeur par défaut
@@ -28,7 +31,7 @@ namespace PfeRH.Models
         }
 
         // Constructeur avec paramètres
-        public DemandeConge(int id, int employeId, DateTime dateDebut, DateTime dateFin, string motif, string statut, string type)
+        public DemandeConge(int id, int employeId, DateTime dateDebut, DateTime dateFin, string motif, string statut, TypeConge type)
         {
             Id = id;
             EmployeId = employeId;
@@ -41,4 +44,15 @@ namespace PfeRH.Models
             Type = type;
         }
     }
+    public enum TypeConge
+    {
+        CongeAnnuel,
+        CongeMaladie,
+        CongeSansSolde,
+        CongeMaternite,
+        CongePaternite
+    }
+
+
+
 }

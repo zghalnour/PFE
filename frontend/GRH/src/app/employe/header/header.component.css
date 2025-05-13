@@ -101,7 +101,7 @@ html,body {
   display: block;
   padding: 15px;
   border-radius: 5px;
-  
+  cursor: pointer;
 }
 
 .sidebar ul li a i {

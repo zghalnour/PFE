@@ -107,9 +107,56 @@ namespace PfeRH.Controllers
                     });
                 }
             }
+            var response = new EntretienResponseDto
+            {
+                Id = entretien.Id,
+                Commentaire = entretien.Commentaire,
+                Statut = entretien.Statut,
+                candidatureId = entretien.CandidatureId,
+               
+            };
+
+            return Ok(response);
 
 
-            return Ok(entretien); // Retourne l'objet entretien mis à jour
+        }
+        [HttpGet("dates")]
+        public async Task<ActionResult<IEnumerable<EntretienDateDto>>> GetAllDateEntretiens()
+        {
+            var dates = await _context.Entretiens
+                .Select(e => new EntretienDateDto
+                {
+                    Id = e.Id,
+                    DateEntretien = e.DateEntretien
+                })
+                .ToListAsync();
+
+            return Ok(dates);
+        }
+
+        [HttpGet("by-responsable")]
+        public async Task<ActionResult<IEnumerable<object>>> GetEntretiensByResponsableName([FromQuery] string nom)
+        {
+            if (string.IsNullOrWhiteSpace(nom))
+            {
+                return BadRequest("Le nom du responsable est requis.");
+            }
+
+            var entretiens = await _context.Entretiens
+                .Include(e => e.Responsable)
+                .Where(e => e.Responsable != null &&
+                            (e.Responsable.NomPrenom).ToLower().Contains(nom.ToLower()))
+                .Select(e => new
+                {
+                    Id = e.Id,
+                    Commentaire = e.Commentaire,
+                    Statut = e.Statut,
+                    CandidatureId = e.CandidatureId,
+                    NomPrenomResponsable = e.Responsable.NomPrenom
+                })
+                .ToListAsync();
+
+            return Ok(entretiens);
         }
 
 
@@ -125,8 +172,22 @@ namespace PfeRH.Controllers
     }
     public class EntretienUpdateDto
     {
-        public string Commentaire { get; set; }
+        public string? Commentaire { get; set; }
         public string Statut { get; set; } // Accepté, Refusé, En cours
+    }
+    public class EntretienResponseDto
+    {
+        public int Id { get; set; }
+        public string Commentaire { get; set; }
+        public string Statut { get; set; }
+        public int candidatureId { get; set; }
+       
+    }
+
+    public class EntretienDateDto
+    {
+        public int Id { get; set; }
+        public DateTime DateEntretien { get; set; }
     }
 
 

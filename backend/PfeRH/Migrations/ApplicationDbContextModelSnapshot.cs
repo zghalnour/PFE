@@ -251,9 +251,8 @@ namespace PfeRH.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -375,10 +374,6 @@ namespace PfeRH.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Lieu")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PointsADiscuter")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -543,16 +538,11 @@ namespace PfeRH.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("GestionnaireRHId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Nom")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GestionnaireRHId");
 
                     b.ToTable("Projets");
                 });
@@ -814,14 +804,17 @@ namespace PfeRH.Migrations
                 {
                     b.HasBaseType("PfeRH.Models.Utilisateur");
 
+                    b.Property<DateTime?>("DateDepart")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("DateEmbauche")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("DepartementId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("GestionnaireRHId")
-                        .HasColumnType("int");
+                    b.Property<bool>("Etat")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Poste")
                         .IsRequired()
@@ -832,7 +825,11 @@ namespace PfeRH.Migrations
 
                     b.HasIndex("DepartementId");
 
-                    b.HasIndex("GestionnaireRHId");
+                    b.ToTable("AspNetUsers", t =>
+                        {
+                            t.Property("Etat")
+                                .HasColumnName("Employe_Etat");
+                        });
 
                     b.HasDiscriminator().HasValue("Employe");
                 });
@@ -840,6 +837,9 @@ namespace PfeRH.Migrations
             modelBuilder.Entity("PfeRH.Models.GestionnaireRH", b =>
                 {
                     b.HasBaseType("PfeRH.Models.Utilisateur");
+
+                    b.Property<bool>("Etat")
+                        .HasColumnType("bit");
 
                     b.HasDiscriminator().HasValue("GestionnaireRH");
                 });
@@ -965,7 +965,7 @@ namespace PfeRH.Migrations
                         .HasForeignKey("EmployeId");
 
                     b.HasOne("PfeRH.Models.GestionnaireRH", "GestionnaireRh")
-                        .WithMany("Evaluations")
+                        .WithMany()
                         .HasForeignKey("GestionnaireRhId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1030,13 +1030,6 @@ namespace PfeRH.Migrations
                     b.Navigation("Test");
                 });
 
-            modelBuilder.Entity("PfeRH.Models.Projet", b =>
-                {
-                    b.HasOne("PfeRH.Models.GestionnaireRH", null)
-                        .WithMany("Projets")
-                        .HasForeignKey("GestionnaireRHId");
-                });
-
             modelBuilder.Entity("PfeRH.Models.Question", b =>
                 {
                     b.HasOne("PfeRH.Models.Test", "Test")
@@ -1099,10 +1092,6 @@ namespace PfeRH.Migrations
                         .WithMany("Employes")
                         .HasForeignKey("DepartementId");
 
-                    b.HasOne("PfeRH.Models.GestionnaireRH", null)
-                        .WithMany("Employes")
-                        .HasForeignKey("GestionnaireRHId");
-
                     b.Navigation("Departement");
                 });
 
@@ -1161,15 +1150,6 @@ namespace PfeRH.Migrations
                     b.Navigation("ObjectifsSmarts");
 
                     b.Navigation("Reclamations");
-                });
-
-            modelBuilder.Entity("PfeRH.Models.GestionnaireRH", b =>
-                {
-                    b.Navigation("Employes");
-
-                    b.Navigation("Evaluations");
-
-                    b.Navigation("Projets");
                 });
 #pragma warning restore 612, 618
         }

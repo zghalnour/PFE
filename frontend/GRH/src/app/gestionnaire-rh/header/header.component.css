@@ -91,8 +91,8 @@ html,body {
   padding-left: 25px;
   padding-right: 30px;
   padding-top: 20px;
-
   text-align: start;
+  cursor: pointer;
 }
 
 .sidebar ul li a {
@@ -101,7 +101,7 @@ html,body {
   display: block;
   padding: 15px;
   border-radius: 5px;
-  
+  cursor: pointer;
 }
 
 .sidebar ul li a i {

@@ -170,6 +170,16 @@ namespace PfeRH.Controllers
                     await _userManager.AddToRoleAsync(user, updatedUser.Role);
                     isUpdated = true;
                 }
+                if ((currentRole == "employe" || currentRole == "gestionnaireRh") && updatedUser.Etat.HasValue)
+                {
+                    if (user is Employe employe)
+                    {
+                        employe.Etat = updatedUser.Etat.Value;
+                        isUpdated = true;
+                    }
+                }
+
+
             }
 
             if (isUpdated)

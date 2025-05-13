@@ -6,4 +6,22 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* Par défaut : pas de curseur texte ni caret */
+body, *:not(input):not(textarea):not([contenteditable="true"]):not(button):not([role="button"]) {
+  cursor: default;
+  caret-color: transparent;
+}
+
+/* Pour les champs de texte : curseur texte et caret visible */
+input, textarea, [contenteditable="true"] {
+  cursor: text;
+  caret-color: auto;
+}
+
+/* Pour les boutons et icônes interactives : curseur pointer */
+button, .fa, .cursor-pointer {
+  cursor: pointer;
+}
+
+
 

@@ -1,5 +1,5 @@
 .content {
-  min-height: 100vh;
+  min-height: 200vh;
   width: calc(100% - 260px);
   margin-left: 240px;
   margin-top: 25px;
@@ -180,6 +180,181 @@
   font-weight: bold;
   font-size: 17px;
 }
+/* In dashboard.component.css or your global styles */
+/* Dans dashboard.component.css */
+
+.form-row {
+  display: flex;
+  gap: 1rem; /* Espace entre les groupes */
+  margin-bottom: 1rem;
+  align-items: flex-start; /* Aligne les hauts des champs */
+}
+
+.form-group {
+  flex: 1; /* Permet aux groupes de prendre l'espace disponible */
+  min-width: 150px; /* Empêche les champs d'être trop étroits */
+  position: relative; /* Utile pour positionner les messages d'erreur */
+}
+
+/* Assurer que les champs Material prennent la largeur */
+.mat-form-field {
+  width: 100%;
+}
+
+/* Placeholder pour l'heure quand aucune date n'est sélectionnée */
+.time-picker-placeholder {
+  min-height: 56px; /* Hauteur approx. d'un mat-form-field outline */
+  /* border: 1px dashed lightgray; */ /* Décommentez pour visualiser */
+  width: 100%;
+}
+
+/* Style pour le spinner dans le select */
+.mat-form-field .mat-spinner {
+  position: absolute; /* Positionne le spinner dans le champ */
+  top: 50%;
+  right: 35px; /* Ajustez pour ne pas chevaucher la flèche */
+  transform: translateY(-50%);
+}
+
+/* Style pour l'option "Aucun créneau disponible" */
+.mat-option[disabled] {
+  color: rgba(0, 0, 0, 0.54);
+  font-style: italic;
+}
+
+/* Style pour les labels natifs (si vous les gardez) */
+.form-group > label:not(.mat-mdc-form-field-label) { /* Cible les labels hors Material */
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  font-size: 0.9rem; /* Ajustez la taille */
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Style pour le select natif (Responsable) */
+.form-group select {
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    min-height: 56px; /* Aligner avec mat-form-field */
+    box-sizing: border-box;
+    font-size: 1rem; /* Assurer une taille de police lisible */
+    color: rgba(0, 0, 0, 0.87);
+}
+.form-group select:focus {
+    border-color: #3f51b5; /* Couleur Material primaire au focus */
+    outline: none;
+}
+
+/* Styles pour les messages d'erreur Material (mat-error) */
+.mat-mdc-form-field-error {
+    font-size: 0.75rem; /* Taille standard pour les erreurs Material */
+}
+
+/* Styles pour les boutons radio */
+.radio-group {
+  display: flex;
+  gap: 1rem;
+  padding-top: 0.5rem; /* Espace au-dessus */
+  min-height: 40px; /* Hauteur minimale pour alignement */
+  align-items: center;
+}
+.radio-group label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 0; /* Reset margin */
+  font-weight: normal; /* Reset font weight */
+}
+.radio-group input[type="radio"] {
+  margin-right: 0.5rem;
+}
+
+/* Styles pour les snackbars (à mettre dans styles.css global) */
+/* styles.css (global) */
+.success-snackbar {
+  background-color: #4CAF50; /* Vert */
+  color: white;
+}
+
+.error-snackbar {
+  background-color: #f44336; /* Rouge */
+  color: white;
+}
+
+/* Style pour le bouton créer */
+.btn-create {
+    background-color: #3f51b5; /* Couleur primaire Material */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem; /* Espace au-dessus */
+}
+
+.btn-create:hover:not(:disabled) {
+    background-color: #303f9f; /* Couleur plus foncée au survol */
+}
+
+.btn-create:disabled {
+    background-color: rgba(0, 0, 0, 0.12);
+    color: rgba(0, 0, 0, 0.38);
+    cursor: not-allowed;
+}
+
+
+
+/* Ensure Material form fields take appropriate width */
+.date-picker-field,
+.time-picker-field {
+  width: 100%;
+}
+
+/* You might need to adjust label/input alignment if using mat-form-field */
+.mat-form-field {
+  width: 100%;
+}
+
+/* Style for the time input placeholder div */
+.form-group.time-picker-field:empty {
+    min-width: 150px; /* Match the width of the actual time field */
+    /* Add other styles if needed to maintain layout */
+}
+
+/* Adjust radio group layout if needed */
+.radio-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem; /* Align with input fields */
+}
+/* Dans dashboard.component.css */
+
+/* Style pour les cellules de date complètement réservées */
+::ng-deep .mat-calendar-body-cell.fully-booked-date .mat-calendar-body-cell-content {
+  background-color: #ffcdd2 !important; /* Rouge très clair (ou une autre couleur) */
+  color: #b71c1c !important; /* Texte rouge foncé */
+  border-radius: 50%; /* Garder la forme ronde */
+  font-weight: bold;
+  /* Optionnel: Ajouter un effet barré */
+  /* text-decoration: line-through; */
+  /* text-decoration-color: #b71c1c; */
+}
+
+/* Optionnel: Style pour les jours complets au survol (pour éviter le style par défaut) */
+::ng-deep .mat-calendar-body-cell.fully-booked-date:hover .mat-calendar-body-cell-content {
+    background-color: #ffcdd2 !important; /* Garder la même couleur */
+}
+
+/* Assurez-vous que les dates désactivées (par le filtre) sont aussi visuellement claires */
+::ng-deep .mat-calendar-body-cell-disabled .mat-calendar-body-cell-content {
+    color: rgba(0, 0, 0, 0.38) !important; /* Couleur standard pour désactivé */
+}
+
 
 
 .form-group {
@@ -338,18 +513,21 @@ textarea {
 }
 
 /* Couleurs selon statut */
-.timeline-circle.en-cours,
-.timeline-line.en-cours {
+.timeline-line.en-cours,.timeline-line.failed,.timeline-line.passe{
+  background: #8a7b7b;
+}
+.timeline-circle.en-cours
+ {
   background: red;
 }
 
-.timeline-circle.failed,
-.timeline-line.failed {
+.timeline-circle.failed
+ {
   background: red;
 }
 
-.timeline-circle.passe,
-.timeline-line.passe {
+.timeline-circle.passe
+ {
   background: green;
 }
 

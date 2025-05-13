@@ -79,10 +79,46 @@
             <label for="type">Type Entretien</label>
             <input id="type" type="text" [(ngModel)]="nouvelEntretien.typeEntretien" placeholder="Ex: RH, Technique...">
           </div>
-          <div class="form-group">
-            <label for="date">Date Entretien</label>
-            <input id="date" type="date" [(ngModel)]="nouvelEntretien.dateEntretien">
+                  <div >
+            <mat-form-field  class="w-[160px]">
+              <mat-label>Date Entretien</mat-label>
+              <input matInput
+                     [matDatepicker]="picker"
+                     [matDatepickerFilter]="dateFilter"
+                     [(ngModel)]="selectedDate"
+                     (dateChange)="onDateChange($event)"
+                     readonly>
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+              <!-- Validation: Date requise si aucune heure n'est sélectionnée (implique qu'on est en train de créer) -->
+              <mat-error *ngIf="!selectedDate && !selectedTime">Date requise</mat-error>
+            </mat-form-field>
           </div>
+        
+          <!-- Heure Entretien (Select) -->
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="time-picker-field w-full" *ngIf="selectedDate">
+              <mat-label>Heure Entretien</mat-label>
+              <!-- Afficher le spinner pendant le traitement -->
+              <mat-spinner *ngIf="isLoadingSlots" diameter="20" matSuffix></mat-spinner>
+              <!-- Le select est désactivé pendant le chargement/traitement -->
+              <mat-select [(ngModel)]="selectedTime" [disabled]="isLoadingSlots || availableTimeSlots.length === 0">
+                <!-- Option si aucun créneau n'est disponible -->
+                <mat-option *ngIf="!isLoadingSlots && availableTimeSlots.length === 0" [value]="''" disabled>
+                  Aucun créneau disponible
+                </mat-option>
+                <!-- Lister les créneaux disponibles -->
+                <mat-option *ngFor="let time of availableTimeSlots" [value]="time">
+                  {{ time }}
+                </mat-option>
+              </mat-select>
+              <!-- Validation: Heure requise si une date est sélectionnée et qu'il y a des options -->
+              <mat-error *ngIf="selectedDate && !selectedTime && !isLoadingSlots && availableTimeSlots.length > 0">Heure requise</mat-error>
+            </mat-form-field>
+            <!-- Placeholder pour garder l'alignement si aucune date n'est sélectionnée -->
+            <div *ngIf="!selectedDate" class="time-picker-placeholder w-full"></div>
+          </div>
+
         </div>
 
         <!-- Ligne 2: Responsable + Mode -->

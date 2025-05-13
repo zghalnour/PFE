@@ -15,7 +15,7 @@ html,body {
   align-items: center;
   justify-content: space-between;
   background: rgb(250, 250, 250);
-
+  cursor: pointer;
   box-shadow: 3px 3px 3px 3px rgba(2, 102, 155, 0.1);
   height: 60px;
 
@@ -254,6 +254,7 @@ html,body {
   padding-top: 30px;
   transition: left 0.3s ease;
   box-shadow: 5px 5px 5px 5px rgba(2, 76, 115, 0.1);
+  cursor: pointer;
 }
 
 .sidebar ul {
@@ -266,7 +267,7 @@ html,body {
   padding-left: 25px;
   padding-right: 30px;
   padding-top: 20px;
-
+  cursor: pointer;
   text-align: start;
 }
 
@@ -276,7 +277,7 @@ html,body {
   display: block;
   padding: 15px;
   border-radius: 5px;
-  
+  cursor: pointer;
 }
 
 .sidebar ul li a i {

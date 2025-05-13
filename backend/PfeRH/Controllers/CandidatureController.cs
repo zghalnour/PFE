@@ -131,7 +131,7 @@ namespace PfeRH.Controllers
                 double scoreAI = 0.0;
                 string competencesExtraites = "";
 
-                var responseObject = await _cvScoringController.ScoreCVPdf(candidatureDto.CVFile,offre.Description.ToLower()+" "+offre.Competences.ToLower()) as OkObjectResult;
+                var responseObject = await _cvScoringController.ScoreCVPdf(candidatureDto.CVFile,offre.Competences.ToLower()) as OkObjectResult;
 
                 // Vérifiez que la réponse contient une valeur
                 if (responseObject != null && responseObject.Value != null)
@@ -390,7 +390,7 @@ namespace PfeRH.Controllers
 
                 if (candidatureDto.CVFile != null)
                 {
-                    var responseObject = await _cvScoringController.ScoreCVPdf(candidatureDto.CVFile,offre.Description.ToLower()+" "+offre.Competences.ToLower()) as OkObjectResult;
+                    var responseObject = await _cvScoringController.ScoreCVPdf(candidatureDto.CVFile,offre.Competences.ToLower()) as OkObjectResult;
                     if (responseObject != null && responseObject.Value != null)
                     {
                         string jsonResponse = JsonConvert.SerializeObject(responseObject.Value, Formatting.Indented);

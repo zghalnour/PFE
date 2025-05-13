@@ -7,6 +7,8 @@ namespace PfeRH.Models
     {
         public string Poste { get; set; } // Exemple : "Développeur"
         public DateTime DateEmbauche { get; set; }
+        public DateTime? DateDepart {  get; set; }
+        public bool Etat { get; set; }
         public double Salaire {  get; set; }
 
         // Relation avec le département
@@ -34,7 +36,7 @@ namespace PfeRH.Models
             EvaluationsRecues = new List<Evaluation>();
             ObjectifsSmarts = new List<ObjectifSmart>();
             Reclamations = new List<Reclamation>();
-
+            Etat = true;
 
         }
 
@@ -50,7 +52,7 @@ namespace PfeRH.Models
             EvaluationsRecues = new List<Evaluation>();
             ObjectifsSmarts = new List<ObjectifSmart>();
             Reclamations = new List<Reclamation>();
-
+            Etat = true;
         }
     }
 }

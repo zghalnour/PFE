@@ -1,6 +1,14 @@
 import { Component,OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar'; 
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { forkJoin } from 'rxjs'; // Import forkJoin if fetching multiple things at once
+import { finalize } from 'rxjs/operators'; // Import finalize for loading indicators
+
+export interface EntretienDateResponse {
+  id: number;
+  dateEntretien: string; 
+}
 export interface Candidature {
   id: number;
   statut: string; // Add statut
@@ -55,7 +63,18 @@ export class DashboardComponent implements OnInit {
   nombreEntretiens: number | null = null;// Total à planifier
 nombreEntretiensPlanifies: number = 0; // Compteur de ceux terminés
  
+bookedDateTimeSlots: Set<string> = new Set();
+// Dates that have at least one booking (for the basic dateFilter)
+datesWithBookings: Set<number> = new Set(); // Store UTC timestamps of dates
+fullyBookedDates: Set<number> = new Set(); 
 
+selectedDate: Date | null = null;
+selectedTime: string = ''; // e.g., "09:30"
+
+allPossibleTimeSlots: string[] = []; // All slots from 8h to 17h
+availableTimeSlots: string[] = []; // Available slots for the selected date
+
+isLoadingSlots: boolean = false
 
   constructor(private http: HttpClient,private snackbar: MatSnackBar) {}
 
@@ -64,7 +83,212 @@ nombreEntretiensPlanifies: number = 0; // Compteur de ceux terminés
     this.loadCandidatures();
     this.loadResponsables();
     this.loadEntretiensForAllCandidatures();
+    this.fetchBookedSlots();
+
+    this.generateAllPossibleTimeSlots(); 
   }
+  fetchBookedSlots(): void {
+    const apiUrl = 'http://localhost:5053/api/Entretien/dates';
+    // Calculer le nombre total de créneaux possibles une seule fois si allPossibleTimeSlots est prêt
+    const totalPossibleSlots = this.allPossibleTimeSlots.length;
+    if (totalPossibleSlots === 0) {
+        console.warn("Impossible de déterminer les jours complets car allPossibleTimeSlots est vide.");
+        // Peut-être appeler generateAllPossibleTimeSlots() ici si ce n'est pas garanti avant
+    }
+
+
+    this.http.get<EntretienDateResponse[]>(apiUrl).subscribe({
+      next: (bookedInterviews) => {
+        this.bookedDateTimeSlots.clear();
+        this.datesWithBookings.clear();
+        this.fullyBookedDates.clear(); // <-- NOUVEAU: Vider l'ensemble des jours complets
+
+        // Map temporaire pour compter les réservations par jour (timestamp UTC)
+        const bookingsPerDay = new Map<number, number>();
+
+        bookedInterviews.forEach(interview => {
+          const dateStringFromApi = interview.dateEntretien;
+          const match = dateStringFromApi.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/);
+
+          if (match) {
+            const datePart = match[1];
+            const timePart = match[2];
+            const dateTimeString = `${datePart}T${timePart}`;
+            this.bookedDateTimeSlots.add(dateTimeString);
+
+            // Calculer le timestamp UTC du jour pour le comptage
+            try {
+                // Utiliser les parties extraites pour être cohérent
+                const [year, month, day] = datePart.split('-').map(Number);
+                // Mois dans Date.UTC est 0-indexé
+                const dayTimestamp = Date.UTC(year, month - 1, day);
+                this.datesWithBookings.add(dayTimestamp); // Ajoute au set des jours ayant au moins une résa
+
+                // Incrémenter le compteur pour ce jour
+                bookingsPerDay.set(dayTimestamp, (bookingsPerDay.get(dayTimestamp) || 0) + 1);
+
+            } catch (e) {
+                console.error("Error parsing date for dayTimestamp:", dateStringFromApi, e);
+            }
+          } else {
+            console.warn(`Could not parse date/time string from API: ${dateStringFromApi}`);
+          }
+        });
+
+        // --- NOUVEAU: Identifier les jours complets ---
+        if (totalPossibleSlots > 0) {
+            bookingsPerDay.forEach((count, dayTimestamp) => {
+                // Si le nombre de réservations est >= au total possible, marquer comme complet
+                if (count >= totalPossibleSlots) {
+                    this.fullyBookedDates.add(dayTimestamp);
+                }
+            });
+        }
+        // --- Fin Nouveau ---
+
+        console.log('Booked DateTime Slots (Parsed Directly):', this.bookedDateTimeSlots);
+        console.log('Dates with any booking (UTC Timestamps):', this.datesWithBookings);
+        console.log('Fully Booked Dates (UTC Timestamps):', this.fullyBookedDates); // <-- NOUVEAU: Log
+
+        // Rafraîchir si une date est déjà sélectionnée (ne devrait plus être nécessaire si le filtre fonctionne)
+        // if (this.selectedDate) {
+        //     this.filterAvailableTimeSlotsForDate(this.selectedDate);
+        // }
+      },
+      error: (err) => {
+        console.error('Error fetching booked slots:', err);
+        this.bookedDateTimeSlots.clear();
+        this.datesWithBookings.clear();
+        this.fullyBookedDates.clear(); // <-- NOUVEAU: Vider aussi en cas d'erreur
+        this.snackbar.open('Erreur lors de la récupération des créneaux réservés.', 'Fermer', { duration: 3000 });
+      }
+    });
+  }
+
+
+  generateAllPossibleTimeSlots(): void {
+    this.allPossibleTimeSlots = [];
+    const startHour = 8;
+    const endHour = 16;
+    const intervalMinutes = 30; // Or 60 for full hours
+
+    for (let hour = startHour; hour <= endHour; hour++) {
+      for (let minute = 0; minute < 60; minute += intervalMinutes) {
+        if (hour === endHour && minute > 0) continue; // Stop at 17:00 sharp
+
+        const formattedHour = hour.toString().padStart(2, '0');
+        const formattedMinute = minute.toString().padStart(2, '0');
+        this.allPossibleTimeSlots.push(`${formattedHour}:${formattedMinute}`);
+      }
+    }
+     // console.log('All possible slots (8h-17h):', this.allPossibleTimeSlots);
+  }
+
+  dateFilter = (d: Date | null): boolean => {
+    if (!d) {
+      return true; // Permettre la sélection vide
+    }
+    // Obtenir le timestamp UTC de minuit pour la date à vérifier
+    const time = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+
+    // Retourner true (activé) si la date N'EST PAS dans l'ensemble des dates complètes
+    // Retourner false (désactivé) si la date EST dans l'ensemble des dates complètes
+    return !this.fullyBookedDates.has(time);
+  };
+
+
+  // Optional: Reset time if the date changes
+  onDateChange(event: MatDatepickerInputEvent<Date>): void {
+    this.selectedDate = event.value;
+    this.selectedTime = ''; // Reset time selection
+    this.availableTimeSlots = []; // Clear previous slots
+
+    if (this.selectedDate) {
+      console.log('Date selected (local):', this.selectedDate);
+      this.isLoadingSlots = true; // Indicate we are processing
+      // Use setTimeout to allow UI to update (show spinner) before heavy filtering
+      setTimeout(() => {
+          this.filterAvailableTimeSlotsForDate(this.selectedDate!);
+          this.isLoadingSlots = false;
+      }, 50); // Small delay
+    }
+  }
+  
+  filterAvailableTimeSlotsForDate(date: Date): void {
+    if (!date) return;
+
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const selectedDateString = `${year}-${month}-${day}`; // YYYY-MM-DD format from local date
+
+    console.log(`Filtering available slots for date (local): ${selectedDateString}`);
+
+    this.availableTimeSlots = this.allPossibleTimeSlots.filter(timeSlot => {
+        // Construct the full UTC DateTime string to check against the booked slots
+        // We assume the selected time (e.g., "09:00") should be treated as UTC
+        // when comparing with the stored booked slots (which we also stored as UTC).
+        const dateTimeToCheck = `${selectedDateString}T${timeSlot}`;
+        const isBooked = this.bookedDateTimeSlots.has(dateTimeToCheck);
+        // console.log(`Checking slot ${dateTimeToCheck}: Booked = ${isBooked}`); // Debug line
+        return !isBooked; // Keep the slot if it's NOT in the booked set
+    });
+
+    console.log(`Available slots for ${selectedDateString}:`, this.availableTimeSlots);
+
+    // Optional: If no slots are available, show a message
+    if (this.availableTimeSlots.length === 0 && this.selectedDate) {
+        this.snackbar.open(`Aucun créneau disponible entre 8h et 17h pour le ${selectedDateString}.`, 'Fermer', { duration: 4000 });
+    }
+  }
+  calendarCellClass = (date: Date): string => {
+    if (!date) {
+      return '';
+    }
+    // Obtenir le timestamp UTC de minuit pour la date à vérifier
+    const time = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+
+    // Si la date EST dans l'ensemble des dates complètes, retourner la classe CSS
+    if (this.fullyBookedDates.has(time)) {
+      return 'fully-booked-date'; // Le nom de la classe CSS définie
+    }
+
+    // Sinon, ne retourner aucune classe spéciale
+    return '';
+  };
+
+  // Method to combine date and time before saving
+  private combineDateTime(): Date | null {
+    console.log('Date received in combineDateTime:', this.selectedDate); // LOG 6
+    if (this.selectedDate && this.selectedTime) {
+      try {
+        const [hours, minutes] = this.selectedTime.split(':').map(Number);
+  
+        // --- Modification ici ---
+        // Récupérer les composants de la date sélectionnée (qui est locale)
+        const year = this.selectedDate.getFullYear();
+        const month = this.selectedDate.getMonth(); // Mois est 0-indexé (0 = Janvier)
+        const day = this.selectedDate.getDate();
+  
+        // Créer une nouvelle date directement avec les composants UTC
+        // Date.UTC retourne un timestamp (nombre), new Date() le convertit en objet Date
+        const combinedUtcDate = new Date(Date.UTC(year, month, day, hours, minutes, 0, 0));
+        // --- Fin de la modification ---
+  
+        console.log('Date created using UTC components:', combinedUtcDate); // <-- Vérifiez cette sortie
+        console.log('ISO String (UTC) being sent:', combinedUtcDate.toISOString()); // <-- Vérifiez cette sortie
+  
+        // Retourne l'objet Date qui représente maintenant le bon moment en UTC
+        return combinedUtcDate;
+  
+      } catch (e) {
+        console.error("Error parsing time or creating UTC date:", e);
+        return null;
+      }
+    }
+    return null;
+  }
+
   loadResponsables(): void {
     this.http.get<Responsable[]>('http://localhost:5053/api/Employe/getAllEmployes').subscribe({
       next: (data) => {
@@ -112,7 +336,7 @@ nombreEntretiensPlanifies: number = 0; // Compteur de ceux terminés
 
     this.http.get<Candidature[]>('http://localhost:5053/api/Candidature/getAllCandidatures').subscribe({
       next: (data) => {
-        const filteredData = data.filter(candidature => candidature.statut !== 'RefusePreSelection');
+        const filteredData = data.filter(candidature => candidature.statut !== 'RefusePreSelection'&& candidature.statut !== 'En cours');
 
         // 2. Map over the FILTERED data to add nbFixe
         this.candidatures = filteredData.map(c => ({
@@ -188,16 +412,38 @@ nombreEntretiensPlanifies: number = 0; // Compteur de ceux terminés
   }
   creerEntretien(): void {
     console.log('ID Responsable sélectionné avant création:', this.nouvelEntretien.responsableId); // <-- AJOUTE CECI
-
+  
     if (!this.selectedCandidature || !this.nouvelEntretien.typeEntretien || !this.nouvelEntretien.dateEntretien) return;
 
+    console.log('Date before combining:', this.selectedDate); // <-- LOG 2
+    console.log('Time before combining:', this.selectedTime); // <-- LOG 3
   
+    const combinedDateTime = this.combineDateTime();
+    console.log('Combined DateTime:', combinedDateTime); // <-- LOG 4
 
+    if (!combinedDateTime) {
+        console.error('A valid date and time must be selected.');
+        return;
+    }
+  
+  
+    const year = this.selectedDate!.getFullYear();
+    const month = (this.selectedDate!.getMonth() + 1).toString().padStart(2, '0');
+    const day = this.selectedDate!.getDate().toString().padStart(2, '0');
+    const selectedDateString = `${year}-${month}-${day}`;
+    const dateTimeToCheck = `${selectedDateString}T${this.selectedTime}`;
+
+    if (this.bookedDateTimeSlots.has(dateTimeToCheck)) {
+        this.snackbar.open('Ce créneau vient d\'être réservé. Veuillez en choisir un autre.', 'Fermer', { duration: 4000 });
+        // Refresh available slots for the user
+        this.filterAvailableTimeSlotsForDate(this.selectedDate!);
+        return;
+    }
     const entretienData = {
       candidatureId: this.selectedCandidature.id,
       typeEntretien: this.nouvelEntretien.typeEntretien,
       modeEntretien: this.nouvelEntretien.modeEntretien,
-      dateEntretien: this.nouvelEntretien.dateEntretien,
+      dateEntretien: combinedDateTime.toISOString(),
       responsableId: this.nouvelEntretien.responsableId 
     };
 
@@ -238,7 +484,7 @@ nombreEntretiensPlanifies: number = 0; // Compteur de ceux terminés
       next: (updatedEntretien) => {
         console.log('entretien updated:', updatedEntretien);
         if (updatedEntretien.candidatureId) {
-          console.log("heloo");
+        
           this.loadEntretiens(updatedEntretien.candidatureId);
           const newStatus = `Entretien${entretien.typeEntretien}${status === 'Passé' ? 'Accepte' : 'Refuse'}`;
         
@@ -249,6 +495,7 @@ nombreEntretiensPlanifies: number = 0; // Compteur de ceux terminés
         }
       
         entretien.showDecision = true;
+        this.loadEntretiensForAllCandidatures();
       },
       error: (error) => {
         console.error('Error updating entretien:', error);
@@ -287,7 +534,8 @@ nombreEntretiensPlanifies: number = 0; // Compteur de ceux terminés
     this.selectedCandidature = candidature;
     this.nombreEntretiens = candidature.nbEntretiens ?? null;
     this.loadCandidatures();
-
+    this.selectedDate = null;
+    this.selectedTime = '';
   }
 
 

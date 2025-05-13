@@ -181,7 +181,7 @@
 
 
     <div class="dashboard-card performance-gauge-card">
-      <h2><i class="fas fa-tachometer-alt"></i> Indice de Performance Clé (KPI)</h2>
+      <h2><i class="fas fa-tachometer-alt"></i> Indice de Performance </h2>
     
        <div  class="gauge-container"> <!-- Conteneur pour le canvas -->
         <canvas baseChart
@@ -193,7 +193,111 @@
       
     </div>
 
-    
+    <div class="dashboard-card suggested-resources-card">
+      <h2><i class="fas fa-book-open"></i> Recherche manuelle</h2>
+      <div class="resource-search-container">
+          <input type="text" [(ngModel)]="resourceSearchTerm" (keyup.enter)="fetchSuggestedResources()" placeholder="Décrivez une tâche ou un sujet...">
+          <button (click)="fetchSuggestedResources()" [disabled]="isLoadingResources || !resourceSearchTerm.trim()" class="search-btn">
+              <i *ngIf="!isLoadingResources" class="fas fa-search"></i>
+              <i *ngIf="isLoadingResources" class="fas fa-spinner fa-spin"></i>
+              <span *ngIf="!isLoadingResources">Rechercher</span>
+              <span *ngIf="isLoadingResources">Recherche...</span>
+          </button>
+      </div>
+
+      <div *ngIf="isLoadingResources && !suggestedResources" class="resource-loading-indicator">
+          <i class="fas fa-spinner fa-spin"></i> Chargement des ressources...
+      </div>
+
+      <ng-container *ngIf="!isLoadingResources && suggestedResources">
+          <div *ngIf="suggestedResources.resultats && suggestedResources.resultats.length > 0" class="resources-list">
+              <p class="results-info">Suggestions pour : <strong>{{ suggestedResources.tache }}</strong></p>
+              <div *ngFor="let res of suggestedResources.resultats" class="resource-item">
+                  <h4>
+                      <a [href]="res.lien" target="_blank" rel="noopener noreferrer" [title]="res.lien">
+                          {{ res.titre }}
+                          <i class="fas fa-external-link-alt"></i>
+                      </a>
+                  </h4>
+              </div>
+          </div>
+          <div *ngIf="!suggestedResources.resultats || suggestedResources.resultats.length === 0" class="no-resources-placeholder">
+              <i class="fas fa-info-circle"></i> Aucune ressource trouvée pour "{{ suggestedResources.tache }}".
+          </div>
+      </ng-container>
+
+      <div *ngIf="!isLoadingResources && !suggestedResources && !initialResourceSearchDone" class="no-resources-placeholder initial-placeholder">
+          <i class="fas fa-search-plus"></i> Entrez une description de tâche ci-dessus pour trouver des ressources utiles.
+      </div>
+    </div>
+        <!-- Automatic Suggestions Card -->
+    <div class="dashboard-card automatic-suggestions-card">
+      <h2><i class="fas fa-lightbulb"></i> Suggestions Automatiques</h2>
+
+      <!-- Loading state for automatic suggestions -->
+      <div *ngIf="isLoadingAutomaticSuggestions" class="loading-indicator">
+        <i class="fas fa-spinner fa-spin"></i> Chargement des suggestions automatiques...
+      </div>
+
+      <ng-container *ngIf="!isLoadingAutomaticSuggestions">
+        <!-- Suggestions for Incomplete Tasks -->
+        <div class="suggestions-group" *ngIf="actionableTaskSuggestions && actionableTaskSuggestions.length > 0">
+          <h3><i class="fas fa-tasks"></i> Pour vos tâches non terminées :</h3>
+          <ul class="suggestion-list-main">
+            <li *ngFor="let taskItem of actionableTaskSuggestions" class="suggestion-item-main">
+              <div class="item-header">
+                <strong>Tâche :</strong> {{ taskItem.description }}
+              </div>
+              <div *ngIf="taskItem.suggestions && taskItem.suggestions.length > 0" class="suggestions-for-item">
+                <ul class="resource-link-list"> <!-- Reusing class if styling is similar -->
+                  <li *ngFor="let suggestion of taskItem.suggestions">
+                    <a [href]="suggestion.lien" target="_blank" rel="noopener noreferrer" [title]="suggestion.lien">
+                      {{ suggestion.titre }}
+                      <i class="fas fa-external-link-alt"></i>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div *ngIf="!taskItem.suggestions || taskItem.suggestions.length === 0" class="no-suggestions-for-item-text">
+                <p><i class="fas fa-info-circle"></i> Aucune suggestion spécifique pour cette tâche actuellement.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Suggestions for Unachieved SMART Goals -->
+        <div class="suggestions-group" *ngIf="actionableGoalSuggestions && actionableGoalSuggestions.length > 0">
+          <h3><i class="fas fa-bullseye"></i> Pour vos objectifs SMART non atteints :</h3>
+          <ul class="suggestion-list-main">
+            <li *ngFor="let goalItem of actionableGoalSuggestions" class="suggestion-item-main">
+              <div class="item-header">
+                <strong>Objectif :</strong> {{ goalItem.description }}
+              </div>
+              <div *ngIf="goalItem.suggestions && goalItem.suggestions.length > 0" class="suggestions-for-item">
+                <ul class="resource-link-list"> <!-- Reusing class if styling is similar -->
+                  <li *ngFor="let suggestion of goalItem.suggestions">
+                    <a [href]="suggestion.lien" target="_blank" rel="noopener noreferrer" [title]="suggestion.lien">
+                      {{ suggestion.titre }}
+                      <i class="fas fa-external-link-alt"></i>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div *ngIf="!goalItem.suggestions || goalItem.suggestions.length === 0" class="no-suggestions-for-item-text">
+                <p><i class="fas fa-info-circle"></i> Aucune suggestion spécifique pour cet objectif actuellement.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Placeholder if no actionable tasks or goals for suggestions, and not loading -->
+        <div *ngIf="(!actionableTaskSuggestions || actionableTaskSuggestions.length === 0) && (!actionableGoalSuggestions || actionableGoalSuggestions.length === 0) && !isLoadingAutomaticSuggestions" class="no-items-placeholder">
+        
+          <p class="placeholder-text">Aucune suggestion automatique à afficher pour le moment. Vos tâches et objectifs sont à jour ou n'ont pas de suggestions associées.</p>
+        </div>
+      </ng-container>
+    </div>
+
 
   </div>  
 </main>

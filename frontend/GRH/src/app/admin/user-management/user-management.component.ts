@@ -25,8 +25,8 @@ export class UserManagementComponent implements OnInit{
   searchTerm: string = '';
   selectedRole: string = '';
 
-  roles = ['Tous', 'Admin', 'Employe', 'Candidat', 'Gestionnaire RH'];
-  rolesF=['Admin', 'Employe', 'Candidat', 'Gestionnaire RH'];
+  roles = ['Tous', 'Admin', 'Employe', 'Candidat', 'GestionnaireRH'];
+
 
   trackByFn(index: number, item: string): string {
     return item;
@@ -61,7 +61,7 @@ export class UserManagementComponent implements OnInit{
     this.http.get(`http://localhost:5053/api/Users/user/${userId}`).subscribe(
       (response) => {
         this.userToEdit = response;
-        console.log("Rôles disponibles :", this.rolesF);
+      
         console.log("Rôle de l'utilisateur :", this.userToEdit.role); // Remplir la variable userToEdit avec les données reçues
       },
       (error) => {

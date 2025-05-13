@@ -534,13 +534,13 @@
   border: none;
   font-size: 24px;
   font-weight: bold;
-  color: #aaa;
+  color: #333;
   cursor: pointer;
   line-height: 1;
 }
 
 .close-modal-btn:hover {
-  color: #333;
+  transform: scale(1.2);
 }
 
 /* Simple Fade-in Animation */
@@ -686,6 +686,380 @@ canvas {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Ou votre configuration existante */
   gap: 20px;
 }
+/* ... your existing CSS ... */
+
+/* New Row for KPI and Suggested Resources */
+.kpi-resources-row {
+  display: flex;
+  gap: 20px; /* Adjust as per your design */
+  margin-bottom: 20px; /* Space before the next grid section */
+  width: 100%;
+}
+
+.kpi-resources-row .performance-gauge-card {
+  flex: 0 0 320px; /* Fixed width for KPI card, adjust as needed */
+  /* Or use a percentage like flex: 0 0 30%; */
+  height: fit-content; /* Ensure it doesn't stretch unnecessarily */
+}
+
+.kpi-resources-row .suggested-resources-card {
+  flex: 1 1 auto; /* Takes remaining space */
+  display: flex;
+  flex-direction: column;
+  min-height: 250px; /* Same as other cards for consistency */
+}
+
+.suggested-resources-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.suggested-resources-card h2 i {
+  color: #17a2b8; /* A different color for this card's icon, e.g., info blue */
+}
+
+
+.resource-search-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px; /* Increased space */
+  padding-bottom: 15px; /* Space before list */
+  border-bottom: 1px solid #eee; /* Separator */
+}
+
+.resource-search-container input[type="text"] {
+  flex-grow: 1;
+  padding: 10px 14px; /* More padding */
+  border: 1px solid #ced4da; /* Softer border */
+  border-radius: 6px; /* Slightly more rounded */
+  font-size: 0.95em;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.resource-search-container input[type="text"]:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+
+.resource-search-container .search-btn {
+  padding: 10px 18px; /* More padding */
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center icon/text */
+  gap: 8px; /* Space between icon and text */
+  font-weight: 500;
+  transition: background-color 0.2s ease-in-out;
+  min-width: 120px; /* Ensure button has a decent width */
+}
+
+.resource-search-container .search-btn:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.resource-search-container .search-btn:disabled {
+  background-color: #adb5bd; /* Muted color when disabled */
+  cursor: not-allowed;
+}
+.resource-search-container .search-btn i.fa-spinner {
+  animation: fa-spin 1s infinite linear; /* Ensure spinner animation */
+}
+
+
+.resources-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: 280px; /* Adjust as needed, considering card padding */
+  padding-right: 5px; /* Space for scrollbar */
+}
+.resources-list .results-info {
+  font-size: 0.9em;
+  color: #555;
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+.resource-item {
+  padding: 12px 5px; /* More vertical padding */
+  border-bottom: 1px solid #f0f0f0; /* Lighter separator */
+  transition: background-color 0.2s ease;
+}
+.resource-item:last-child {
+  border-bottom: none;
+}
+.resource-item:hover {
+  background-color: #f8f9fa; /* Subtle hover */
+}
+
+.resource-item h4 {
+  margin: 0;
+}
+
+.resource-item h4 a {
+  text-decoration: none;
+  color: #0056b3; /* Darker blue for links */
+  font-size: 0.95em; /* Slightly adjusted size */
+  font-weight: 500; /* Medium weight */
+  display: flex; /* For aligning icon */
+  align-items: center;
+  justify-content: space-between; /* Push icon to the end */
+}
+.resource-item h4 a:hover {
+  text-decoration: underline;
+  color: #003d80; /* Even darker on hover */
+}
+.resource-item h4 a i.fa-external-link-alt {
+  font-size: 0.85em;
+  margin-left: 8px;
+  color: #6c757d; /* Muted color for icon */
+  transition: color 0.2s ease;
+}
+.resource-item h4 a:hover i.fa-external-link-alt {
+  color: #0056b3;
+}
+
+.no-resources-placeholder, .resource-loading-indicator {
+  text-align: center;
+  padding: 30px 20px; /* More padding */
+  color: #6c757d; /* Softer text color */
+  font-style: italic;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column; /* Stack icon and text */
+  align-items: center;
+  justify-content: center;
+  font-size: 1em;
+}
+.no-resources-placeholder i, .resource-loading-indicator i {
+  font-size: 2.5em; /* Larger icon */
+  margin-bottom: 15px;
+  color: #adb5bd; /* Muted icon color */
+}
+.no-resources-placeholder.initial-placeholder i {
+  color: #007bff; /* More prominent color for initial call to action */
+  opacity: 0.7;
+}
+
+/* Custom scrollbar for resources list (optional) */
+.resources-list::-webkit-scrollbar {
+  width: 6px;
+}
+.resources-list::-webkit-scrollbar-thumb {
+  background-color: #ced4da;
+  border-radius: 3px;
+}
+.resources-list::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+/* dashboard.component.css */
+
+/* ... your existing styles ... */
+
+/* --- Styles for Automatic Suggestions Card --- */
+.automatic-suggestions-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); /* Subtle gradient background */
+  transition: all 0.3s ease-in-out;
+}
+
+.automatic-suggestions-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.automatic-suggestions-card h2 {
+  color: #34495e; /* Darker heading for better contrast */
+  font-weight: 700; /* Slightly bolder */
+}
+
+.automatic-suggestions-card h2 .fa-lightbulb {
+  color: #007bff; /* Brighter, more distinct lightbulb color */
+  text-shadow: 0 0 8px rgba(255, 193, 7, 0.5); /* Subtle glow */
+}
+
+.automatic-suggestions-card .loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  color: #495057;
+  font-size: 1.1em;
+}
+
+.automatic-suggestions-card .loading-indicator .fa-spinner {
+  margin-right: 12px;
+  font-size: 1.5em;
+  color: #007bff;
+}
+
+.suggestions-group {
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #dee2e6; /* Softer border */
+}
+
+.suggestions-group:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 5px; /* Reduce padding for the last group */
+}
+
+.suggestions-group h3 {
+  font-size: 1.2em; /* Slightly larger sub-heading */
+  color: #007bff; /* Consistent accent color */
+  margin-bottom: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.suggestions-group h3 .fas {
+  margin-right: 10px;
+  font-size: 1.1em; /* Icon size relative to h3 */
+}
+.suggestions-group h3 .fa-tasks {
+  color: #17a2b8; /* Specific color for tasks icon */
+}
+.suggestions-group h3 .fa-bullseye {
+  color: #28a745; /* Specific color for goals icon */
+}
+
+
+.suggestion-list-main {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.suggestion-item-main {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 15px 18px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.suggestion-item-main:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.item-header {
+  color: #343a40;
+  margin-bottom: 10px;
+  font-size: 1.05em;
+  font-weight: 500; /* Make the task/goal description stand out a bit */
+}
+.item-header strong {
+  color: #495057; /* Subtler color for "Tâche :" / "Objectif :" */
+  font-weight: 600;
+}
+
+.suggestions-for-item {
+  margin-top: 12px;
+  padding-left: 5px; /* Slight indent for suggestion links */
+
+}
+
+.resource-link-list {
+  list-style-type: none;
+  padding-left: 10px; /* Indent links */
+  margin-top: 0;
+}
+
+.resource-link-list li {
+  margin-bottom: 8px;
+  padding: 5px 0;
+}
+
+.resource-link-list li a {
+  color: #0056b3; /* Darker blue for links for better readability */
+  text-decoration: none;
+  font-size: 0.98em;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s ease, padding-left 0.2s ease;
+  position: relative; /* For potential pseudo-elements */
+}
+.resource-link-list li a:before { /* Optional: subtle hover indicator */
+  content: '';
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 2px;
+  background-color:#007bff;
+  transition: width 0.2s ease-out;
+}
+
+.resource-link-list li a:hover {
+  color: #007bff; /* Brighter blue on hover */
+  padding-left: 3px; /* Slight nudge on hover */
+}
+.resource-link-list li a:hover:before {
+   width: 6px;
+}
+
+
+.resource-link-list li a .fa-external-link-alt {
+  margin-left: 8px;
+  font-size: 0.85em;
+  opacity: 0.8;
+  color: #007bff; /* Match link hover color */
+}
+
+.no-suggestions-for-item-text {
+  font-style: normal; /* Less emphasis than italic */
+  color: #6c757d; /* Standard muted text color */
+  font-size: 0.95em;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #f8f9fa; /* Very light background */
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+.no-suggestions-for-item-text .fa-info-circle {
+  margin-right: 8px;
+  color: #17a2b8; /* Info blue */
+  font-size: 1.1em;
+}
+
+/* Placeholder for when no tasks/goals have suggestions */
+.automatic-suggestions-card .no-items-placeholder {
+  text-align: center;
+  padding: 30px 20px;
+  color: #495057;
+  border: 2px dashed #ced4da;
+  border-radius: 8px;
+  background-color: #f8f9fae0; /* Slightly transparent background */
+  margin-top: 15px;
+}
+
+.automatic-suggestions-card .no-items-placeholder .placeholder-icon {
+  font-size: 3em; /* Larger icon */
+  color: #28a745; /* Green for "all good" */
+  margin-bottom: 15px;
+  display: block;
+  opacity: 0.8;
+}
+
+.automatic-suggestions-card .no-items-placeholder .placeholder-text {
+  font-size: 1.1em;
+  line-height: 1.6;
+  margin: 0;
+  color: #343a40;
+}
+
+/* --- End of Styles for Automatic Suggestions Card --- */
+
+
 
 
 

@@ -19,19 +19,19 @@ namespace PfeRH.Models
 
         public string Lieu { get; set; }
 
-        public string PointsADiscuter { get; set; }
+      
 
         // 🔹 Constructeur sans paramètre (obligatoire pour EF)
         public EvaluationProjet() { }
 
         // 🔹 Constructeur avec paramètres
-        public EvaluationProjet(int projetId, DateTime dateEvaluation, string lieu, string titre, string pointsADiscuter)
+        public EvaluationProjet(int projetId, DateTime dateEvaluation, string lieu, string titre)
         {
             ProjetId = projetId;
             DateEvaluation = dateEvaluation;
             Lieu = lieu;
             Titre = titre;
-            PointsADiscuter = pointsADiscuter;
+         
         }
     }
 }

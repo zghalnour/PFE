@@ -46,10 +46,11 @@ originalDemandes: any[] = [];
   @ViewChild('demandeCongeDialogTemplate') demandeCongeDialogTemplate!: TemplateRef<any>;
   demandeForm: FormGroup;
   typesConge: TypeConge[] = [
-    { value: 'Congé Payé' },
-    { value:'Congé Maladie' },
-    { value:'Congé Sans Solde' },
-    { value: 'Congé Maternité/Paternité' },
+    { value: 'CongeAnnuel' },
+    { value:'CongeMaladie' },
+    { value:'CongeSansSolde' },
+    { value: 'CongeMaternite'},
+    { value: 'CongePaternite'},
   ];
   minDateFin: Date | null = null;
   private currentDialogRef: MatDialogRef<any> | null = null; // Pour garder une référ

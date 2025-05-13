@@ -1,6 +1,6 @@
 /* Conservez les variables :host comme avant */
 .content {
-  min-height: 100vh;
+  min-height: 350vh;
   width: calc(100% - 260px);
   margin-left: 240px;
   margin-top: 25px;
@@ -10,21 +10,9 @@
   display: flex;
   flex-direction: column;
 }
-:host {
-  --cal-border-color: #e5e7eb;
-  --cal-header-bg: #f9fafb;
-  --cal-cell-hover-bg: #f3f4f6;
-  --cal-today-bg: #eff6ff;
-  --cal-today-text: #1d4ed8;
-  --cal-day-number-color: #374151;
-  --cal-out-month-opacity: 0.4;
-  --cal-event-text-color: white;
-  --cal-event-default-bg: #3b82f6;
-  --cal-event-hover-brightness: 90%;
-}
 
-.calendar-wrapper {
-}
+
+
 
 /* En-tête des jours (Lun, Mar...) - Pas de changement */
 .cal-header {
@@ -146,13 +134,9 @@
   opacity: 0.6;
 }
 
-.cal-day-cell.cal-today .day-card {
-  /* Optionnel: léger fond différent pour la carte du jour */
-  /* background-color: var(--cal-today-bg); */
-}
 .cal-day-cell.cal-today .cal-day-number {
   color: var(--cal-today-text);
-  font-weight: 700; /* Plus gras */
+  font-weight: 900; /* Plus gras */
   /* Optionnel: Cercle */
   /* background-color: var(--cal-today-text); color: white; border-radius: 50%; */
   /* width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; */

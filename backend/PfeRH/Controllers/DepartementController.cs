@@ -61,7 +61,7 @@ namespace PfeRH.Controllers
                                 r.Id,
                                 r.DateEvaluation,
                                 r.Lieu,
-                                r.PointsADiscuter
+                               
                             }).ToList()
 
                         })

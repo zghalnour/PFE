@@ -591,20 +591,6 @@
           </div>
         </div>
 
-        <!-- Notes -->
-        <div class="w-full">
-          <label for="meetingNotes" class="block text-sm font-medium text-gray-700 mb-1">Points A discuter</label>
-          <textarea id="meetingNotes"
-                    rows="3"
-                    placeholder="Points à discuter..."
-                    formControlName="pointsADiscuter"
-                    class="mt-1 p-2 w-full border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300 sm:text-sm"
-                    [ngClass]="{'border-red-500': evaluationForm.get('pointsADiscuter')?.invalid && evaluationForm.get('pointsADiscuter')?.touched}"></textarea>
-          <div *ngIf="evaluationForm.get('pointsADiscuter')?.invalid && evaluationForm.get('pointsADiscuter')?.touched" class="text-red-500 text-xs mt-1">
-            Les notes sont obligatoires.
-          </div>
-        </div>
-
         <!-- Participants -->
         <div>
           <h4 class="text-sm font-medium text-gray-700 mb-2">Participants</h4>

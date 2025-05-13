@@ -113,7 +113,7 @@ namespace PfeRH.Controllers
                 t.Titre,
                 t.DateEvaluation,
                 t.Lieu,
-                t.PointsADiscuter,
+                
                 
             }).ToList();
 
@@ -161,7 +161,7 @@ namespace PfeRH.Controllers
                 { r.Id,
                   r.DateEvaluation,
                   r.Lieu,
-                  r.PointsADiscuter
+                  
 
                 })
             });
@@ -322,7 +322,7 @@ namespace PfeRH.Controllers
                 DateEvaluation = dateEval,
                 Lieu = dto.Lieu,
                 Titre = dto.Titre,
-                PointsADiscuter = dto.PointsADiscuter
+               
             };
 
             _context.EvaluationProjets.Add(nouvelleEvaluation);
@@ -354,7 +354,7 @@ namespace PfeRH.Controllers
         public string DateEvaluation { get; set; }  
         public string Lieu { get; set; }
         public string Titre {  get; set; }
-        public string PointsADiscuter { get; set; }
+        
     }
 
 
