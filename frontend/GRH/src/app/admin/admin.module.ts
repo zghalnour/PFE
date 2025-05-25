@@ -25,6 +25,7 @@ import { HeaderComponent } from './header/header.component';
 import { DepartementsComponent } from './departements/departements.component';
 import { EmployesComponent } from './employes/employes.component';
 import { ParcoursCandidatComponent } from './parcours-candidat/parcours-candidat.component';
+import { AccessListComponent } from './access-list/access-list.component';
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA] ,
   declarations: [
@@ -36,7 +37,8 @@ import { ParcoursCandidatComponent } from './parcours-candidat/parcours-candidat
     HeaderComponent,
     DepartementsComponent,
     EmployesComponent,
-    ParcoursCandidatComponent
+    ParcoursCandidatComponent,
+    AccessListComponent
   ],
   imports: [
     CommonModule,

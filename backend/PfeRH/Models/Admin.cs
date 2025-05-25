@@ -22,8 +22,8 @@
         }
 
         // Constructeur avec paramètres pour initialiser l'Admin
-        public Admin( string nomPrenom, string email, string role)
-            : base( nomPrenom, email, role)
+        public Admin( string nomPrenom, string email)
+            : base( nomPrenom, email, "Admin")
         {
             Candidatures = new List<Candidature>();
             Employes = new List<Employe>();

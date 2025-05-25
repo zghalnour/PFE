@@ -69,8 +69,15 @@
       [class.active]="isActive('/users')" 
       (click)="setActiveRoute('/users')">
      <i class="fas fa-users"></i>
-     <span>Utilisateurs</span>
+     <span>Comptes</span>
    </a>
+    </li>
+  
+          <li *ngIf="isActive('/admin/access-list')">
+      <a routerLink="/admin/access-list" [class.active]="isActive('/admin/access-list')" (click)="setActiveRoute('/admin/access-list')">
+        <i class="fas fa-user-check mr-2"></i>
+        <span>Liste Accès</span>
+      </a>
     </li>
     <li *ngIf="isActive('/parcours-candidat')">
       <a routerLink="/parcours-candidat" [class.active]="isActive('/parcours-candidat')" (click)="setActiveRoute('/parcours-candidat')">

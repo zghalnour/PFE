@@ -58,8 +58,8 @@ namespace PfeRH.Controllers
                 }
 
                 // Vérifier si le candidat existe ou le créer
-                var candidat = await _context.Utilisateurs.OfType<Condidat>()
-                                                          .FirstOrDefaultAsync(c => c.Email == candidatureDto.Email);
+                var candidat = await _context.Candidats
+      .FirstOrDefaultAsync(c => c.Email == candidatureDto.Email);
 
                 if (candidat == null)
                 {
@@ -67,23 +67,17 @@ namespace PfeRH.Controllers
                     {
                         NomPrenom = candidatureDto.NomPrenom,
                         Email = candidatureDto.Email,
-                        UserName = candidatureDto.Email,
+                      
                         PhoneNumber = candidatureDto.Telephone,
                         LinkedIn = !string.IsNullOrEmpty(candidatureDto.LinkedIn)
     ? (candidatureDto.LinkedIn.StartsWith("http") ? candidatureDto.LinkedIn : "https://" + candidatureDto.LinkedIn)
     : null, // ou "" si tu veux éviter le null
 
-                        Role = "Candidat"
+                      
                     };
 
-
-                    var result = await _userManager.CreateAsync(candidat, "DefaultPassword123!");
-                    if (!result.Succeeded)
-                    {
-                        return BadRequest(result.Errors);
-                    }
-
-                    await _userManager.AddToRoleAsync(candidat, "Candidat");
+                    _context.Candidats.Add(candidat);
+                    await _context.SaveChangesAsync();
                 }
                 else
                 {
@@ -124,7 +118,7 @@ namespace PfeRH.Controllers
                 }
 
 
-                _context.Utilisateurs.Update(candidat);
+                _context.Candidats.Update(candidat);
                 await _context.SaveChangesAsync();
 
 
@@ -320,8 +314,8 @@ namespace PfeRH.Controllers
                 }
 
                 // Vérifier si le candidat existe ou le créer
-                var candidat = await _context.Utilisateurs.OfType<Condidat>()
-                                                          .FirstOrDefaultAsync(c => c.Email == candidatureDto.Email);
+                var candidat = await _context.Candidats
+     .FirstOrDefaultAsync(c => c.Email == candidatureDto.Email);
 
                 if (candidat == null)
                 {
@@ -329,21 +323,16 @@ namespace PfeRH.Controllers
                     {
                         NomPrenom = candidatureDto.NomPrenom,
                         Email = candidatureDto.Email,
-                        UserName = candidatureDto.Email,
+                        
                         PhoneNumber = candidatureDto.Telephone,
                         LinkedIn = !string.IsNullOrEmpty(candidatureDto.LinkedIn)
                             ? (candidatureDto.LinkedIn.StartsWith("http") ? candidatureDto.LinkedIn : "https://" + candidatureDto.LinkedIn)
                             : null,
-                        Role = "Candidat"
+                       
                     };
 
-                    var result = await _userManager.CreateAsync(candidat, "DefaultPassword123!");
-                    if (!result.Succeeded)
-                    {
-                        return BadRequest(result.Errors);
-                    }
-
-                    await _userManager.AddToRoleAsync(candidat, "Candidat");
+                    _context.Candidats.Add(candidat);
+                    await _context.SaveChangesAsync();
                 }
                 else
                 {
@@ -381,7 +370,7 @@ namespace PfeRH.Controllers
                     candidat.CVPath = cvPath;
                 }
 
-                _context.Utilisateurs.Update(candidat);
+                _context.Candidats.Update(candidat);
                 await _context.SaveChangesAsync();
 
                 // Calcul du ScoreAI et des compétences extraites

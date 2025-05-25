@@ -110,6 +110,67 @@ export class DashboardComponent implements AfterViewChecked {
       console.error('Erreur lors du chargement des offres :', error);
     }
   }
+  // In dashboard.component.ts
+
+// Dans dashboard.component.ts
+
+isJobExpired(job: any): boolean {
+  console.log('Vérification de l\'expiration pour le job:', job);
+
+  if (!job || !job.deadline) {
+    console.warn('Job ou job.deadline est manquant. Retourne false (non expiré par défaut).');
+    return false;
+  }
+
+  console.log('Valeur brute de job.deadline:', job.deadline, '| Type:', typeof job.deadline);
+
+  let deadlineDate: Date;
+  const dateParts = String(job.deadline).split('/'); // S'assurer que c'est une chaîne avant de splitter
+
+  // Vérifier si la date est au format DD/MM/YYYY et a 3 parties
+  if (dateParts.length === 3) {
+    const day = parseInt(dateParts[0], 10);
+    const month = parseInt(dateParts[1], 10) - 1; // Mois en JS est 0-indexé (0 = Janvier, 11 = Décembre)
+    const year = parseInt(dateParts[2], 10);
+    
+    // Vérifier si les parties sont des nombres valides
+    if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+      deadlineDate = new Date(year, month, day);
+      console.log(`Date analysée manuellement (DD/MM/YYYY) comme: Année=${year}, Mois=${month + 1}, Jour=${day}`);
+    } else {
+      console.error('ERREUR: Les parties de job.deadline ne sont pas des nombres valides après le split. Tentative d\'analyse directe.');
+      deadlineDate = new Date(job.deadline); // Tentative d'analyse directe en cas d'échec
+    }
+  } else {
+    // Si le format n'est pas DD/MM/YYYY, essayer une analyse directe (peut échouer ou mal interpréter)
+    console.warn('Format de job.deadline non reconnu comme DD/MM/YYYY. Tentative d\'analyse directe.');
+    deadlineDate = new Date(job.deadline);
+  }
+  
+  const currentDate = new Date();
+
+  console.log('Date limite interprétée (deadlineDate):', deadlineDate.toString());
+  console.log('Date actuelle (currentDate):', currentDate.toString());
+
+  // Vérifier si deadlineDate est une date valide
+  if (isNaN(deadlineDate.getTime())) {
+    console.error('ERREUR: deadlineDate est une "Invalid Date". Vérifiez le format de job.deadline depuis l\'API ou la logique d\'analyse.');
+    return true; // Considérer comme expiré si la date est invalide pour plus de sécurité
+  }
+
+  // S'assurer que la comparaison est juste : considérer la date limite valide pour toute la journée
+  // Cette copie évite de modifier l'objet date original si ce n'est pas souhaité ailleurs
+  const adjustedDeadlineDate = new Date(deadlineDate.valueOf());
+  adjustedDeadlineDate.setHours(23, 59, 59, 999);
+  console.log('Date limite ajustée (fin de journée):', adjustedDeadlineDate.toString());
+
+  const isExpired = currentDate > adjustedDeadlineDate;
+  console.log('L\'offre est-elle expirée ? (currentDate > adjustedDeadlineDate):', isExpired);
+
+  return isExpired;
+}
+
+
   sendMessage() {
     if (this.newMessage.trim() === '') return;
 

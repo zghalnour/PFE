@@ -223,6 +223,42 @@ namespace PfeRH.Migrations
                     b.ToTable("Candidatures");
                 });
 
+            modelBuilder.Entity("PfeRH.Models.Condidat", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CVPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.PrimitiveCollection<string>("CompetencesExtraites")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LinkedIn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NomPrenom")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Candidats");
+                });
+
             modelBuilder.Entity("PfeRH.Models.DemandeConge", b =>
                 {
                     b.Property<int>("Id")
@@ -321,45 +357,6 @@ namespace PfeRH.Migrations
                     b.HasIndex("ResponsableId");
 
                     b.ToTable("Entretiens");
-                });
-
-            modelBuilder.Entity("PfeRH.Models.Evaluation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Commentaire")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DateEvaluation")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("EmployeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GestionnaireRhId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Ponctualite")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Qualite")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RespectDeadline")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeId");
-
-                    b.HasIndex("GestionnaireRhId");
-
-                    b.ToTable("Evaluations");
                 });
 
             modelBuilder.Entity("PfeRH.Models.EvaluationProjet", b =>
@@ -710,8 +707,8 @@ namespace PfeRH.Migrations
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("nvarchar(21)");
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -782,25 +779,7 @@ namespace PfeRH.Migrations
                     b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("PfeRH.Models.Condidat", b =>
-                {
-                    b.HasBaseType("PfeRH.Models.Utilisateur");
-
-                    b.Property<string>("CVPath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.PrimitiveCollection<string>("CompetencesExtraites")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LinkedIn")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasDiscriminator().HasValue("Condidat");
-                });
-
-            modelBuilder.Entity("PfeRH.Models.Employe", b =>
+            modelBuilder.Entity("PfeRH.Models.Personnel", b =>
                 {
                     b.HasBaseType("PfeRH.Models.Utilisateur");
 
@@ -810,38 +789,25 @@ namespace PfeRH.Migrations
                     b.Property<DateTime>("DateEmbauche")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("DepartementId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("Etat")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Poste")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Salaire")
                         .HasColumnType("float");
 
-                    b.HasIndex("DepartementId");
-
-                    b.ToTable("AspNetUsers", t =>
-                        {
-                            t.Property("Etat")
-                                .HasColumnName("Employe_Etat");
-                        });
-
-                    b.HasDiscriminator().HasValue("Employe");
+                    b.HasDiscriminator().HasValue("Personnel");
                 });
 
-            modelBuilder.Entity("PfeRH.Models.GestionnaireRH", b =>
+            modelBuilder.Entity("PfeRH.Models.Employe", b =>
                 {
-                    b.HasBaseType("PfeRH.Models.Utilisateur");
+                    b.HasBaseType("PfeRH.Models.Personnel");
 
-                    b.Property<bool>("Etat")
-                        .HasColumnType("bit");
+                    b.Property<int?>("DepartementId")
+                        .HasColumnType("int");
 
-                    b.HasDiscriminator().HasValue("GestionnaireRH");
+                    b.HasIndex("DepartementId");
+
+                    b.HasDiscriminator().HasValue("Employe");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -956,23 +922,6 @@ namespace PfeRH.Migrations
                     b.Navigation("Candidature");
 
                     b.Navigation("Responsable");
-                });
-
-            modelBuilder.Entity("PfeRH.Models.Evaluation", b =>
-                {
-                    b.HasOne("PfeRH.Models.Employe", "Employe")
-                        .WithMany("EvaluationsRecues")
-                        .HasForeignKey("EmployeId");
-
-                    b.HasOne("PfeRH.Models.GestionnaireRH", "GestionnaireRh")
-                        .WithMany()
-                        .HasForeignKey("GestionnaireRhId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employe");
-
-                    b.Navigation("GestionnaireRh");
                 });
 
             modelBuilder.Entity("PfeRH.Models.EvaluationProjet", b =>
@@ -1102,6 +1051,11 @@ namespace PfeRH.Migrations
                     b.Navigation("ReponseCandidats");
                 });
 
+            modelBuilder.Entity("PfeRH.Models.Condidat", b =>
+                {
+                    b.Navigation("Candidatures");
+                });
+
             modelBuilder.Entity("PfeRH.Models.Departement", b =>
                 {
                     b.Navigation("Employes");
@@ -1134,18 +1088,11 @@ namespace PfeRH.Migrations
                     b.Navigation("Questions");
                 });
 
-            modelBuilder.Entity("PfeRH.Models.Condidat", b =>
-                {
-                    b.Navigation("Candidatures");
-                });
-
             modelBuilder.Entity("PfeRH.Models.Employe", b =>
                 {
                     b.Navigation("Affectations");
 
                     b.Navigation("DemandesConge");
-
-                    b.Navigation("EvaluationsRecues");
 
                     b.Navigation("ObjectifsSmarts");
 

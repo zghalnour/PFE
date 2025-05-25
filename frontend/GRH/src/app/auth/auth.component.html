@@ -17,23 +17,90 @@
 
 
           <h2>Connectez-vous</h2>
-          <input type="email" placeholder="Email" [(ngModel)]="loginForm.email" name="email" required>
-          <input type="password" placeholder="Mot de passe" [(ngModel)]="loginForm.password" name="password" required>
+          <div class="form-input-group">
+            <input type="email" placeholder="Email" [(ngModel)]="loginForm.email" name="email" required email #emailModel="ngModel">
+            <div *ngIf="emailModel.invalid && (emailModel.dirty || emailModel.touched)" class="error-message">
+              <div *ngIf="emailModel.errors?.['required']">L'email est requis.</div>
+              <div *ngIf="emailModel.errors?.['email']">L'email n'est pas valide.</div>
+            </div>
+          </div>    
+          <div class="form-input-group">
+            <div class="password-wrapper">
+              <input [type]="showSignUpPassword ? 'text' : 'password'" placeholder="Mot de passe" [(ngModel)]="loginForm.password" name="password" required minlength="6" #passwordModel="ngModel">
+             <mat-icon class="toggle-password-icon" (click)="showSignUpPassword = !showSignUpPassword">
+                {{showSignUpPassword ? 'visibility' : 'visibility_off'}}
+              </mat-icon>
+            </div>
+            <div *ngIf="passwordModel.invalid && (passwordModel.dirty || passwordModel.touched)" class="error-message">
+              <div *ngIf="passwordModel.errors?.['required']">Le mot de passe est requis.</div>
+            
+            </div>
+          </div>
+          <br>
           <button type="submit">Se connecter</button>
         </form>
       </div>
 
       <div *ngIf="isSignUp">
-        <form (ngSubmit)="onSignUp()">
+        <form (ngSubmit)="onSignUp()" #signUpFormInstance="ngForm">
           <h2>Créer un compte</h2>
-          <input type="email" placeholder="Email" [(ngModel)]="signUpForm.email" name="email" required>
-          <input type="text" placeholder="Nom et Prénom" [(ngModel)]="signUpForm.nomPrenom" name="nomPrenom" required>
-          <input type="password" placeholder="Mot de passe" [(ngModel)]="signUpForm.password" name="password" required>
-          <select [(ngModel)]="signUpForm.role" name="role" required>
-            <option value="Admin">Admin</option>
-            <option value="GestionnaireRH">GestionnaireRH</option>
-          </select>
-          <button type="submit">S'inscrire</button>
+           <div *ngIf="genericSignUpError" class="error-message generic-error-container">
+            {{ genericSignUpError }}
+          </div>
+          
+
+          <div class="form-input-group">
+            <input type="text" placeholder="Nom et Prénom" [(ngModel)]="signUpForm.nomPrenom" name="nomPrenom" required #nomPrenomModel="ngModel">
+            <div *ngIf="nomPrenomModel.invalid && (nomPrenomModel.dirty || nomPrenomModel.touched) && nomPrenomModel.errors?.['required']" class="error-message">
+              Le nom et prénom sont requis.
+            </div>
+          </div>
+        
+                 <div class="form-input-group">
+            <input type="tel" placeholder="(+216)téléphone" [(ngModel)]="signUpForm.telephone" name="telephone" required #telephoneModel="ngModel" pattern="[0-9]{8,}">
+            <div *ngIf="telephoneModel.invalid && (telephoneModel.dirty || telephoneModel.touched)" class="error-message">
+              <div *ngIf="telephoneModel.errors?.['required']">Le numéro de téléphone est requis.</div>
+              <div *ngIf="telephoneModel.errors?.['pattern']">Le numéro de téléphone n'est pas valide (minimum 8 chiffres).</div>
+            </div>
+          </div>
+              <div class="form-input-group">
+            <input type="email" placeholder="Email" [(ngModel)]="signUpForm.email" name="email" required email #emailModel="ngModel">
+            <div *ngIf="emailModel.invalid && (emailModel.dirty || emailModel.touched)" class="error-message">
+              <div *ngIf="emailModel.errors?.['required']">L'email est requis.</div>
+              <div *ngIf="emailModel.errors?.['email']">L'email n'est pas valide.</div>
+            </div>
+            <div *ngIf="emailExistsError" class="error-message"> <!-- This flag is set in component.ts -->
+              Cet email existe déjà.
+            </div>
+          </div>
+          <div class="form-input-group">
+            <div class="password-wrapper">
+              <input [type]="showSignUpPassword ? 'text' : 'password'" placeholder="Mot de passe" [(ngModel)]="signUpForm.password" name="password" required minlength="6" #passwordModel="ngModel">
+             <mat-icon class="toggle-password-icon" (click)="showSignUpPassword = !showSignUpPassword">
+                {{showSignUpPassword ? 'visibility' : 'visibility_off'}}
+              </mat-icon>
+            </div>
+            <div *ngIf="passwordModel.invalid && (passwordModel.dirty || passwordModel.touched)" class="error-message">
+              <div *ngIf="passwordModel.errors?.['required']">Le mot de passe est requis.</div>
+              <div *ngIf="passwordModel.errors?.['minlength']">
+                Le mot de passe doit contenir au moins {{ passwordModel.errors?.['minlength'].requiredLength }} caractères.
+              </div>
+            </div>
+          </div>
+
+          <div class="form-field-group">
+            <label for="roleSelect" class="form-label-role">Rôle</label>
+            <select id="roleSelect" class="form-select-role" [(ngModel)]="signUpForm.role" name="role" required #roleModel="ngModel">
+              <option Value= "Admin">Admin</option>
+              <option Value="GestionnaireRH">Gestionnaire RH</option>
+              <option Value="Employe">Employé</option>
+            </select>
+            <div *ngIf="roleModel.invalid && (roleModel.dirty || roleModel.touched) && roleModel.errors?.['required']" class="error-message">
+              Le rôle est requis.
+            </div>
+          </div>
+
+          <button type="submit" [disabled]="!signUpFormInstance.valid">S'inscrire</button>
         </form>
       </div>
 

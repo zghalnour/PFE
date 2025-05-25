@@ -8,18 +8,23 @@
     <div class="cards">
       <div class="card">
           <div class="icon"><i class="fas fa-users"></i></div>
-          <div class="number">120</div>
+        <div class="number">{{ dashboardData?.totalEmployees }}</div>
           <div class="label">Total Employés</div>
       </div>
       <div class="card">
           <div class="icon"><i class="fas fa-briefcase"></i></div>
-          <div class="number">15</div>
+         <div class="number">{{ dashboardData?.newHiresThisMonth }}</div>
           <div class="label">Nouvelles Embauches</div>
       </div>
       <div class="card">
           <div class="icon"><i class="fas fa-user-minus"></i></div>
-          <div class="number">5</div>
+         <div class="number">{{ dashboardData?.departures }}</div>
           <div class="label">Départs</div>
+      </div>
+         <div class="card">
+          <div class="icon"><i class="fas fa-file-alt"></i></div> <!-- Icon for open job offers -->
+          <div class="number">{{ dashboardData?.openJobOffers }}</div>
+          <div class="label">Offres Ouvertes</div>
       </div>
   </div>
 
@@ -27,9 +32,38 @@
     <div class="charts">
       <!-- Partie gauche avec Line Chart et Bar Chart -->
       <div class="charts-left">
+        <!-- Contrôles de sélection de l'année - Style amélioré -->
+ <div class="chart-container">
+          <div class="chart-controls-header">
+            <span class="chart-title-text">Évolution Embauches/Départs</span>
+            <div class="inline-year-selector">
+              <input type="number" id="lineChartYearInput" class="year-input-field"
+                     [(ngModel)]="currentYearForStats"
+                     placeholder="Année"
+                     min="1900" max="2200" aria-label="Année pour graphique linéaire">
+              <button (click)="updateChartForYear()" class="update-chart-button" title="Mettre à jour le graphique linéaire">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
           <div class="chart-container">
               <canvas id="lineChart"></canvas>
           </div>
+           <div class="chart-container">
+          <div class="chart-controls-header">
+            <span class="chart-title-text">Évolution Des Projets</span>
+            <div class="inline-year-selector">
+              <input type="number" id="barChartYearInput" class="year-input-field"
+                     [(ngModel)]="barChartDisplayYear"
+                     placeholder="Année"
+                     min="1900" max="2200" aria-label="Année pour graphique à barres">
+              <button (click)="updateBarChartData()" class="update-chart-button" title="Mettre à jour le graphique à barres">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
           <div class="chart-container">
               <canvas id="barChart"></canvas>
           </div>
@@ -40,6 +74,6 @@
       <div class="pie-chart">
           <canvas id="pieChart"></canvas>
       </div>
+      
   </div>
   </main>
-

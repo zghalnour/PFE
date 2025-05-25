@@ -116,6 +116,86 @@ button:hover {
   background: #9333ea;
 }
 
+.form-container form .form-field-group {
+  width: 100%; 
+  margin-bottom: 1rem; /* Ajustez l'espacement vertical si nécessaire, pour être cohérent */
+  text-align: left; /* Force l'alignement à gauche du contenu inline/inline-block à l'intérieur */
+}
+
+/* Style pour le libellé du rôle */
+.form-container form .form-label-role {
+  display: block; /* Fait en sorte que le libellé occupe sa propre ligne */
+  margin-bottom: 0.1rem; /* Espace entre le libellé et le champ de sélection */
+  font-weight: 500; /* Optionnel : pour un texte légèrement plus gras */
+  color: #333; /* Optionnel : couleur du texte du libellé */
+  /* Ajoutez ici d'autres styles pour correspondre à votre design */
+}
+/* Dans votre fichier auth.component.css */
+
+
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input[type="password"],
+.password-wrapper input[type="text"] {
+  flex-grow: 1;
+  padding-right: 35px; /* Laissez de la place pour l'icône à l'intérieur */
+}
+
+.toggle-password-icon {
+  position: absolute;
+  right: 10px;
+  bottom:16px;
+  cursor: pointer;
+  user-select: none; /* Empêche la sélection du texte de l'icône */
+  font-size: 1.2em; /* Ajustez la taille de l'émoji/icône si nécessaire */
+  line-height: 1; /* Assure un bon alignement vertical */
+}
+
+.error-message {
+  color: #e74c3c; /* Rouge plus doux pour les erreurs */
+  font-size: 0.9em;
+  margin-top: 5px;
+  padding-left: 5px;
+}
+
+/* Conteneur pour l'erreur générique d'inscription */
+.generic-error-container {
+  background-color: #fbeae5; /* Fond légèrement rosé/orangé */
+  color: #c0392b; /* Texte rouge foncé */
+  border: 1px solid #e74c3c;
+  padding: 10px 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Style pour les inputs en cas d'erreur (optionnel) */
+input.ng-invalid.ng-touched {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25); /* Effet de focus rouge léger */
+}
+
+/* Vous pouvez ajouter d'autres styles pour moderniser l'apparence générale du formulaire */
+/* Par exemple, pour les boutons, les labels, etc. */
+
+
+
+/* Style pour le champ de sélection du rôle */
+.form-container form .form-select-role {
+  width: 100%; /* Fait en sorte que le select prenne toute la largeur de son conteneur */
+  padding: 0.75rem; /* Ajustez pour correspondre au padding de vos autres champs input */
+  border: 1px solid #ccc; /* Bordure standard */
+  border-radius: 4px; /* Coins arrondis, ajustez selon votre design */
+  box-sizing: border-box; /* Important pour que padding et border soient inclus dans la largeur totale */
+  background-color: white; /* Couleur de fond */
+  /* Ajoutez ici d'autres styles pour correspondre à vos champs input */
+}
+
 /* Texte toggle */
 .toggle {
   margin-top: 15px;

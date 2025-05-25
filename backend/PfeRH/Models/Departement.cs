@@ -29,7 +29,6 @@ namespace PfeRH.Models
         {
             Id = id;
             Nom = nom;
-          
             Employes = new List<Employe>(); // Initialisation des collections
            
         }

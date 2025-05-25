@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PfeRH.Models
 {
-    public class GestionnaireRH: Utilisateur
+    public class GestionnaireRH: Personnel
     {
 
         public bool Etat { get; set; }
@@ -11,14 +11,11 @@ namespace PfeRH.Models
         public GestionnaireRH()
         {
             Etat = true;
+        }
 
-    }
-
-        // Constructeur avec paramètres
-        public GestionnaireRH( string nomPrenom, string email, string role)
-            : base( nomPrenom, email, role)
+        public GestionnaireRH(string nomPrenom, string email, string role, DateTime dateEmbauche, double salaire)
+            : base(nomPrenom, email, role, dateEmbauche, salaire)
         {
-            Etat = true;
         }
     }
 }

@@ -34,7 +34,7 @@ namespace PfeRH.Controllers
                     Nom = d.Nom,
                     // Recherche du responsable insensible à la casse
                     NomResponsable = d.Employes
-                        .FirstOrDefault(e => e.Poste.ToLower().Contains("chef")).NomPrenom ?? "Aucun",  // Si aucun responsable, afficher "Aucun"
+                        .FirstOrDefault(e => e.Role.ToLower().Contains("chef")).NomPrenom ?? "Aucun",  // Si aucun responsable, afficher "Aucun"
                     Employes = d.Employes.Select(e => new
                     {
                         e.Id,

@@ -12109,11 +12109,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\nourh\\OneDrive\\Documents\\Terminal\\PFE\\PfeGit\\PFE\\backend\\PfeRH\\PfeRH.csproj",
+      "projectUniqueName": "C:\\Users\\nourh\\OneDrive\\Documents\\Terminal\\PFE\\backend\\PfeRH\\PfeRH.csproj",
       "projectName": "PfeRH",
-      "projectPath": "C:\\Users\\nourh\\OneDrive\\Documents\\Terminal\\PFE\\PfeGit\\PFE\\backend\\PfeRH\\PfeRH.csproj",
+      "projectPath": "C:\\Users\\nourh\\OneDrive\\Documents\\Terminal\\PFE\\backend\\PfeRH\\PfeRH.csproj",
       "packagesPath": "C:\\Users\\nourh\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\nourh\\OneDrive\\Documents\\Terminal\\PFE\\PfeGit\\PFE\\backend\\PfeRH\\obj\\",
+      "outputPath": "C:\\Users\\nourh\\OneDrive\\Documents\\Terminal\\PFE\\backend\\PfeRH\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

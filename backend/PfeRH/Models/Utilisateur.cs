@@ -12,8 +12,6 @@ namespace PfeRH.Models
         
         public string Email { get; set; }  // Email de l'utilisateur
         
-         // Mot de passe de l'utilisateur
-       
         public string Role { get; set; }
         public string? SecurityToken { get; set; }
         [NotMapped] // Ne sera pas stocké dans la base de données
@@ -27,9 +25,10 @@ namespace PfeRH.Models
             NomPrenom = nomPrenom;
             Email = email;
             Role = role;
-          
+            
         }
     }
+  
 
-    
+
 }

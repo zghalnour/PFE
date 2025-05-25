@@ -12,10 +12,12 @@ namespace PfeRH.Models
         }
 
         public DbSet<Utilisateur> Utilisateurs { get; set; }
+        public DbSet<Condidat> Candidats { get; set; }
+
         public DbSet<DemandeConge> DemandesConge { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<Departement> Departements { get; set; }
-        public DbSet<Evaluation> Evaluations { get; set; }
+        public DbSet<Personnel> Personnels { get; set; }
         public DbSet<Affectation> Affectations { get; set; }
         public DbSet<EvaluationProjet> EvaluationProjets { get; set; }
         public DbSet<Projet> Projets { get; set; }

@@ -39,7 +39,7 @@ namespace PfeRH.Controllers
                     NomPrenom = user.NomPrenom,
                     Email = user.Email,
                     Telephone = user.PhoneNumber,
-                    Role = roles.FirstOrDefault() ?? "Aucun rôle"
+                    Role = user.Role
                 });
             }
 
@@ -87,14 +87,44 @@ namespace PfeRH.Controllers
                     _context.Candidatures.RemoveRange(candidatures);
                     await _context.SaveChangesAsync();
                 }
+                var affectations = await _context.Affectations.Where(a => a.EmployeId == id).ToListAsync();
+                if (affectations.Any())
+                {
+                    _context.Affectations.RemoveRange(affectations);
+                }
 
-                // Supprimer les demandes de congé de l'utilisateur
+            
+
+                // 3. Supprimer les objectifs SMART
+                var objectifs = await _context.Objectifs.Where(o => o.EmployeId == id).ToListAsync();
+                if (objectifs.Any())
+                {
+                    _context.Objectifs.RemoveRange(objectifs);
+                }
+
+                // 4. Supprimer les réclamations
+                var reclamations = await _context.Reclamations.Where(r => r.EmployeId == id).ToListAsync();
+                if (reclamations.Any())
+                {
+                    _context.Reclamations.RemoveRange(reclamations);
+                }
+
+                // 5. Supprimer les demandes de congé (déjà présent mais gardé ici pour cohérence)
                 var demandesConges = await _context.DemandesConge.Where(d => d.EmployeId == id).ToListAsync();
                 if (demandesConges.Any())
                 {
                     _context.DemandesConge.RemoveRange(demandesConges);
-                    await _context.SaveChangesAsync();
                 }
+                var taches = await _context.Taches.Where(t => t.EmployeId == id).ToListAsync();
+                if (taches.Any())
+                {
+                    _context.Taches.RemoveRange(taches);
+
+                }
+
+
+                await _context.SaveChangesAsync();
+
 
                 // Supprimer l'utilisateur
                 var result = await _userManager.DeleteAsync(user);

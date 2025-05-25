@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PfeRH.Models;
 using PfeRH.services;
+using System.Linq;
 using System.Text.Json;
+using static Google.Cloud.Dialogflow.V2.MessageEntry.Types;
+using static PfeRH.Controllers.EmployeController;
 
 namespace PfeRH.Controllers
 {
@@ -30,46 +33,56 @@ namespace PfeRH.Controllers
         {
             try
             {
-                var departement = await _context.Departements
-                                   .FirstOrDefaultAsync(d => d.Nom == employeDto.DepartementNom);
-
-                if (departement == null)
+                Departement departement = null;
+                if (!string.IsNullOrWhiteSpace(employeDto.DepartementNom))
                 {
-                    departement = new Departement { Nom = employeDto.DepartementNom, NomResponsable = "Aucun" };
-                    _context.Departements.Add(departement);
-                    await _context.SaveChangesAsync();
+                    departement = await _context.Departements
+                        .FirstOrDefaultAsync(d => d.Nom == employeDto.DepartementNom);
+
+                    if (departement == null)
+                    {
+                        departement = new Departement { Nom = employeDto.DepartementNom, NomResponsable = "Aucun" };
+                        _context.Departements.Add(departement);
+                        await _context.SaveChangesAsync();
+                    }
                 }
 
-                var candidat = await _context.Users
-                    .OfType<Condidat>()
-                    .Include(c => c.Candidatures)
-                        .ThenInclude(ca => ca.Entretiens)
-                    .FirstOrDefaultAsync(c => c.Email == employeDto.Email);
+                var candidat = await _context.Candidats
+            .Include(c => c.Candidatures)
+                .ThenInclude(ca => ca.Entretiens)
+            .FirstOrDefaultAsync(c => c.Email == employeDto.Email);
 
                 if (candidat != null)
                 {
+                    // Supprimer les entretiens associés
                     foreach (var candidature in candidat.Candidatures)
                     {
                         _context.Entretiens.RemoveRange(candidature.Entretiens);
                     }
 
+                    // Supprimer les candidatures
                     _context.Candidatures.RemoveRange(candidat.Candidatures);
-                    _context.Users.Remove(candidat);
+
+                    // Supprimer le candidat
+                    _context.Candidats.Remove(candidat);
+
                     await _context.SaveChangesAsync();
                 }
+              
 
-                var employe = new Employe
-                {
-                    UserName = employeDto.Email,
-                    Email = employeDto.Email,
-                    PhoneNumber = employeDto.PhoneNumber,
-                    NomPrenom = employeDto.NomPrenom,
-                    Poste = employeDto.Poste,
-                    Salaire = employeDto.Salaire,
-                    DepartementId = departement.Id,
-                    Role = "Employe",
-                    DateEmbauche = DateTime.Now.Date
-                };
+                    var employe = new Employe
+                    {
+                        UserName = employeDto.Email.Split('@')[0],
+                        Email = employeDto.Email,
+                        PhoneNumber = employeDto.PhoneNumber,
+                        NomPrenom = employeDto.NomPrenom,
+                        Salaire = employeDto.Salaire,
+                        DepartementId = departement?.Id,
+                        Role = employeDto.Poste,
+                        DateEmbauche = DateTime.Now.Date
+                    };
+                    
+                
 
                 var result = await _userManager.CreateAsync(employe, employeDto.Password);
                 if (!result.Succeeded)
@@ -77,16 +90,16 @@ namespace PfeRH.Controllers
                     return BadRequest(result.Errors);
                 }
 
-                if (!await _roleManager.RoleExistsAsync("Employe"))
+                if (!await _roleManager.RoleExistsAsync(employeDto.Poste))
                 {
-                    var role = new IdentityRole<int> { Name = "Employe", NormalizedName = "EMPLOYE" };
+                    var role = new IdentityRole<int> { Name = employeDto.Poste, NormalizedName = employeDto.Poste.ToUpper() };
                     var roleResult = await _roleManager.CreateAsync(role);
 
                     if (!roleResult.Succeeded)
                         return BadRequest("Erreur lors de la création du rôle Employe.");
                 }
 
-                var addToRoleResult = await _userManager.AddToRoleAsync(employe, "Employe");
+                var addToRoleResult = await _userManager.AddToRoleAsync(employe, employeDto.Poste);
                 if (!addToRoleResult.Succeeded)
                 {
                     return BadRequest("Erreur lors de l’ajout du rôle à l’utilisateur.");
@@ -121,13 +134,71 @@ namespace PfeRH.Controllers
                 return StatusCode(500, $"Erreur lors de la création de l'employé : {ex.Message}");
             }
         }
+        [HttpPost("add-gestionnaire-rh")]
+        public async Task<IActionResult> CreerGestionnaireRH([FromBody] GestionnaireRhDto rhDto)
+        {
+            try
+            {
+                var rh = new GestionnaireRH
+                {
+                    UserName = rhDto.Email.Split('@')[0],
+                    Email = rhDto.Email,
+                    PhoneNumber = rhDto.PhoneNumber,
+                    NomPrenom = rhDto.NomPrenom,
+                    Role = rhDto.Poste,
+                    DateEmbauche = DateTime.Now.Date,
+                    Salaire = rhDto.Salaire
+                };
+
+                var result = await _userManager.CreateAsync(rh, rhDto.Password);
+                if (!result.Succeeded) return BadRequest(result.Errors);
+
+                if (!await _roleManager.RoleExistsAsync(rhDto.Poste))
+                {
+                    var role = new IdentityRole<int> { Name = rhDto.Poste, NormalizedName = rhDto.Poste.ToUpper() };
+                    var roleResult = await _roleManager.CreateAsync(role);
+
+                    if (!roleResult.Succeeded)
+                        return BadRequest("Erreur lors de la création du rôle Employe.");
+                }
+
+                var addToRoleResult = await _userManager.AddToRoleAsync(rh, rhDto.Poste);
+                if (!addToRoleResult.Succeeded)
+                {
+                    return BadRequest("Erreur lors de l’ajout du rôle à l’utilisateur.");
+                }
+                try
+                {
+                    await _emailService.EnvoyerEmailConfirmationAsync(
+                        rh.Email,
+                        rh.NomPrenom,
+                        rh.Email,
+                        rh.Password
+                    );
+                }
+                catch (Exception emailEx)
+                {
+                    // Optionnel : journaliser ou ignorer l'échec d'envoi
+                    Console.WriteLine($"Erreur envoi mail : {emailEx.Message}");
+                }
+
+
+                return Ok(rh);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur création RH : {ex.Message}");
+            }
+        }
+
 
 
         [HttpGet("getNomEmployes")]
         public async Task<IActionResult> GetAllEmployes()
         {
             var employes = await _context.Users
-                                         .Where(u => u.Role == "Employe")
+                                         .Where(u => u.Role != "Admin" && u.Role != "RH")
+
                                          .Select(e => new { e.Id, e.NomPrenom })
                                          .ToListAsync();
 
@@ -136,42 +207,69 @@ namespace PfeRH.Controllers
         [HttpGet("getAllEmployes")]
         public async Task<IActionResult> GetAllEmployesDetails()
         {
+            // Employés
             var employes = await _context.Users
-                                         .OfType<Employe>() // Filtrer uniquement les employés
-                                         .Include(e => e.Departement)
-                                          .Include(e => e.Affectations)
-                                          .ThenInclude(a => a.Projet)
-                                         .Include(e => e.DemandesConge)
-                                         .Include(e => e.EvaluationsRecues)
-                                         .Include(e => e.ObjectifsSmarts)
-                                         .Include(e => e.Reclamations)
-                                         .Select(e => new
-                                         {
-                                             e.Id,
-                                             e.NomPrenom,
-                                             e.Email,
-                                             e.PhoneNumber,
-                                             e.Poste,
-                                             e.Salaire,
-                                             e.DateEmbauche,
-                                             Departement = e.Departement != null ? e.Departement.Nom : null,
-                                             Projets = e.Affectations.Select(a => new
-                                             {
-                                                 a.Projet.Id,
-                                                 a.Projet.Nom,
-                                                 a.Projet.Description,
-                                                 a.Projet.DateDebut,
-                                                 a.Projet.DateFin
-                                             }).ToList(),
-                                             DemandesConge = e.DemandesConge.Select(d => new { d.Id, d.DateDebut, d.DateFin, d.Statut }).ToList(),
-                                             EvaluationsRecues = e.EvaluationsRecues.Select(ev => new { ev.Id, ev.Commentaire }).ToList(),
-                                             ObjectifsSmarts = e.ObjectifsSmarts.Select(o => new { o.Id, o.Description, o.Etat }).ToList(),
-                                             Reclamations = e.Reclamations.Select(r => new { r.Id, r.Description, r.DateReclamation }).ToList()
-                                         })
-                                         .ToListAsync();
+                .OfType<Employe>()
+                .Include(e => e.Departement)
+                .Include(e => e.Affectations).ThenInclude(a => a.Projet)
+                .Include(e => e.DemandesConge)
+                .Include(e => e.ObjectifsSmarts)
+                .Include(e => e.Reclamations)
+                .Select(e => new UserDto
+                {
+                    Id = e.Id,
+                    NomPrenom = e.NomPrenom,
+                    Email = e.Email,
+                    PhoneNumber = e.PhoneNumber,
+                    Role = e.Role,
+                    Etat=e.Etat,
+                    Salaire = e.Salaire,
+                    DateEmbauche = e.DateEmbauche,
+                    Departement = e.Departement != null ? e.Departement.Nom : null,
+                    Projets = e.Affectations.Select(a => new
+                    {
+                        a.Projet.Id,
+                        a.Projet.Nom,
+                        a.Projet.Description,
+                        a.Projet.DateDebut,
+                        a.Projet.DateFin
+                    }).Cast<object>().ToList(),
+                    DemandesConge = e.DemandesConge.Select(d => new { d.Id, d.DateDebut, d.DateFin, d.Statut }).Cast<object>().ToList(),
+                    ObjectifsSmarts = e.ObjectifsSmarts.Select(o => new { o.Id, o.Description, o.Etat }).Cast<object>().ToList(),
+                    Reclamations = e.Reclamations.Select(r => new { r.Id, r.Description, r.DateReclamation }).Cast<object>().ToList()
+                })
+                .ToListAsync();
 
-            return Ok(employes);
+            // RH non-employés
+            var rhUsers = await _context.Users
+        .OfType<Personnel>() // assure que c’est bien du type Personnel (y compris RH)
+        .Where(u => u.Role.ToLower().Contains("rh") && !(u is Employe))
+        .Select(u => new UserDto
+        {
+            Id = u.Id,
+            NomPrenom = u.NomPrenom,
+            Email = u.Email,
+            PhoneNumber = u.PhoneNumber,
+            Role = u.Role,
+            Etat = u.Etat,
+            Salaire = u.Salaire,
+            DateEmbauche = u.DateEmbauche,
+            Departement = null,
+            Projets = new List<object>(),
+            DemandesConge = new List<object>(),
+            ObjectifsSmarts = new List<object>(),
+            Reclamations = new List<object>()
+        })
+        .ToListAsync();
+
+
+            // Fusion
+            var result = employes.Concat(rhUsers).ToList();
+
+            return Ok(result);
         }
+
+
         [HttpPut("updateEmByAdmin")]
         public async Task<IActionResult> UpdateEmploye([FromBody] UpdateEmployeDto dto)
         {
@@ -186,7 +284,7 @@ namespace PfeRH.Controllers
             }
 
             // Mettre à jour les champs simples
-            employe.Poste = dto.Poste;
+            employe.Role = dto.Poste;
             employe.Salaire = dto.Salaire;
 
             // Gérer le département
@@ -217,6 +315,36 @@ namespace PfeRH.Controllers
 
             return Ok("Employé mis à jour avec succès.");
         }
+        [HttpPut("updateRh")]
+        public async Task<IActionResult> UpdateRh([FromBody] UpdateRhDto dto)
+        {
+            var rh = await _context.Users
+                .OfType<Personnel>()
+                .FirstOrDefaultAsync(u => u.Id == dto.RhId && u.Role.ToLower().Contains("rh"));
+
+
+            if (rh == null)
+            {
+                return NotFound("Gestionnaire RH non trouvé.");
+            }
+
+            // Mettre à jour seulement si différent et non vide/nul
+            if (dto.NomPrenom!="string" && dto.NomPrenom != rh.NomPrenom)
+            {
+                rh.NomPrenom = dto.NomPrenom;
+            }
+
+            if (dto.Salaire > 0 && dto.Salaire != rh.Salaire)
+            {
+                rh.Salaire = dto.Salaire;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok("RH mis à jour avec succès.");
+        }
+
+
         [HttpGet("getObjectifsSmart/{employeId}")]
         public async Task<IActionResult> GetObjectifsSmartByEmploye(int employeId)
         {
@@ -383,7 +511,7 @@ namespace PfeRH.Controllers
                 {
                     EmployeId = e.Id,
                     Nom = e.NomPrenom,
-                    Poste=e.Poste,
+                    Poste=e.Role,
                     NomDepartement = e.Departement != null ? e.Departement.Nom : null,
                     Projets = e.Affectations
                         .Select(a => new ProjetResponse
@@ -440,6 +568,12 @@ namespace PfeRH.Controllers
 
 
 
+        public class UpdateRhDto
+        {
+            public int RhId { get; set; }
+            public string NomPrenom { get; set; }
+            public double Salaire { get; set; }
+        }
 
         public class EmployeDto
         {
@@ -452,6 +586,33 @@ namespace PfeRH.Controllers
             public string DepartementNom { get; set; }
            
         }
+        public class UserDto
+        {
+            public int Id { get; set; }
+            public string NomPrenom { get; set; }
+            public string Email { get; set; }
+            public string PhoneNumber { get; set; }
+            public string Role { get; set; }
+            public Boolean Etat { get; set; }   
+            public double? Salaire { get; set; }
+            public DateTime? DateEmbauche { get; set; }
+            public string Departement { get; set; }
+            public List<object> Projets { get; set; } = new();
+            public List<object> DemandesConge { get; set; } = new();
+            public List<object> ObjectifsSmarts { get; set; } = new();
+            public List<object> Reclamations { get; set; } = new();
+        }
+
+        public class GestionnaireRhDto
+        {
+            public string NomPrenom { get; set; }
+            public string Email { get; set; }
+             public string PhoneNumber { get; set; }
+            public string Password { get; set; }
+            public string Poste { get; set; }
+            public double Salaire { get; set; }
+        }
+
         public class UpdateEmployeDto
         {
             public int EmployeId { get; set; }

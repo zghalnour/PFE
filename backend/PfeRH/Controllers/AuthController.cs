@@ -41,30 +41,33 @@ namespace PfeRH.Controllers
 
         // ✅ Inscription d'un utilisateur
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] Utilisateur model)
+        public async Task<IActionResult> Register([FromBody] RegisterDto model)
         {
             if (await _userManager.FindByEmailAsync(model.Email) != null)
                 return BadRequest("Cet email est déjà utilisé.");
             if (string.IsNullOrEmpty(model.Password))
                 return BadRequest("Le mot de passe est requis.");
 
+            if (string.IsNullOrWhiteSpace(model.Role))
+                return BadRequest("Le poste (Position) est requis.");
             var user = new Utilisateur
             {
                 UserName = model.Email.Split('@')[0],
                 Email = model.Email,
                 NomPrenom = model.NomPrenom,
-                Role = model.Role,
-                PhoneNumber=model.PhoneNumber,
+                PhoneNumber=model.telephone,
+                Role=model.Role,
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
-            var roleExists = await _roleManager.RoleExistsAsync(model.Role);
+            var roleName = model.Role.Trim();
+
+            var roleExists = await _roleManager.RoleExistsAsync(roleName);
             if (!roleExists)
             {
-                // Si le rôle n'existe pas, le créer
-                var role = new IdentityRole<int>(model.Role);
+                var role = new IdentityRole<int>(roleName);
                 var createRoleResult = await _roleManager.CreateAsync(role);
                 if (!createRoleResult.Succeeded)
                 {
@@ -73,14 +76,16 @@ namespace PfeRH.Controllers
             }
 
             // Assigner le rôle à l'utilisateur
-            var addRoleResult = await _userManager.AddToRoleAsync(user, model.Role);
+            var addRoleResult = await _userManager.AddToRoleAsync(user, roleName);
             if (!addRoleResult.Succeeded)
             {
                 return BadRequest("Erreur lors de l'assignation du rôle à l'utilisateur.");
             }
-
-            // Retourner la réponse
-            return Ok(new { message = "Utilisateur inscrit avec succès." });
+            return Ok(new
+            {
+                message = "Utilisateur inscrit avec succès.",
+                role = roleName
+            });
         }
 
         // ✅ Connexion et génération du token JWT
@@ -188,4 +193,17 @@ namespace PfeRH.Controllers
 
 
     }
+    public class RegisterDto
+    {
+        public string NomPrenom { get; set; }
+        public string telephone { get; set; }
+        public string Email { get; set; }
+
+        public string Password { get; set; }
+
+        public String Role { get; set; }
+
+      
+    }
+
 }

@@ -8,7 +8,7 @@ interface Employe {
   nomPrenom: string;
   email: string;
   phoneNumber: string;
-  poste: string;
+  role: string;
   salaire: number;
   dateEmbauche: string;
   departement: string;
@@ -42,7 +42,7 @@ interface CreerEmployePayload {
   phoneNumber: string;
   poste: string;
   salaire: number;
-  departementNom: string; // L'API attend le nom final ici
+  departementNom: string | null;// L'API attend le nom final ici
 }
 @Component({
   selector: 'app-employes',
@@ -73,7 +73,7 @@ export class EmployesComponent implements OnInit {
     email: '',
     password: '',
     phoneNumber: '',
-    poste: '',
+    role: '',
     salaire: 0,
     departementNom: null as string | null, 
     nouveauDepartementNom: '' 
@@ -82,7 +82,8 @@ export class EmployesComponent implements OnInit {
   formError: string | null = null; 
   passwordVisible: boolean = false;
   private queryParamsSubscription: Subscription | null = null; 
-
+  employeForAccountDetails: any | null = null; // To store the employee whose account details are being viewed
+  isAccountDetailsPanelVisible: boolean = false; // 
   constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit(): void {
@@ -101,7 +102,7 @@ export class EmployesComponent implements OnInit {
       const email = params['email'];
       // Utilise la clé 'telephone' comme défini dans le queryParams du lien
       const telephone = params['telephone'];
-      const poste= params['poste'];
+      const poste= params['role'];
       
 
       // Vérifie si les paramètres nécessaires sont présents
@@ -110,7 +111,7 @@ export class EmployesComponent implements OnInit {
 
         // Pré-remplit le modèle du formulaire
         this.employe.nomPrenom = nom;
-        this.employe.poste = poste;
+        this.employe.role = poste;
         this.employe.email = email;
         this.employe.phoneNumber = telephone; // Utilise la bonne propriété du modèle
 
@@ -207,14 +208,14 @@ export class EmployesComponent implements OnInit {
   }
   
   extractUniquePostes() {
-    this.postes = [...new Set(this.employes.map(employe => employe.poste))];
+    this.postes = [...new Set(this.employes.map(employe => employe.role))];
   }
 
   filterEmployes() {
     this.filteredEmployes = this.employes.filter((employe) => {
       const nameMatch = employe.nomPrenom.toLowerCase().includes(this.searchTerm.toLowerCase());
       const departementMatch = this.selectedDepartement ? employe.departement === this.selectedDepartement : true;
-      const posteMatch = this.selectedPoste ? employe.poste === this.selectedPoste : true;
+      const posteMatch = this.selectedPoste ? employe.role === this.selectedPoste : true;
       return nameMatch && departementMatch && posteMatch;
     });
   }
@@ -284,6 +285,7 @@ export class EmployesComponent implements OnInit {
 
   // Méthode pour ouvrir le panneau des réclamations
   openReclamationPanel(employe: Employe) {
+    this.isAccountDetailsPanelVisible = false;
     this.selectedEmploye = employe; // Select the employee
     this.isReclamationPanelVisible = true; // Show the reclamations panel
     console.log("Selected Employee:", this.selectedEmploye); // Log the selected employee
@@ -337,6 +339,7 @@ export class EmployesComponent implements OnInit {
 
   // 🟢 Ouvre le formulaire de modification
   openEditForm(employe: any) {
+    
     this.currentEmploye = { ...employe }; // Clone les données de l'employé
     if (!this.currentEmploye.objectifs) {
       this.currentEmploye.objectifs = [];
@@ -356,60 +359,104 @@ export class EmployesComponent implements OnInit {
 
   // 🟢 Sauvegarde les modifications
   saveChanges() {
-    const objectifsSmarts = this.currentEmploye.objectifs.map(
-      (objectif: any) => ({
-        description: objectif.description,
-        etat: objectif.atteint,
-      })
-    );
+    if (!this.currentEmploye || !this.currentEmploye.id) {
+      console.error('Current employee data is missing or invalid.');
+      // Optionally, show an error message to the user
+      return;
+    }
 
-    const updateData = {
-      employeId: this.currentEmploye.id,
-      poste: this.currentEmploye.poste,
-      salaire: this.currentEmploye.salaire,
-      departementNom: this.currentEmploye.departement,
-      objectifsSmarts: objectifsSmarts,
-    };
+    let apiUrl: string;
+    let updatePayload: any;
+    const isRhRole = this.currentEmploye.role && this.currentEmploye.role.toLowerCase().includes('rh');
 
-    fetch('http://localhost:5053/api/Employe/updateEmByAdmin', {
+    if (isRhRole) {
+      apiUrl = 'http://localhost:5053/api/Employe/updateRh';
+      updatePayload = {
+        rhId: this.currentEmploye.id,
+        nomPrenom: this.currentEmploye.nomPrenom,
+        salaire: this.currentEmploye.salaire,
+      };
+    } else {
+      apiUrl = 'http://localhost:5053/api/Employe/updateEmByAdmin';
+      const objectifsSmarts = (this.currentEmploye.objectifs || []).map(
+        (objectif: any) => ({
+          description: objectif.description,
+          etat: objectif.atteint ?? false, // Ensure etat has a default if undefined
+        })
+      );
+      updatePayload = {
+        employeId: this.currentEmploye.id,
+        nomPrenom: this.currentEmploye.nomPrenom, // Make sure nomPrenom is included for consistency if API expects it
+        poste: this.currentEmploye.role,
+        salaire: this.currentEmploye.salaire,
+        departementNom: this.currentEmploye.departement,
+        objectifsSmarts: objectifsSmarts,
+      };
+    }
+
+    fetch(apiUrl, {
       method: 'PUT',
       headers: {
-        accept: '*/*',
+        'accept': '*/*',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(updateData),
+      body: JSON.stringify(updatePayload),
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          // Try to get more error details from the response body
+          return response.text().then(text => {
+            throw new Error(`Network response was not ok. Status: ${response.status}, Body: ${text}`);
+          });
         }
-        return response.text(); // Expecting text response
+        return response.text(); // Or response.json() if the API returns JSON on success
       })
       .then((data) => {
         console.log('Employee updated successfully:', data);
-        // Update the local employes array
+        
+        // Update the local employes array more robustly
         const index = this.employes.findIndex(
           (e) => e.id === this.currentEmploye.id
         );
         if (index !== -1) {
-          this.employes[index] = { ...this.currentEmploye };
+          // Merge changes into the existing employee object to preserve other properties
+          // and reflect what was actually sent to the backend.
+          // For RH roles, only nomPrenom and salaire are updated from currentEmploye.
+          // For other roles, more fields are updated.
+          const updatedFields = isRhRole 
+            ? { nomPrenom: this.currentEmploye.nomPrenom, salaire: this.currentEmploye.salaire }
+            : { 
+                nomPrenom: this.currentEmploye.nomPrenom,
+                role: this.currentEmploye.role, 
+                salaire: this.currentEmploye.salaire, 
+                departement: this.currentEmploye.departement,
+                objectifsSmarts: updatePayload.objectifsSmarts // Use the processed objectifs
+              };
+          this.employes[index] = { ...this.employes[index], ...updatedFields };
+
+          // Also update in filteredEmployes if it exists there
           const filteredIndex = this.filteredEmployes.findIndex(
             (e) => e.id === this.currentEmploye.id
           );
           if (filteredIndex !== -1) {
-            this.filteredEmployes[filteredIndex] = { ...this.currentEmploye };
+            this.filteredEmployes[filteredIndex] = { ...this.filteredEmployes[filteredIndex], ...updatedFields };
           }
         }
         
-        this.fetchEmployes();
-        this.fetchObjectifsSmart(this.currentEmploye.id);
-        this.cancelEdit();
+        // Re-fetch all employees to ensure data consistency from the server
+        this.fetchEmployes(); 
+        // If not an RH role, and objectives were part of the update, re-fetch them
+        if (!isRhRole && this.currentEmploye.objectifs) {
+          this.fetchObjectifsSmart(this.currentEmploye.id);
+        }
+        this.cancelEdit(); // Close the edit form
       })
       .catch((error) => {
         console.error(
           'There has been a problem with your fetch operation:',
           error
         );
+        // Optionally, display a user-friendly error message here
       });
   }
   // 🟢 Ajoute un nouvel objectif
@@ -433,7 +480,7 @@ export class EmployesComponent implements OnInit {
       phoneNumber: '',
       email: '',
       password: '',
-      poste: '',
+      role: '',
       salaire: 0,
       departementNom: null, // Reset to null
       nouveauDepartementNom: '' // Reset the new property
@@ -443,10 +490,24 @@ export class EmployesComponent implements OnInit {
   togglePasswordVisibility(): void {
     this.passwordVisible = !this.passwordVisible;
   }
+    openAccountDetails(employe: any): void {
+    this.employeForAccountDetails = employe; // Store the selected employee
+    this.isAccountDetailsPanelVisible = true; // Set flag to show the details panel
+
+    // Optional: Close other panels to avoid UI clutter
+    this.isFormVisible = false; 
+    this.selectedEmploye = null; 
+  }
+
+  /**
+   * Closes the account details panel.
+   */
+
+
   submitEmploye() {
     this.departementError = null;
     
-    let finalDepartementNom = this.employe.departementNom;
+    let finalDepartementNom: string | null = null;
     if (this.employe.departementNom === '--AUTRE--') {
       // Si "Autre" est sélectionné, prendre la valeur de l'input
       finalDepartementNom = this.employe.nouveauDepartementNom?.trim() || null; // Utilise trim() et gère le cas où c'est vide
@@ -455,11 +516,7 @@ export class EmployesComponent implements OnInit {
       finalDepartementNom = this.employe.departementNom;
     }
 
-    if (!finalDepartementNom) { // Vérifie si c'est null ou une chaîne vide après trim
-      console.error('Nom de département invalide.');
-      this.departementError = "Veuillez sélectionner ou saisir un nom de département valide.";
-      return; // Arrête l'exécution si invalide
-    }
+  
 
     // Prepare the data payload according to the API specification
     const dataToSend : CreerEmployePayload = { 
@@ -467,13 +524,13 @@ export class EmployesComponent implements OnInit {
       email: this.employe.email,
       password: this.employe.password,
       phoneNumber: this.employe.phoneNumber,
-      poste: this.employe.poste,
+      poste: this.employe.role,
       salaire: this.employe.salaire,
       departementNom: finalDepartementNom // Use the determined department name
     };
 
     console.log('Envoi des données de l\'employé :', dataToSend);
-
+   
   
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -517,5 +574,3 @@ export class EmployesComponent implements OnInit {
 
   }
   
-
-

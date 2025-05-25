@@ -6,9 +6,27 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './user-management.component.html',
   styleUrl: './user-management.component.css'
 })
+
 export class UserManagementComponent implements OnInit{
+  
   constructor(private http: HttpClient){}
   
+  public getRoleStyling(role: string): { icon: string; classes: string } {
+  if (!role) {
+    return { icon: 'fas fa-tag', classes: 'bg-gray-100 text-gray-700' };
+  }
+  switch (role.toLowerCase()) {
+    case 'admin':
+      return { icon: 'fas fa-user-shield', classes: 'bg-sky-100 text-sky-700' };
+    case 'rh': // Exemple pour GestionnaireRH
+      return { icon: 'fas fa-users-cog', classes: 'bg-purple-100 text-purple-700' };
+    case 'employe': // Exemple pour Employe
+      return { icon: 'fas fa-user', classes: 'bg-indigo-100 text-indigo-700' };
+  
+    default:
+      return { icon: 'fas fa-tag', classes: 'bg-gray-100 text-gray-700' };
+  }
+}
   ngOnInit() {this.fetchUsers();
   
   }
@@ -25,7 +43,7 @@ export class UserManagementComponent implements OnInit{
   searchTerm: string = '';
   selectedRole: string = '';
 
-  roles = ['Tous', 'Admin', 'Employe', 'Candidat', 'GestionnaireRH'];
+  roles = ['Tous', 'Admin', 'Employe', 'GestionnaireRH'];
 
 
   trackByFn(index: number, item: string): string {

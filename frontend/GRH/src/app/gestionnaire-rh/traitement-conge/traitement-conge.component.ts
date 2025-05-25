@@ -214,7 +214,7 @@ getStatutClass(statut: string): string {
 
   rejeterDemande(demande: DemandeConge) {
     console.log('Rejeter demande:', demande.id);
-    this.http.put(`http://localhost:5053/api/DemCong/ModifierStatut/${demande.id}`, { nouveauStatut: 'Approuvée' })
+    this.http.put(`http://localhost:5053/api/DemCong/ModifierStatut/${demande.id}`, { nouveauStatut: 'Refusée' })
     .subscribe({
       next: (response: any) => {
         console.log('Réponse serveur:', response.message);

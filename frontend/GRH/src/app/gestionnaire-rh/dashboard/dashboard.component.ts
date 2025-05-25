@@ -480,6 +480,8 @@ isLoadingSlots: boolean = false
       commentaire: entretien.commentaire,
       statut: entretien.statut,
     };
+    console.log('entretienData:', entretienData);
+    console.log('entretien.id:', entretien.id);
     this.http.put<Entretien>(`http://localhost:5053/api/Entretien/update/${entretien.id}`, entretienData).subscribe({
       next: (updatedEntretien) => {
         console.log('entretien updated:', updatedEntretien);

@@ -31,19 +31,40 @@
       <table class="table">
         <thead>
           <tr>
-            <th>Nom & Prénom</th>
             <th>Email</th>
+            <th>Nom & Prénom</th>
             <th>Téléphone</th>
+            
+            <th>État</th>
             <th>Rôle</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let user of filteredUsers">
-            <td>{{ user.nomPrenom }}</td>
             <td>{{ user.email }}</td>
+            <td>{{ user.nomPrenom }}</td>
             <td>{{ user.telephone }}</td>
-            <td><span class="badge" [ngClass]="getRoleClass(user.role)">{{ user.role }}</span></td>
+               <td>
+              <span *ngIf="user.etat === true"
+                    class="inline-flex items-center gap-x-1.5 py-1 px-2.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                <i class="fas fa-check-circle fa-fw"></i>
+                Actif
+              </span>
+              <span *ngIf="user.etat === false"
+                    class="inline-flex items-center gap-x-1.5 py-1 px-2.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                <i class="fas fa-times-circle fa-fw"></i>
+                Inactif
+              </span>
+          
+            </td>
+            <td>
+              <span class="inline-flex items-center gap-x-1.5 py-1 px-2.5 rounded-full text-xs font-medium"
+                    [ngClass]="getRoleStyling(user.role).classes">
+                <i [class]="getRoleStyling(user.role).icon + ' fa-fw'"></i>
+                {{ user.role }}
+              </span>
+            </td>
             <td>
               <button class="btn btn-sm btn-warning" (click)="  openEditModal(user.id)">
                 <i class="fas fa-edit"></i>
@@ -99,6 +120,16 @@
           required
         />
       </div>
+       <div class="mb-4 w-full max-w-xs">
+  <label for="etat" class="block text-lg font-medium">État</label>
+  <input
+    id="etat"
+    type="text"
+    class="mt-1 p-2 w-full border rounded"
+    [(ngModel)]="userToEdit.etat"
+    name="etat"
+  />
+</div>
 
 
 
