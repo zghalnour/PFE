@@ -2,6 +2,9 @@
 
 <main class="content">
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+
+
+    <!-- Cartes des départements existants -->
     <div *ngFor="let dept of departements; let i = index" class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
     
         <h2 class="text-xl font-semibold text-gray-800 flex items-center">
@@ -41,5 +44,40 @@
         </button>
       </div>
     </div>
+        <!-- Carte pour ajouter un nouveau département (style icône) -->
+    <div class="bg-white shadow-md rounded-lg p-6 border-2 border-dashed border-gray-300 flex flex-col justify-center items-center min-h-[230px]"> 
+      <!-- Afficher l'icône "plus" si le champ de saisie n'est pas visible -->
+      <div *ngIf="!showAddDepartmentInput" (click)="toggleAddDepartmentInput()" class="cursor-pointer text-center text-gray-400 hover:text-blue-500 transition-colors duration-150 ease-in-out">
+        <i class="fas fa-plus fa-3x"></i>
+        <p class="mt-2 text-sm font-medium">Ajouter un département</p>
+      </div>
+
+      <!-- Afficher le champ de saisie si showAddDepartmentInput est vrai -->
+      <div *ngIf="showAddDepartmentInput" class="w-full flex flex-col items-center">
+        <input 
+          type="text" 
+          placeholder="Nom du nouveau département" 
+          [(ngModel)]="newDepartmentName" 
+          (keyup.enter)="addNewDepartment()"
+          class="w-full p-2 border border-gray-300 rounded-md mb-4 focus:ring-blue-500 focus:border-blue-500 text-lg"
+          autofocus
+        />
+        <div class="flex justify-center gap-3 w-full">
+          <button 
+            (click)="addNewDepartment()" 
+            [disabled]="!newDepartmentName || newDepartmentName.trim() === ''"
+            class="flex-grow bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out"
+            title="Enregistrer">
+            <i class="fas fa-check mr-1"></i> Enregistrer
+          </button>
+          <button 
+            (click)="cancelAddDepartment()" 
+            class="flex-grow bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-md text-sm transition duration-150 ease-in-out"
+            title="Annuler">
+            <i class="fas fa-times mr-1"></i> Annuler
+          </button>
+        </div>
+      </div>
+  </div>
   </div>
 </main>

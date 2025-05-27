@@ -21,11 +21,13 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { EntretiensComponent } from './entretiens/entretiens.component';
 @NgModule({
   declarations: [
     DashboardComponent,
     HeaderComponent,
-    DemandeCongeComponent
+    DemandeCongeComponent,
+    EntretiensComponent
   ],
   imports: [
     CommonModule,

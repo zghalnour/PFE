@@ -20,6 +20,7 @@ export class AuthComponent {
    emailExistsError: boolean = false;
   genericSignUpError: string | null = null;
   showSignUpPassword: boolean = false;
+   loginErrorMessage: string | null = null;
 
   signUpForm = {
     nomPrenom: '',
@@ -92,6 +93,7 @@ export class AuthComponent {
   onLogin(email: string, password: string) {
     this.emailExistsError = false; // Réinitialiser les erreurs d'inscription
     this.genericSignUpError = null; // Réinitialiser les erreurs d'inscription
+    this.loginErrorMessage = null;
     const loginData = { email: email, password: password };
     this.http.post<LoginResponse>(`${this.apiUrl}/login`, loginData).subscribe({
       next: (response) => {
@@ -103,11 +105,21 @@ export class AuthComponent {
         this.redirectUser(response.role);
       },
       error: (error) => {
-        // Gérer les erreurs de connexion de manière plus moderne si nécessaire
-        // Par exemple, afficher un message d'erreur dans le formulaire de connexion
-        this.genericSignUpError = 'Email ou mot de passe incorrect.'; // Ou une propriété spécifique pour le login
-        console.error('Erreur de connexion:', error);
+             if (error.status === 401) {
+          if (error.error && typeof error.error === 'string') {
+            this.loginErrorMessage = error.error; // "Identifiants incorrects."
+          } else if (error.error && error.error.message) {
+            this.loginErrorMessage = error.error.message; // "Ce compte est désactivé."
+          } else {
+            this.loginErrorMessage = "Une erreur d'authentification s'est produite."; // Message générique
+          }
+        } else {
+          // Gérer d'autres types d'erreurs (500, etc.)
+          this.loginErrorMessage = "Une erreur inattendue s'est produite. Veuillez réessayer.";
+        }
+        
       }
+      
     });
   }
 redirectUser(role: string) {

@@ -66,7 +66,7 @@
       <!-- Formulaire de création d'entretien -->
           <!-- Formulaire de création d'entretien OU Message de fin d'entretiens -->
       <!-- Vérifier si le nombre total est fixé ET si le nombre planifié est inférieur au total -->
-      <div class="form-container"  *ngIf="selectedCandidature?.nbFixe && nombreEntretiensPlanifies < (selectedCandidature?.nbEntretiens ?? 0)">
+      <div class="form-container "  *ngIf="selectedCandidature?.nbFixe && nombreEntretiensPlanifies < (selectedCandidature?.nbEntretiens ?? 0)">
         <div class="form-group">
           <label>Progression des entretiens : {{ nombreEntretiensPlanifies }} / {{ selectedCandidature.nbEntretiens }}</label>
         </div>
@@ -75,12 +75,21 @@
 
         <!-- Ligne 1: Type + Date -->
         <div class="form-row">
-          <div class="form-group">
-            <label for="type">Type Entretien</label>
-            <input id="type" type="text" [(ngModel)]="nouvelEntretien.typeEntretien" placeholder="Ex: RH, Technique...">
+          <div class="form-group"> <!-- Modified Type Entretien -->
+            <label for="typeSelect">Type Entretien</label>
+            <select id="typeSelect" [(ngModel)]="selectedTypeOption" (ngModelChange)="handleTypeChange()">
+              <option value="" selected disabled>Choisir...</option>
+              <option value="RH">RH</option>
+              <option value="Autre">Autre</option>
+            </select>
+            <input *ngIf="selectedTypeOption === 'Autre'"
+                   type="text"
+                   class="mt-2"
+                   [(ngModel)]="nouvelEntretien.typeEntretien"
+                   placeholder=" (Ex: Technique)">
           </div>
                   <div >
-            <mat-form-field  class="w-[160px]">
+            <mat-form-field  class="w-[160px] mt-3">
               <mat-label>Date Entretien</mat-label>
               <input matInput
                      [matDatepicker]="picker"
@@ -97,7 +106,7 @@
         
           <!-- Heure Entretien (Select) -->
           <div class="form-group">
-            <mat-form-field appearance="outline" class="time-picker-field w-full" *ngIf="selectedDate">
+            <mat-form-field appearance="outline" class="time-picker-field w-full mt-6" *ngIf="selectedDate">
               <mat-label>Heure Entretien</mat-label>
               <!-- Afficher le spinner pendant le traitement -->
               <mat-spinner *ngIf="isLoadingSlots" diameter="20" matSuffix></mat-spinner>
@@ -123,17 +132,17 @@
 
         <!-- Ligne 2: Responsable + Mode -->
         <div class="form-row">
-          <div class="form-group">
+          <div class="form-group" *ngIf="selectedTypeOption !== 'RH' && selectedTypeOption !== ''">
             <label for="responsableEntretien">Responsable Entretien</label>
-            <select id="responsableEntretien" [(ngModel)]="nouvelEntretien.responsableId" name="responsableId" required>
+            <select id="responsableEntretien" [(ngModel)]="nouvelEntretien.responsableId" name="responsableId" required [disabled]="selectedTypeOption === 'RH'">
               <option [ngValue]="null" disabled>Sélectionner un responsable</option>
               <option *ngFor="let resp of responsables" [ngValue]="resp.id">
-                {{ resp.nomPrenom }} ({{ resp.poste }})
+                {{ resp.nomPrenom }} ({{ resp.role }})
               </option>
             </select>
           </div>
 
-          <div class="form-group">
+          <div class="form-group ">
             <label>Mode Entretien</label>
             <div class="radio-group">
               <label>
@@ -148,7 +157,7 @@
           </div>
         </div>
 
-        <button class="btn-create" (click)="creerEntretien()">Créer</button>
+        <button class="btn-create" (click)="creerEntretien()" [disabled]="isNewInterviewCreationDisabled()">Créer</button>
       </div>
 
       <!-- Message affiché quand tous les entretiens sont terminés -->
@@ -207,8 +216,14 @@
                   <span>
                     <strong>Mode: </strong> {{ entretien.modeEntretien }}
                   </span>
-                  <span>
-                    <strong>Responsable: </strong> {{ entretien.responsableNom }}
+                <span> <!-- Modified to handle missing responsableNom for RH interviews -->
+                    <strong>Responsable: </strong> 
+                    <ng-container *ngIf="entretien.typeEntretien === 'RH'">
+                      {{ loggedInUser }} 
+                    </ng-container>
+                    <ng-container *ngIf="entretien.typeEntretien !== 'RH'">
+                      {{ entretien.responsableNom }}
+                    </ng-container>
                   </span>
                   <span class="decision-text" (click)="toggleDecision(entretien)">➤ Décision</span>
               
@@ -224,7 +239,7 @@
             <div *ngIf="entretien.showDecision " class="decision-side">
   
               <!-- SI showOnlyDecision === false (alors afficher textarea + boutons) -->
-              <div *ngIf="entretien.statut === 'En cours'">
+              <div *ngIf="entretien.statut === 'En cours'&& entretien.typeEntretien == 'RH'">
                 <textarea [(ngModel)]="entretien.commentaire" placeholder="Ajouter un commentaire"></textarea>
             
                 <div *ngIf="!entretien.decisionPrise" class="decision-buttons">
@@ -232,7 +247,17 @@
                   <button class="btn-reject" (click)="updateEntretien(entretien, 'Echoué')">Refuser</button>
                 </div>
               </div>
-            
+            <!-- Enhanced Pending Evaluation Message -->
+            <div *ngIf="entretien.statut === 'En cours' && entretien.typeEntretien !== 'RH'" class="pending-evaluation-message">
+              <div class="icon-area">
+                <i class="fas fa-info-circle"></i> <!-- Consider other icons like fa-clock or fa-hourglass-half -->
+              </div>
+              <div class="text-area">
+                <p>Le responsable de cet entretien n'a pas encore évalué le candidat.</p>
+                <p *ngIf="entretien.responsableNom" class="responsable-name">Responsable: {{ entretien.responsableNom }}</p>
+              </div>
+            </div>
+
               <!-- Résultat de la décision -->
               <div *ngIf="entretien.statut !== 'En cours' " class="decision-result">
                 <p *ngIf="entretien.commentaire"><strong>Notes:</strong> {{ entretien.commentaire }}</p>

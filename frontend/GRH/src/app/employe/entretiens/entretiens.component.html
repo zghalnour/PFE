@@ -1,0 +1,67 @@
+<app-header></app-header>
+  <main class="content">
+    <div class="container-fluid mt-4">
+      <h2 class="page-title">Entretiens à Évaluer</h2>
+
+      <!-- Message if no interviews -->
+      <div *ngIf="!entretiens || entretiens.length === 0" class="no-interviews-message card-style">
+        <i class="fas fa-calendar-times icon"></i>
+        <p>Aucun entretien à évaluer pour le moment.</p>
+      </div>
+
+      <!-- List of interviews -->
+      <div *ngIf="entretiens && entretiens.length > 0" class="interviews-list">
+        <div *ngFor="let entretien of entretiens; let i = index" class="interview-card card-style">
+          <div class="card-header">
+            <h3>{{ entretien.nomOffre }}</h3>
+            <span class="badge" [ngClass]="getStatusClass(entretien.statut)">{{ entretien.statut }}</span>
+          </div>
+          <div class="card-body">
+            <div class="interview-details">
+              <p><strong><i class="fas fa-user-tie"></i> Candidat:</strong> {{ entretien.nomPrenom }}</p>
+              <p><strong><i class="fas fa-briefcase"></i> Type:</strong> {{ entretien.typeEntretien }}</p>
+              <p><strong><i class="fas fa-calendar-alt"></i> Date:</strong> {{ entretien.dateEntretien | date:'dd/MM/yyyy \'à\' HH:mm' }}</p>
+              <p><strong><i class="fas fa-map-marker-alt"></i> Mode:</strong> {{ entretien.modeEntretien }}</p>
+            </div>
+
+            <!-- Evaluation section - shown if status is 'En cours' and evaluation form is toggled -->
+            <div *ngIf="entretien.statut === 'En cours'">
+              <button class="btn btn-primary btn-evaluate mt-3" (click)="toggleEvaluationForm(entretien)">
+                <i class="fas fa-edit"></i> Évaluer
+              </button>
+
+              <div *ngIf="entretien.showEvaluationForm" class="evaluation-form mt-3">
+                <h4>Évaluation de {{ entretien.nomPrenom }}</h4>
+                <textarea class="form-control" 
+                          [(ngModel)]="entretien.commentaire" 
+                          placeholder="Saisir votre commentaire ici..." 
+                          rows="4"></textarea>
+                
+                <div class="decision-buttons mt-3">
+                  <button class="btn btn-success" (click)="submitEvaluation(entretien, 'Passé')">
+                    <i class="fas fa-check-circle"></i> Accepter
+                  </button>
+                  <button class="btn btn-danger" (click)="submitEvaluation(entretien, 'Echoué')">
+                    <i class="fas fa-times-circle"></i> Refuser
+                  </button>
+                  <button class="btn btn-secondary" (click)="toggleEvaluationForm(entretien)">
+                    <i class="fas fa-ban"></i> Annuler
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Display evaluation result if already evaluated -->
+            <div *ngIf="entretien.statut !== 'En cours' && entretien.commentaire" class="evaluation-result mt-3">
+              <h4>Résultat de l'évaluation :</h4>
+              <p><strong>Décision :</strong> <span [ngClass]="{'text-success': entretien.statut === 'Passé', 'text-danger': entretien.statut === 'Echoué'}">{{ entretien.statut }}</span></p>
+              <p><strong>Commentaire :</strong> {{ entretien.commentaire }}</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  

@@ -47,10 +47,14 @@
         <span>Mes congés</span>
       </a>
     </li>
+        <li>
+      <a routerLink="/employe/entretiens" 
+         [class.active]="isActive('/employe/entretiens')" 
+         (click)="setActiveRoute('/employe/entretiens')">
+         <i class="fas fa-clipboard-check"></i> <!-- Changed icon -->
+        <span>Evaluation entretiens</span> <!-- Slightly refined text -->
+      </a>
+    </li>
   
   </ul>
 </nav>
-
-
-
-

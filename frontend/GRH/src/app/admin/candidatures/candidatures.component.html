@@ -2,10 +2,25 @@
 <main class="content">
   <div class="candidatures-container">
     <h2 class="text-2xl font-semibold mb-4">Candidatures pour: {{ titreOffre }}</h2>
-  
-    <div class="candidatures-list">
+
+    <!-- Message if no candidatures -->
+    <div *ngIf="!candidatures || candidatures.length === 0" class="no-candidatures-message">
+      <div class="icon-container">
+        <i class="fas fa-folder-open"></i> <!-- Or use another relevant icon like fas fa-users-slash -->
+      </div>
+      <p class="message-text">Aucune candidature n'a été trouvée pour cette offre pour le moment.</p>
+      <p class="sub-message-text">N'hésitez pas à vérifier plus tard ou à promouvoir davantage l'offre.</p>
+    </div>
+
+    <div *ngIf="candidatures && candidatures.length > 0" class="candidatures-list">
       <div *ngFor="let candidature of candidatures" class="candidature-card">
-        <h3 class="text-sm text-gray-600">{{ candidature.name }}</h3>
+        <!-- Flex container for name and delete button -->
+        <div class="flex justify-between items-center mb-2">
+          <h3 class="text-sm text-gray-600 font-medium">{{ candidature.name }}</h3>
+          <button class="btn btn-icon btn-outline-danger" (click)="deleteCandidature(candidature)" title="Supprimer la candidature">
+              <i class="fas fa-trash-alt"></i> <!-- Icône Corbeille -->
+          </button>
+        </div>
         <div class="flex justify-between items-center">
           <p>Score AI: <strong>{{ candidature.scoreAI }} </strong></p>
           <p *ngIf="candidature.testScore !== '0/0'">Test Score: <strong>{{ candidature.testScore }}</strong></p>
@@ -15,8 +30,8 @@
         <div class="candidature-status mt-2">
           <strong>
           <span [ngClass]="{
-              'text-green-500': candidature.etat === 'AcceptePreSelection',
-              'text-red-500': candidature.etat === 'RefusePreSelection',
+              'text-green-500': candidature.etat?.toLowerCase().includes('accept'),
+              'text-red-500': candidature.etat?.toLowerCase().includes('refus'),
               'text-yellow-500': candidature.etat === 'En cours'
           }">
             {{ candidature.etat }}
@@ -33,14 +48,17 @@
           <!-- Section pour les actions d'acceptation et de rejet, placée à droite -->
           <div class="flex">
             <!-- Icône alternative pour accepter : Check Circle -->
-            <button class="btn btn-success" (click)="acceptCandidate(candidature)"  [disabled]="candidature.etat !== 'En cours'">
+            <button *ngIf="candidature.etat === 'En cours'" class="btn btn-success" (click)="acceptCandidate(candidature)"  >
               <i class="fas fa-check-circle"></i> <!-- Icône Check Circle -->
             </button>
             
             <!-- Icône alternative pour rejeter : Times Circle -->
-            <button class="btn btn-danger" (click)="rejectCandidate(candidature)"  [disabled]="candidature.etat !== 'En cours'">
+            <button *ngIf="candidature.etat === 'En cours'" class="btn btn-danger" (click)="rejectCandidate(candidature)" >
               <i class="fas fa-times-circle"></i> <!-- Icône Times Circle -->
             </button>
+
+            <!-- Bouton de suppression -->
+          
           </div>
         </div>        
         

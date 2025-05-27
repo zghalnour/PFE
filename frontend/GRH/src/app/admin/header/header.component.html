@@ -54,7 +54,11 @@
 
 <!-- Menu latéral -->
 <!-- Menu latéral -->
-<nav class="sidebar" >
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <i class="fas fa-user-shield"></i> <!-- Icône d'administration -->
+    <span>Administrateur</span>
+  </div>
   <ul>
     <li>
       <a routerLink="/admin" 
@@ -64,34 +68,21 @@
         <span>Dashboard</span>
       </a>
     </li>
-    <li>
-      <a routerLink="/users" 
-      [class.active]="isActive('/users')" 
-      (click)="setActiveRoute('/users')">
-     <i class="fas fa-users"></i>
-     <span>Comptes</span>
-   </a>
-    </li>
   
-          <li *ngIf="isActive('/admin/access-list')">
-      <a routerLink="/admin/access-list" [class.active]="isActive('/admin/access-list')" (click)="setActiveRoute('/admin/access-list')">
-        <i class="fas fa-user-check mr-2"></i>
-        <span>Liste Accès</span>
-      </a>
-    </li>
+  
     <li *ngIf="isActive('/parcours-candidat')">
       <a routerLink="/parcours-candidat" [class.active]="isActive('/parcours-candidat')" (click)="setActiveRoute('/parcours-candidat')">
         <i class="fas fa-clipboard-list"></i>
         <span>Parcours Candidat</span>
       </a>
     </li>
-    <li>
-      <a routerLink="/offres" 
-         [class.active]="isActive('/offres')" 
-         (click)="setActiveRoute('/offres')">
-         <i class="fas fa-briefcase"></i>
-
-        <span>offres</span>
+  
+        <li>
+      <a routerLink="/employes" 
+         [class.active]="isActive('/employes')" 
+         (click)="setActiveRoute('/employes')">
+        <i class="fas fa-user-tie"></i>
+        <span>Personnel</span>
       </a>
     </li>
     <li>
@@ -102,12 +93,13 @@
         <span>Départements</span>
       </a>
     </li>
-    <li>
-      <a routerLink="/employes" 
-         [class.active]="isActive('/employes')" 
-         (click)="setActiveRoute('/employes')">
-        <i class="fas fa-user-tie"></i>
-        <span>Employes</span>
+      <li>
+      <a routerLink="/offres" 
+         [class.active]="isActive('/offres')" 
+         (click)="setActiveRoute('/offres')">
+         <i class="fas fa-briefcase"></i>
+
+        <span>offres</span>
       </a>
     </li>
   </ul>

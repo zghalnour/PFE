@@ -1,9 +1,9 @@
 .content {
   min-height: 200vh;
   width: calc(100% - 260px);
-  margin-left: 240px;
-  margin-top: 25px;
-  margin-right: 20px;
+  margin-left: 255px;
+  margin-top: 55px;
+  margin-right: 5px;
   padding: 20px;
   background-color: #eae8e889;
   display: flex;
@@ -165,7 +165,7 @@
 
 /* Formulaire */
 .form-container {
-  max-width: 700px;
+  max-width: 800px;
   margin: 30px auto;
   background-color: #f9f9f9;
   border-radius: 15px;
@@ -258,10 +258,64 @@
   display: flex;
   gap: 1rem;
   padding-top: 0.5rem; /* Espace au-dessus */
-  min-height: 40px; /* Hauteur minimale pour alignement */
+  min-height: 40px;
+  
   align-items: center;
 }
+/* In dashboard.component.scss (or .css) */
+
+/* ... other styles ... */
+
+.pending-evaluation-message {
+  display: flex;
+  align-items: flex-start; /* Align items to the top, useful if text wraps */
+  padding: 15px;
+  margin-top: 10px; /* Spacing from elements above */
+  background-color: #f8f9fa; /* A very light, neutral gray */
+  border: 1px solid #e9ecef;  /* A soft border */
+  border-left: 3px solid #a0bfe0; /* A modern blue accent for "info" type messages */
+  border-radius: 6px; /* Slightly more rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* A subtle shadow for depth */
+  color: #495057; /* A good readable dark gray for text */
+}
+
+.pending-evaluation-message .icon-area {
+  margin-right: 15px; /* Space between the icon and the text block */
+  flex-shrink: 0; /* Prevents the icon area from shrinking if text is long */
+}
+
+.pending-evaluation-message .icon-area .fas { /* Targeting Font Awesome icons */
+  font-size: 1.5rem; /* Make the icon a bit larger and more prominent */
+  color: #a0bfe0; /* Icon color to match the left border accent */
+  line-height: 1; /* Helps with vertical alignment consistency */
+  margin-top: 2px; /* Fine-tune vertical alignment with the first line of text */
+}
+
+.pending-evaluation-message .text-area {
+  flex-grow: 1; /* Allows the text area to take up the remaining space */
+}
+
+.pending-evaluation-message .text-area p {
+  margin: 0 0 5px 0; /* Default margin for paragraphs within the text area */
+  font-size: 0.95rem; /* Slightly larger font for better readability */
+  line-height: 1.6; /* Improved line spacing */
+}
+
+.pending-evaluation-message .text-area p:last-child {
+  margin-bottom: 0; /* Remove bottom margin from the last paragraph */
+}
+
+.pending-evaluation-message .text-area .responsable-name {
+  font-size: 0.85rem; /* Smaller font for secondary information */
+  color: #6c757d; /* A more subtle color for the responsible name */
+  font-style: italic;
+  margin-top: 8px; /* Add some space if the responsible name is shown */
+}
+
+
+
 .radio-group label {
+ gap: 0.15rem;    
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -269,7 +323,7 @@
   font-weight: normal; /* Reset font weight */
 }
 .radio-group input[type="radio"] {
-  margin-right: 0.5rem;
+  margin-right: 2px;
 }
 
 /* Styles pour les snackbars (à mettre dans styles.css global) */

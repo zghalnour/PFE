@@ -3,7 +3,7 @@
 
   <div class="flex items-center gap-x-10 mb-4">
     <!-- Recherche -->
-    <div class="relative w-1/3">
+    <div class="relative w-[370px]">
       <input type="text" [(ngModel)]="searchTerm" (input)="filterEmployes()" 
              placeholder="Rechercher par nom" 
              class="input input-bordered w-full h-12 pl-10 text-lg" />
@@ -45,21 +45,29 @@
     <li *ngFor="let employe of filteredEmployes" class="flex items-center justify-between p-4 border-b">
       <div class="flex items-center gap-6">
         <img class="size-14 rounded-full" src="https://ui-avatars.com/api/?name={{ employe.nomPrenom }}&background=random"/>
-        <div class="space-y-2">
-          <div class="font-semibold text-xl">{{ employe.nomPrenom }} </div>
+        <div class="space-y-1"> 
+          <div class="flex items-center gap-x-3"> 
+            <span class="font-semibold text-xl">{{ employe.nomPrenom }}</span>
+            
+            <button (click)="openEditForm(employe)" class="text-blue-500 hover:text-blue-700" title="Modifier l'employé">
+              <i class="fas fa-edit text-lg"></i> 
+            </button>
+          
+            <button (click)="confirmDeleteEmploye(employe)" class="text-gray-500 hover:text-red-700" title="Supprimer l'employé">
+              <i class="fas fa-trash-alt text-lg"></i> 
+            </button>
+          </div>
          <div *ngIf="!employe.role || !employe.role.toLowerCase().includes('rh')" class="flex items-center opacity-70 text-custom-size">
             <span class="font-semibold">Département:&nbsp;</span> {{ employe.departement }}
           </div>
-          
           <div class="flex items-center text-custom-size opacity-70">
             <span class="font-semibold">Poste:&nbsp;</span> {{ employe.role }}
           </div>
-          
           <div class="text-sm opacity-65">Salaire: {{ employe.salaire }}dt | Ancienneté: {{ employe.anciennete }} </div>
         </div>
       </div>
 
-      <!-- Conteneur pour les icônes de modification et réclamation -->
+      <!-- Conteneur pour les icônes de réclamation et détails du compte (celles qui restent à droite) -->
       <div class="flex items-center gap-4">
           <!-- Icône de réclamation -->
         <button *ngIf="!employe.role.toLowerCase().includes('rh')" (click)="openReclamationPanel(employe)" class="text-gray-500 hover:text-black" title="Voir les réclamations">
@@ -68,61 +76,90 @@
           <button (click)="openAccountDetails(employe)" class="text-teal-500 hover:text-teal-700" title="Voir les détails du compte">
           <i class="fas fa-id-card text-xl"></i>
         </button>
-        <!-- Icône de modification -->
-        <button (click)="openEditForm(employe)" class="text-blue-500 hover:text-blue-700" title="Modifier l'employé">
-          <i class="fas fa-edit text-xl"></i>
-        </button>
-        
-  
       </div>
     </li>
   </ul>
   <!-- Panneau des Détails du Compte (à droite, similar to reclamations panel) -->
-<div *ngIf="isAccountDetailsPanelVisible && employeForAccountDetails" class="w-1/3 p-6 bg-white rounded-lg shadow-lg max-h-[350px] mt-[50px] overflow-y-auto no-scrollbar">
+<div *ngIf="isAccountDetailsPanelVisible && employeForAccountDetails" class="w-1/3 p-6 bg-white rounded-lg shadow-lg max-h-[380px] mt-[50px] overflow-y-auto no-scrollbar">
   <div class="flex justify-between items-center mb-6 border-b pb-3">
     <h2 class="text-xl font-semibold text-gray-800">
       Détails du Compte
     </h2>
-  
+    <!-- Bouton pour activer le mode édition -->
+    <button *ngIf="!isEditingAccountDetails" (click)="toggleEditAccountDetails()" class="text-blue-500 hover:text-blue-700 p-1" title="Modifier les détails">
+      <i class="fas fa-edit text-lg"></i>
+    </button>
   </div>
-  
-  <div *ngIf="employeForAccountDetails" class="space-y-3">
-  
-    <div class="flex items-center">
-      <i class="fas fa-envelope fa-fw text-gray-600 mr-3 text-lg"></i>
-      <div>
-        <p class="text-sm text-gray-800">Email</p>
-        <p class="font-medium text-gray-500">{{ employeForAccountDetails.email || 'Non spécifié' }}</p>
+
+  <div *ngIf="employeForAccountDetails" class="space-y-4">
+
+    <!-- Email -->
+    <div class="flex items-start">
+      <i class="fas fa-envelope fa-fw text-gray-600 mr-3 text-lg mt-1"></i>
+      <div class="w-full">
+        <p class="text-sm text-gray-800 mb-0.5">Email</p>
+        <ng-container *ngIf="!isEditingAccountDetails">
+          <p class="font-medium text-gray-500">{{ employeForAccountDetails.email || 'Non spécifié' }}</p>
+        </ng-container>
+        <ng-container *ngIf="isEditingAccountDetails">
+          <input type="email" [(ngModel)]="editableAccountDetails.email" class="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+        </ng-container>
       </div>
     </div>
-     <div class="flex items-center">
-      <i class="fas fa-phone-alt fa-fw text-gray-600 mr-3 text-lg"></i>
-      <div>
-        <p class="text-sm text-gray-800">Téléphone</p>
-        <p class="font-medium text-gray-500">{{ employeForAccountDetails.phoneNumber || 'Non spécifié' }}</p>
+
+    <!-- Téléphone -->
+    <div class="flex items-start">
+      <i class="fas fa-phone-alt fa-fw text-gray-600 mr-3 text-lg mt-1"></i>
+      <div class="w-full">
+        <p class="text-sm text-gray-800 mb-0.5">Téléphone</p>
+        <ng-container *ngIf="!isEditingAccountDetails">
+          <p class="font-medium text-gray-500">{{ employeForAccountDetails.phoneNumber || 'Non spécifié' }}</p>
+        </ng-container>
+        <ng-container *ngIf="isEditingAccountDetails">
+          <input type="tel" [(ngModel)]="editableAccountDetails.phoneNumber" class="p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+        </ng-container>
       </div>
     </div>
-    <div class="flex items-center">
-      <i class="fas fa-user-check fa-fw mr-3 text-lg text-gray-600" 
-         ></i>
-      <div>
-        <p class="text-sm text-gray-800">État du Compte</p>
-        <p class="font-medium"
-           [ngClass]="{
-             'text-green-600':  employeForAccountDetails.etat === true,
-             'text-red-600':  employeForAccountDetails.etat === false,
-            
-           }">
-          {{ employeForAccountDetails.etat === true ? 'Actif' : (employeForAccountDetails.etat === false ? 'Inactif' : (employeForAccountDetails.etatCompte || 'Non spécifié')) }}
-        </p>
+
+    <!-- État du Compte -->
+    <div class="flex items-start">
+      <i class="fas fa-user-check fa-fw mr-3 text-lg text-gray-600 mt-1"></i>
+      <div class="w-full">
+        <p class="text-sm text-gray-800 mb-0.5">État du Compte</p>
+        <ng-container *ngIf="!isEditingAccountDetails">
+          <p class="font-medium"
+             [ngClass]="{
+               'text-green-600':  employeForAccountDetails.etat === true,
+               'text-red-600':  employeForAccountDetails.etat === false
+             }">
+            {{ employeForAccountDetails.etat === true ? 'Actif' : (employeForAccountDetails.etat === false ? 'Inactif' : (employeForAccountDetails.etatCompte || 'Non spécifié')) }}
+          </p>
+        </ng-container>
+        <ng-container *ngIf="isEditingAccountDetails">
+          <select [(ngModel)]="editableAccountDetails.etat" class="p-2 border border-gray-300 rounded w-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+            <option [ngValue]="true">Actif</option>
+            <option [ngValue]="false">Inactif</option>
+          </select>
+        </ng-container>
       </div>
     </div>
-    <!-- You can add more details here as needed -->
+
+    <!-- Boutons Enregistrer/Annuler pour le mode édition -->
+    <div *ngIf="isEditingAccountDetails" class="flex justify-end gap-x-3 mt-6">
+      <button (click)="saveAccountDetails()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 text-sm flex items-center">
+        <i class="fas fa-save mr-2"></i> Enregistrer
+      </button>
+      <button (click)="cancelEditAccountDetails()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 text-sm flex items-center">
+        <i class="fas fa-times mr-2"></i> Annuler
+      </button>
+    </div>
   </div>
-  <div *ngIf="!employeForAccountDetails" class="text-center text-gray-500 mt-6">
-    Aucun détail à afficher.
+
+  <div *ngIf="!employeForAccountDetails && !isEditingAccountDetails" class="text-center text-gray-500 mt-6">
+    Aucun détail de compte à afficher.
   </div>
 </div>
+
 
   <!-- Panneau des réclamations (à droite) -->
   <div *ngIf="selectedEmploye && selectedEmploye.reclamations" class="w-1/3 p-6 bg-white rounded-lg shadow-lg max-h-[350px] mt-[50px] overflow-y-auto no-scrollbar">
@@ -277,7 +314,7 @@
   <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl">
     <!-- Header -->
     <div class="flex justify-between items-center mb-6 border-b pb-2">
-      <h2 class="text-2xl font-semibold">Ajouter un employé</h2>
+      <h2 class="text-2xl font-semibold">Ajouter un personnel</h2>
       <button
         (click)="cancelForm()"
         type="button"
@@ -329,10 +366,18 @@
         </div>
       </div>
 
-      <div class="w-full md:w-[48%]">
-        <label class="block text-lg font-medium">Poste</label>
-        <input type="text" [(ngModel)]="employe.role" class="mt-1 p-2 w-full border rounded" placeholder="Entrez le poste" />
-      </div>
+      <!-- Type de Poste -->
+    <div class="w-full md:w-[48%]">
+  <label class="block text-lg font-medium">Poste</label>
+  <input
+    type="text"
+    [(ngModel)]="employe.role"
+    class="mt-2 p-2 w-full border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+    placeholder="Ex: Chef Marketing"
+    readonly
+  />
+</div>
+
 
       <div class="w-full md:w-[48%]">
         <label class="block text-lg font-medium">Salaire</label>
@@ -340,8 +385,8 @@
       </div>
 
         <!-- Département -->
-            <!-- Département -->
-            <div class="w-full md:w-[48%]">
+            <!-- Département - Conditionally displayed -->
+            <div *ngIf="employe.selectedRoleType === 'Autre'" class="w-full md:w-[48%]">
               <label class="block text-lg font-medium mb-1">Département</label>
               <select
                 [(ngModel)]="employe.departementNom"

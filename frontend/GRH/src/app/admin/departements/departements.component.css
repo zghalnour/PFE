@@ -1,9 +1,9 @@
 .content {
   min-height: 100vh; /* Assure que le contenu prend toute la hauteur */
   width: calc(100% - 260px); /* Prend toute la largeur sauf la sidebar */
-  margin-left: 240px;
-  margin-top: 25px;
-  margin-right: 20px; /* Supprime la marge droite pour qu'il prenne toute la largeur */
+  margin-left: 255px;
+  margin-top: 55px;
+  margin-right: 5px; /* Supprime la marge droite pour qu'il prenne toute la largeur */
   padding: 20px; /* Optionnel pour l'espacement */
   background-color: #eae8e889; /* Fond du content */
   display: flex;

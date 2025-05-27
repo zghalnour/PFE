@@ -40,7 +40,7 @@ export interface Entretien {
 export interface Responsable {
   id: number;
   nomPrenom: string;
-  poste: string;
+  role: string;
 }
 
 
@@ -73,12 +73,19 @@ selectedTime: string = ''; // e.g., "09:30"
 
 allPossibleTimeSlots: string[] = []; // All slots from 8h to 17h
 availableTimeSlots: string[] = []; // Available slots for the selected date
-
+selectedTypeOption: string = '';
 isLoadingSlots: boolean = false
-
+loggedInUser: any = null;
+loggedInUserId: any = null;
   constructor(private http: HttpClient,private snackbar: MatSnackBar) {}
 
   ngOnInit(): void {
+     this.loggedInUser = localStorage.getItem('userName'); // IMPORTANT: Use your actual localStorage key
+      this.loggedInUserId=localStorage.getItem('userId');
+
+
+    // Initialize or reset the form (if you have such a method)
+    this.resetNouvelEntretienForm();
   
     this.loadCandidatures();
     this.loadResponsables();
@@ -87,6 +94,49 @@ isLoadingSlots: boolean = false
 
     this.generateAllPossibleTimeSlots(); 
   }
+    handleTypeChange(): void {
+    if (this.selectedTypeOption === 'RH') {
+      this.nouvelEntretien.typeEntretien = 'RH';
+      if (this.loggedInUser) { // IMPORTANT: Ensure 'id' is the correct property for user ID
+        this.nouvelEntretien.responsableId = this.loggedInUserId;
+        this.nouvelEntretien.responsableNom = this.loggedInUser;
+      } else {
+        this.nouvelEntretien.responsableId = null; // Fallback if user or ID not found
+        console.warn('Logged-in GRH user ID not available to auto-assign responsable.');
+      }
+    } else if (this.selectedTypeOption === 'Autre') {
+      // When 'Autre' is selected, the input field will bind to nouvelEntretien.typeEntretien
+      // Clear it initially to ensure user provides a new value
+      this.nouvelEntretien.typeEntretien = '';
+      this.nouvelEntretien.responsableId = null; // Allow user to select a responsable
+    } else {
+      // Handle cases where no option is selected (e.g., initial state if "Choisir..." is re-selectable)
+      this.nouvelEntretien.typeEntretien = '';
+      this.nouvelEntretien.responsableId = null;
+    }
+  }
+    resetNouvelEntretienForm(): void {
+    this.selectedTypeOption = ''; // Default to "Choisir..."
+    // Or, if you want 'RH' to be the default:
+    // this.selectedTypeOption = 'RH';
+
+    this.nouvelEntretien = {
+      typeEntretien: '',
+      dateEntretien: undefined,
+      responsableId: null,
+      modeEntretien: 'Présentiel',
+      // ... reset other properties of nouvelEntretien
+    };
+    this.selectedDate = null;
+    this.selectedTime = '';
+    this.availableTimeSlots = [];
+
+    // If you have a default selectedTypeOption (e.g. 'RH'), call handleTypeChange to set initial state
+    if (this.selectedTypeOption) {
+         this.handleTypeChange();
+    }
+  }
+
   fetchBookedSlots(): void {
     const apiUrl = 'http://localhost:5053/api/Entretien/dates';
     // Calculer le nombre total de créneaux possibles une seule fois si allPossibleTimeSlots est prêt
@@ -95,7 +145,7 @@ isLoadingSlots: boolean = false
         console.warn("Impossible de déterminer les jours complets car allPossibleTimeSlots est vide.");
         // Peut-être appeler generateAllPossibleTimeSlots() ici si ce n'est pas garanti avant
     }
-
+  
 
     this.http.get<EntretienDateResponse[]>(apiUrl).subscribe({
       next: (bookedInterviews) => {
@@ -410,11 +460,24 @@ isLoadingSlots: boolean = false
       return this.selectedOffre ? candidature.nomOffre === this.selectedOffre : true;
     });
   }
+    isNewInterviewCreationDisabled(): boolean {
+    if (!this.selectedCandidature || !this.entretiens[this.selectedCandidature.id]) {
+      return false; // No candidate selected or no interviews for this candidate
+    }
+    // Check if any interview for the selected candidate has the status 'En cours'
+    return this.entretiens[this.selectedCandidature.id].some(entretien => entretien.statut === 'En cours');
+  }
   creerEntretien(): void {
     console.log('ID Responsable sélectionné avant création:', this.nouvelEntretien.responsableId); // <-- AJOUTE CECI
   
-    if (!this.selectedCandidature || !this.nouvelEntretien.typeEntretien || !this.nouvelEntretien.dateEntretien) return;
-
+    // Validate that a candidate is selected, a type is chosen, and both date and time have been picked
+    if (!this.selectedCandidature || 
+        !this.nouvelEntretien.typeEntretien || 
+        !this.selectedDate ||  // Check selectedDate directly
+        !this.selectedTime) { // Check selectedTime directly
+      console.warn('Creation d\'entretien annulée: des informations requises sont manquantes (candidature, type, date ou heure).');
+      return;
+    }
     console.log('Date before combining:', this.selectedDate); // <-- LOG 2
     console.log('Time before combining:', this.selectedTime); // <-- LOG 3
   
@@ -446,7 +509,8 @@ isLoadingSlots: boolean = false
       dateEntretien: combinedDateTime.toISOString(),
       responsableId: this.nouvelEntretien.responsableId 
     };
-
+    console.log('entretienData:', entretienData);
+  
     this.http.post<number>('http://localhost:5053/api/Entretien/add', entretienData,)
       .subscribe({
         next: (newEntretienId) => {
@@ -488,7 +552,7 @@ isLoadingSlots: boolean = false
         if (updatedEntretien.candidatureId) {
         
           this.loadEntretiens(updatedEntretien.candidatureId);
-          const newStatus = `Entretien${entretien.typeEntretien}${status === 'Passé' ? 'Accepte' : 'Refuse'}`;
+          const newStatus = `Entretien${entretien.typeEntretien}${status === 'Passé' ? 'Accepté' : 'Refusé'}`;
         
           this.updateCandidatureStatus(
             updatedEntretien.candidatureId,
@@ -608,9 +672,9 @@ isLoadingSlots: boolean = false
   }
 
   getStatusColor(statut: string): string {
-    if (statut.toLowerCase().includes('accepte')) {
+    if (statut.toLowerCase().includes('accept')) {
       return 'green';
-    } else if (statut.toLowerCase().includes('refuse') || statut.toLowerCase().includes('programmé')) {
+    } else if (statut.toLowerCase().includes('refus') || statut.toLowerCase().includes('programmé')) {
       return 'red';
     } else {
       return 'black'; // Default color

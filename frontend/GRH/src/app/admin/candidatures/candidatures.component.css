@@ -2,14 +2,55 @@
 .content {
   min-height: 100vh; /* Assure que le contenu prend toute la hauteur */
   width: calc(100% - 260px); /* Prend toute la largeur sauf la sidebar */
-  margin-left: 240px;
-  margin-top: 25px;
+  margin-left: 260px;
+  margin-top: 55px;
   margin-right: 20px; /* Supprime la marge droite pour qu'il prenne toute la largeur */
   padding: 20px; /* Optionnel pour l'espacement */
   background-color: #eae8e889; /* Fond du content */
   display: flex;
   flex-direction: column; /* Pour bien organiser les éléments */
 }
+.no-candidatures-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+  margin-top: 20px;
+  background-color: #f8f9fa; /* Light, neutral background */
+  border-radius: 8px;
+  border: 1px dashed #d3dce6; /* Soft dashed border */
+  color: #5a6778; /* Softer text color */
+}
+
+.no-candidatures-message .icon-container {
+  margin-bottom: 20px;
+}
+
+.no-candidatures-message .icon-container .fas { /* Targeting Font Awesome icons */
+  font-size: 4rem; /* Larger icon */
+  color: #007bff; /* A primary or accent color */
+  opacity: 0.7;
+}
+
+.no-candidatures-message .message-text {
+  font-size: 1.25rem; /* Slightly larger main message */
+  font-weight: 500;
+  margin-bottom: 10px;
+  color: #343a40; /* Darker text for main message */
+}
+
+.no-candidatures-message .sub-message-text {
+  font-size: 0.95rem;
+  color: #6c757d; /* Lighter text for sub-message */
+}
+
+/* Ensure the list of candidatures is hidden if there are none */
+.candidatures-list:empty {
+  display: none;
+}
+
 .candidatures-container {
   margin-top: 20px;
   padding: 20px;
@@ -20,6 +61,24 @@
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
 }
+/* Optional: Styling for icon-only buttons */
+.btn-icon {
+  padding: 0.35rem 0.5rem; /* Adjust padding for a smaller button */
+  line-height: 1; /* Helps with icon alignment */
+}
+
+.btn-icon .fas {
+  font-size: 1rem; /* Adjust icon size if needed */
+  color: gray;
+}
+.btn-icon:hover .fas {
+  color: #dc3545; /* Standard danger red color */
+}
+
+
+
+
+
 
 .candidature-card {
   background-color: white;

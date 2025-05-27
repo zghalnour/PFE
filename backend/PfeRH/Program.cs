@@ -84,8 +84,8 @@ app.UseCors(MyAllowSpecificOrigins);
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.UseStaticFiles(); // Permet l'accès aux fichiers dans wwwroot
 app.MapHub<NotificationHub>("/notificationHub");
 app.MapControllers();
-
 app.Run();

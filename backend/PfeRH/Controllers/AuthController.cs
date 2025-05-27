@@ -101,8 +101,12 @@ namespace PfeRH.Controllers
                 Console.WriteLine("Utilisateur non trouvé.");
                 return Unauthorized("Identifiants incorrects.");
             }
+            if (user is Personnel employe && employe.Etat == false)
+            {
+                return Unauthorized(new { message = "Ce compte est désactivé." });
+            }
 
-           
+
 
             bool isPasswordValid = await _userManager.CheckPasswordAsync(user, model.Password);
             if (!isPasswordValid)

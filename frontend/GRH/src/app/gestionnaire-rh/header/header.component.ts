@@ -11,8 +11,8 @@ export class HeaderComponent implements OnInit{
   constructor(private http:HttpClient, private router: Router) {this.currentRoute = this.router.url;}
   nomUtilisateur: string = "";
 
-  currentRoute: string = '';
-  activePage: string = "";
+  currentRoute: string = '/project-management';
+  activePage: string = "project-management";
   ngOnInit() {
     this.loadUserData();
   }

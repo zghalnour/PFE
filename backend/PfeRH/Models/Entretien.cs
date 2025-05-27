@@ -26,7 +26,7 @@ namespace PfeRH.Models
         public virtual Candidature Candidature { get; set; }
         [ForeignKey("Responsable")]
         public int? ResponsableId { get; set; }
-        public virtual Employe Responsable { get; set; }
+        public virtual Personnel Responsable { get; set; }
         public Entretien()
         {
             Commentaire = string.Empty;

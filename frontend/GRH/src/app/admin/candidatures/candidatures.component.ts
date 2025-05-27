@@ -3,7 +3,17 @@ import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { CandidatureDetailsDialogComponent } from '../candidature-details-dialog/candidature-details-dialog.component';
-
+export interface Candidature {
+  id: number; // Assuming 'id' is the identifier, adjust if it's 'idCandidature' or similar
+  name: string;
+  scoreAI: string;
+  testScore?: string;
+  etat: string;
+  // Add other properties as needed
+}
+export interface DeleteApiResponse {
+  message: string;
+}
 @Component({
   selector: 'app-candidatures',
   templateUrl: './candidatures.component.html',
@@ -22,7 +32,30 @@ export class CandidaturesComponent implements OnInit {
       this.fetchCandidatures(this.titreOffre);
     });
   }
+ deleteCandidature(candidatureToDelete: Candidature): void {
+    // Confirmation dialog
+    
 
+  
+    
+      const apiUrl = `http://localhost:5053/api/Candidature/supprimer-candidature/${candidatureToDelete.id}`;
+
+      this.http.delete<DeleteApiResponse>(apiUrl).subscribe({
+        next: (response) => {
+          console.log(response.message); // "Candidature supprimée avec succès."
+          // Remove the candidature from the local array to update the UI
+        
+          this.candidatures = this.candidatures.filter(c => c.id !== candidatureToDelete.id);
+        
+        },
+        error: (error) => {
+          console.error('Error deleting candidature:', error);
+        
+          alert('Erreur lors de la suppression de la candidature.'); // Simple alert for now
+        }
+      });
+  
+  }
   
 
   fetchCandidatures(titreOffre: string) {

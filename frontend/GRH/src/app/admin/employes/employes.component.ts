@@ -8,6 +8,7 @@ interface Employe {
   nomPrenom: string;
   email: string;
   phoneNumber: string;
+
   role: string;
   salaire: number;
   dateEmbauche: string;
@@ -40,6 +41,7 @@ interface CreerEmployePayload {
   email: string;
   password: string;
   phoneNumber: string;
+
   poste: string;
   salaire: number;
   departementNom: string | null;// L'API attend le nom final ici
@@ -73,6 +75,8 @@ export class EmployesComponent implements OnInit {
     email: '',
     password: '',
     phoneNumber: '',
+    selectedRoleType: undefined as string | undefined, // For the role type select: 'GestionnaireRH' or 'Autre'
+    customRole: '',
     role: '',
     salaire: 0,
     departementNom: null as string | null, 
@@ -84,6 +88,8 @@ export class EmployesComponent implements OnInit {
   private queryParamsSubscription: Subscription | null = null; 
   employeForAccountDetails: any | null = null; // To store the employee whose account details are being viewed
   isAccountDetailsPanelVisible: boolean = false; // 
+  isEditingAccountDetails: boolean = false;
+  editableAccountDetails: any;
   constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit(): void {
@@ -94,6 +100,94 @@ export class EmployesComponent implements OnInit {
   ngOnDestroy(): void {
     this.queryParamsSubscription?.unsubscribe();
   }
+ onRoleTypeChange(): void {
+  if (this.employe.selectedRoleType === 'GestionnaireRH') {
+    this.employe.customRole = ''; // Clear custom role if not 'Autre'
+    // For a 'Gestionnaire RH', department is not applicable, so clear it.
+    this.employe.departementNom = null;
+    this.employe.nouveauDepartementNom = '';
+  }
+  // If 'Autre' is selected, the customRole input and department section will become visible.
+  // The user will fill them.
+}
+
+
+  toggleEditAccountDetails(): void {
+    this.isEditingAccountDetails = !this.isEditingAccountDetails;
+    if (this.isEditingAccountDetails && this.employeForAccountDetails) {
+      // Créer une copie superficielle pour l'édition
+      this.editableAccountDetails = { ...this.employeForAccountDetails };
+    } else {
+      // Optionnel: réinitialiser si on quitte le mode édition sans sauvegarder
+      // this.editableAccountDetails = null;
+    }
+  }
+
+  saveAccountDetails(): void {
+    if (this.editableAccountDetails && this.employeForAccountDetails && this.employeForAccountDetails.id) {
+      const userId = this.employeForAccountDetails.id;
+      const apiUrl = `http://localhost:5053/api/Users/modifier/${userId}`;
+
+      const payload = {
+        email: this.editableAccountDetails.email,
+        phoneNumber: this.editableAccountDetails.phoneNumber,
+        etat: this.editableAccountDetails.etat
+      };
+
+      this.http.put<any>(apiUrl, payload).subscribe({
+        next: (response) => {
+          console.log('Account details updated successfully:', response);
+
+          // Mettre à jour l'objet original avec les valeurs retournées par l'API (meilleure pratique)
+          this.employeForAccountDetails.email = response.email;
+          this.employeForAccountDetails.phoneNumber = response.phoneNumber;
+          this.employeForAccountDetails.etat = response.etat;
+
+          // Mettre à jour également dans la liste principale des employés si nécessaire
+          const indexInEmployes = this.employes.findIndex(emp => emp.id === userId);
+          if (indexInEmployes !== -1) {
+            this.employes[indexInEmployes].email = response.email;
+            this.employes[indexInEmployes].phoneNumber = response.phoneNumber;
+            // Si 'etat' est une propriété directe de l'objet Employe dans la liste, mettez-la aussi à jour.
+            // this.employes[indexInEmployes].etat = response.etat;
+          }
+          const indexInFilteredEmployes = this.filteredEmployes.findIndex(emp => emp.id === userId);
+          if (indexInFilteredEmployes !== -1) {
+            this.filteredEmployes[indexInFilteredEmployes].email = response.email;
+            this.filteredEmployes[indexInFilteredEmployes].phoneNumber = response.phoneNumber;
+            // this.filteredEmployes[indexInFilteredEmployes].etat = response.etat;
+          }
+
+
+          this.isEditingAccountDetails = false; // Quitter le mode édition
+          // Optionnel: Afficher un message de succès (par exemple, avec un service de notification/toaster)
+          // alert('Détails du compte mis à jour avec succès !');
+        },
+        error: (error) => {
+          console.error('Error updating account details:', error);
+          // Optionnel: Afficher un message d'erreur à l'utilisateur
+          // alert("Erreur lors de la mise à jour des détails du compte. Veuillez réessayer.");
+          // Il est souvent préférable de laisser l'utilisateur en mode édition pour corriger
+        }
+      });
+    } else {
+      console.error('Editable account details or employee ID is missing.');
+      // Gérer le cas où les données nécessaires ne sont pas disponibles
+    }
+  }
+
+
+  cancelEditAccountDetails(): void {
+    this.isEditingAccountDetails = false;
+    // Pas besoin de restaurer `editableAccountDetails` car une nouvelle copie est faite à chaque entrée en mode édition.
+  }
+
+  // Assurez-vous de fermer le mode édition si le panneau est fermé
+  closeAccountDetailsPanel(): void { // Si vous avez une méthode pour fermer le panneau
+      this.isAccountDetailsPanelVisible = false;
+      this.isEditingAccountDetails = false;
+      this.employeForAccountDetails = null;
+  }
 
   checkQueryParamsForNewEmploye(): void {
     // S'abonne aux queryParams. Se désabonnera automatiquement si ngOnDestroy est implémenté
@@ -102,7 +196,7 @@ export class EmployesComponent implements OnInit {
       const email = params['email'];
       // Utilise la clé 'telephone' comme défini dans le queryParams du lien
       const telephone = params['telephone'];
-      const poste= params['role'];
+      const poste= params['poste'];
       
 
       // Vérifie si les paramètres nécessaires sont présents
@@ -117,6 +211,17 @@ export class EmployesComponent implements OnInit {
 
         // Ouvre automatiquement le formulaire d'ajout
         this.isOpenForm = true;
+           if (poste) {
+    if (/rh/i.test(poste)) {
+      this.employe.selectedRoleType = 'GestionnaireRH';
+      this.employe.customRole = ''; // pas besoin de customRole ici
+    } else {
+      this.employe.selectedRoleType = 'Autre';
+      this.employe.customRole = poste; // met la valeur exacte dans customRole
+    }
+  }
+
+
 
         // Optionnel mais recommandé : Nettoie les queryParams de l'URL
         // pour éviter que le formulaire ne se pré-remplisse à nouveau
@@ -480,6 +585,8 @@ export class EmployesComponent implements OnInit {
       phoneNumber: '',
       email: '',
       password: '',
+      selectedRoleType: undefined, // For the role type select: 'GestionnaireRH' or 'Autre'
+      customRole: '',
       role: '',
       salaire: 0,
       departementNom: null, // Reset to null
@@ -505,66 +612,150 @@ export class EmployesComponent implements OnInit {
 
 
   submitEmploye() {
-    this.departementError = null;
-    
-    let finalDepartementNom: string | null = null;
-    if (this.employe.departementNom === '--AUTRE--') {
-      // Si "Autre" est sélectionné, prendre la valeur de l'input
-      finalDepartementNom = this.employe.nouveauDepartementNom?.trim() || null; // Utilise trim() et gère le cas où c'est vide
+    let apiUrl: string;
+    let dataToSend: any; // Use 'any' for flexibility or create specific payload types
+
+    // Validate and set the final 'role' and determine API URL and payload
+    if (this.employe.selectedRoleType === 'GestionnaireRH') {
+      this.employe.role = 'Gestionnaire RH';
+      apiUrl = 'http://localhost:5053/api/Employe/add-gestionnaire-rh';
+      dataToSend = {
+        nomPrenom: this.employe.nomPrenom,
+        email: this.employe.email,
+        phoneNumber: this.employe.phoneNumber,
+        password: this.employe.password,
+        poste: this.employe.role, // Will be "Gestionnaire RH"
+        salaire: this.employe.salaire,
+      };
+      // Department is not applicable for GestionnaireRH with this endpoint
+      this.employe.departementNom = null;
+      this.employe.nouveauDepartementNom = '';
+
+    } else if (this.employe.selectedRoleType === 'Autre') {
+      if (!this.employe.customRole || this.employe.customRole.trim() === '') {
+        this.formError = "Veuillez préciser le poste.";
+        return;
+      }
+      this.employe.role = this.employe.customRole.trim();
+
+      if (!this.employe.departementNom) {
+        this.formError = "Veuillez sélectionner un département pour ce poste.";
+        return;
+      }
+      if (this.employe.departementNom === '--AUTRE--' && (!this.employe.nouveauDepartementNom || this.employe.nouveauDepartementNom.trim() === '')) {
+        this.formError = "Veuillez préciser le nom du nouveau département.";
+        return;
+      }
+
+      let finalDepartementNom: string | null = null;
+      if (this.employe.departementNom === '--AUTRE--') {
+        finalDepartementNom = this.employe.nouveauDepartementNom?.trim() || null;
+      } else {
+        finalDepartementNom = this.employe.departementNom;
+      }
+
+      apiUrl = 'http://localhost:5053/api/Employe/add';
+      dataToSend = {
+        nomPrenom: this.employe.nomPrenom,
+        email: this.employe.email,
+        password: this.employe.password,
+        phoneNumber: this.employe.phoneNumber,
+        poste: this.employe.role,
+        salaire: this.employe.salaire,
+        departementNom: finalDepartementNom
+      } as CreerEmployePayload;
+
     } else {
-      // Sinon, prendre la valeur du select (si elle n'est pas null)
-      finalDepartementNom = this.employe.departementNom;
+      this.formError = "Veuillez sélectionner un type de poste.";
+      return;
     }
 
-  
+    // Clear previous errors
+    this.formError = null;
+    this.departementError = null;
 
-    // Prepare the data payload according to the API specification
-    const dataToSend : CreerEmployePayload = { 
-      nomPrenom: this.employe.nomPrenom,
-      email: this.employe.email,
-      password: this.employe.password,
-      phoneNumber: this.employe.phoneNumber,
-      poste: this.employe.role,
-      salaire: this.employe.salaire,
-      departementNom: finalDepartementNom // Use the determined department name
-    };
-
-    console.log('Envoi des données de l\'employé :', dataToSend);
-   
-  
+    console.log('Envoi des données de l\'employé :', dataToSend, 'to URL:', apiUrl);
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    this.http.post<any>('http://localhost:5053/api/Employe/add', dataToSend, { headers })
+    this.http.post<any>(apiUrl, dataToSend, { headers })
       .subscribe({
         next: (response) => {
           console.log('Employé ajouté avec succès:', response);
-          // Rafraîchir la liste, afficher succès, fermer formulaire...
-          this.fetchEmployes(); // Exemple de rafraîchissement
+          this.fetchEmployes();
           this.cancelForm();
         },
-        error: (errorResponse) => { // Renommé en errorResponse pour clarté
+        error: (errorResponse) => {
           console.error('Erreur lors de l\'ajout de l\'employé:', errorResponse);
-
-          // Vérifie si c'est une erreur 400 et si le corps de l'erreur existe
-          if (errorResponse.status === 400 && errorResponse.error && Array.isArray(errorResponse.error)) {
-            // Recherche une erreur spécifique d'email dupliqué (les codes peuvent varier)
-            const duplicateEmailError = errorResponse.error.find(
-              (err: any) => err.code === 'DuplicateUserName' || err.code === 'DuplicateEmail' || (err.description && err.description.toLowerCase().includes('email') && err.description.toLowerCase().includes('already taken'))
-            );
-
-            if (duplicateEmailError) {
-              this.formError = `Un compte employé avec l'adresse email "${this.employe.email}" existe déjà.`;
-            } else {
-              // Affiche la première erreur de validation trouvée, ou un message générique
-              this.formError = errorResponse.error[0]?.description || "Erreur de validation. Veuillez vérifier les informations saisies.";
+          if (errorResponse.status === 400 && errorResponse.error) {
+            if (Array.isArray(errorResponse.error)) { // Standard ASP.NET Core validation errors
+              const duplicateEmailError = errorResponse.error.find(
+                (err: any) => err.code === 'DuplicateUserName' || err.code === 'DuplicateEmail' || (err.description && err.description.toLowerCase().includes('email') && (err.description.toLowerCase().includes('already taken') || err.description.toLowerCase().includes('existe déjà')))
+              );
+              if (duplicateEmailError) {
+                this.formError = `Un compte employé avec l'adresse email "${this.employe.email}" existe déjà.`;
+              } else {
+                this.formError = errorResponse.error[0]?.description || "Erreur de validation. Veuillez vérifier les informations saisies.";
+              }
+            } else if (typeof errorResponse.error === 'string') { // Simple string error
+                 if (errorResponse.error.toLowerCase().includes('email') && (errorResponse.error.toLowerCase().includes('already taken') || errorResponse.error.toLowerCase().includes('existe déjà'))) {
+                    this.formError = `Un compte employé avec l'adresse email "${this.employe.email}" existe déjà.`;
+                 } else {
+                    this.formError = errorResponse.error;
+                 }
+            } else if (errorResponse.error.errors) { // Validation problem details
+                const errorMessages = Object.values(errorResponse.error.errors).flat();
+                this.formError = errorMessages.join(' ') || "Erreur de validation. Veuillez vérifier les informations saisies.";
+            }
+             else {
+              this.formError = "Erreur de validation. Veuillez vérifier les informations saisies.";
             }
           } else {
-            // Erreur réseau ou autre erreur serveur
             this.formError = "Une erreur inattendue est survenue lors de l'ajout de l'employé.";
           }
         }
       });
   }
+   confirmDeleteEmploye(employe: any): void {
+    if (!employe || !employe.id) {
+      console.error('Informations de l\'employé manquantes pour la suppression.');
+      // Optionnel: Afficher une erreur à l'utilisateur
+      return;
+    }
+
+  
+      const userId = employe.id;
+      const apiUrl = `http://localhost:5053/api/Users/supprimer/${userId}`;
+
+      this.http.delete(apiUrl).subscribe({
+        next: () => {
+          console.log(`Employé avec ID ${userId} supprimé avec succès.`);
+          
+          // Mettre à jour les listes locales après la suppression
+          this.employes = this.employes.filter(emp => emp.id !== userId);
+          this.filteredEmployes = this.filteredEmployes.filter(emp => emp.id !== userId);
+
+          // Optionnel: Fermer les panneaux de détails si l'employé supprimé y était affiché
+          if (this.selectedEmploye && this.selectedEmploye.id === userId) {
+            this.selectedEmploye = null;
+          }
+          if (this.employeForAccountDetails && this.employeForAccountDetails.id === userId) {
+            this.isAccountDetailsPanelVisible = false;
+            this.employeForAccountDetails = null;
+            this.isEditingAccountDetails = false;
+          }
+          
+          // Optionnel: Afficher un message de succès (par exemple, avec un service de notification/toaster)
+          // alert(`L'employé "${employe.nomPrenom}" a été supprimé.`);
+        },
+        error: (errorResponse) => {
+          console.error(`Erreur lors de la suppression de l'employé avec ID ${userId}:`, errorResponse);
+          // Optionnel: Afficher un message d'erreur à l'utilisateur
+          // alert(`Une erreur est survenue lors de la suppression de l'employé "${employe.nomPrenom}".`);
+        }
+      });
+    
+  }
+
 
   cancelForm() {
     this.isOpenForm = false; 

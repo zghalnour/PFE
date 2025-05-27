@@ -146,7 +146,6 @@ namespace PfeRH.Controllers
             }
         }
 
-
         [HttpPut("modifier/{id}")]
         public async Task<IActionResult> EditUser(int id, [FromBody] EditUserDto updatedUser)
         {
@@ -158,17 +157,10 @@ namespace PfeRH.Controllers
 
             bool isUpdated = false;
 
-            // Modifier uniquement si la valeur est différente et non égale à "string"
-            if (!string.IsNullOrWhiteSpace(updatedUser.NomPrenom) && updatedUser.NomPrenom != "string" && updatedUser.NomPrenom != user.NomPrenom)
-            {
-                user.NomPrenom = updatedUser.NomPrenom;
-                isUpdated = true;
-            }
-
             if (!string.IsNullOrWhiteSpace(updatedUser.Email) && updatedUser.Email != "string" && updatedUser.Email != user.Email)
             {
                 user.Email = updatedUser.Email;
-                user.UserName = updatedUser.Email.Split('@')[0]; // Mise à jour du UserName si l'email change
+                user.UserName = updatedUser.Email.Split('@')[0]; // Mise à jour du UserName
                 isUpdated = true;
             }
 
@@ -178,38 +170,28 @@ namespace PfeRH.Controllers
                 isUpdated = true;
             }
 
-            // Modifier le rôle uniquement si un nouveau rôle est fourni et qu'il est différent
-            if (!string.IsNullOrWhiteSpace(updatedUser.Role) && updatedUser.Role != "string")
+            if (updatedUser.Etat.HasValue)
             {
-                var currentRoles = await _userManager.GetRolesAsync(user);
-                var currentRole = currentRoles.FirstOrDefault();
-
-                if (currentRole != updatedUser.Role)
+                if (user is Personnel employe)
                 {
-                    var roleExists = await _roleManager.RoleExistsAsync(updatedUser.Role);
-                    if (!roleExists)
+                    employe.Etat = updatedUser.Etat.Value;
+
+                    if (!employe.Etat)
                     {
-                        return BadRequest(new { message = "Le rôle spécifié n'existe pas" });
+                        // Désactiver le compte : bloquer l'utilisateur jusqu'à une date lointaine
+                        employe.LockoutEnabled = true;
+                        employe.LockoutEnd = DateTimeOffset.MaxValue;
+                        employe.DateDepart = DateTime.Now;
+                    }
+                    else
+                    {
+                        // Réactiver le compte
+                        employe.LockoutEnd = null;
+                        employe.DateDepart = null;
                     }
 
-                    // Supprimer l'ancien rôle et ajouter le nouveau
-                    if (currentRole != null)
-                    {
-                        await _userManager.RemoveFromRoleAsync(user, currentRole);
-                    }
-                    await _userManager.AddToRoleAsync(user, updatedUser.Role);
                     isUpdated = true;
                 }
-                if ((currentRole == "employe" || currentRole == "gestionnaireRh") && updatedUser.Etat.HasValue)
-                {
-                    if (user is Employe employe)
-                    {
-                        employe.Etat = updatedUser.Etat.Value;
-                        isUpdated = true;
-                    }
-                }
-
-
             }
 
             if (isUpdated)
@@ -224,12 +206,12 @@ namespace PfeRH.Controllers
             return Ok(new
             {
                 user.Id,
-                user.NomPrenom,
                 user.Email,
                 user.PhoneNumber,
-                Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault() // Un seul rôle
+                Etat = (user is Personnel e) ? e.Etat : (bool?)null
             });
         }
+
 
         // 🔹 Récupérer un utilisateur par ID
         [HttpGet("user/{id}")]

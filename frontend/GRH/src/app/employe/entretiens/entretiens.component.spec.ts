@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AccessListComponent } from './access-list.component';
+import { EntretiensComponent } from './entretiens.component';
 
-describe('AccessListComponent', () => {
-  let component: AccessListComponent;
-  let fixture: ComponentFixture<AccessListComponent>;
+describe('EntretiensComponent', () => {
+  let component: EntretiensComponent;
+  let fixture: ComponentFixture<EntretiensComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AccessListComponent]
+      declarations: [EntretiensComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(AccessListComponent);
+    fixture = TestBed.createComponent(EntretiensComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

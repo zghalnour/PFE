@@ -8,16 +8,15 @@ import { AuthService } from './services/auth.service';
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
-  constructor(private router: Router, private authService: AuthService) {}
-
+  constructor(private router: Router) {}
   ngOnInit() {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
     console.log(role);
     console.log(token);
 
-    if (!token) {
-      // Aucun utilisateur connecté => Rediriger vers candidat
+    if (token==null) {
+    
       console.log("Pas de token -> Redirection vers /condidat");
       this.router.navigate(['/candidat']);
     } else {
@@ -33,7 +32,7 @@ export class AppComponent implements OnInit {
           this.router.navigate(['/employe']);
           break;
         default:
-          this.router.navigate(['/candidat']); // Par défaut vers candidat
+          this.router.navigate(['/login']); // Par défaut vers candidat
       }
     }
   }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -12,12 +13,15 @@ namespace PfeRH.Controllers
     public class EntretienController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<Utilisateur> _userManager;
+
         private readonly IHubContext<NotificationHub> _hubContext;
 
-        public EntretienController(ApplicationDbContext context, IHubContext<NotificationHub> hubContext)
+        public EntretienController(ApplicationDbContext context, IHubContext<NotificationHub> hubContext, UserManager<Utilisateur> userManager)
         {
             _context = context;
             _hubContext = hubContext;
+            _userManager = userManager;
         }
         [HttpPost("add")]
         public async Task<ActionResult<Entretien>> AddEntretien([FromBody] EntretienCreateDto dto)
@@ -28,7 +32,7 @@ namespace PfeRH.Controllers
                 return NotFound($"Candidature avec ID {dto.CandidatureId} non trouvée.");
             }
             var responsable = await _context.Users
-       .OfType<Employe>() // Filtrer pour obtenir uniquement les Employe
+       .OfType<Personnel>() // Filtrer pour obtenir uniquement les Employe
        .FirstOrDefaultAsync(u => u.Id == dto.ResponsableId); // Rechercher l'employé avec l'ID du responsable
 
             if (responsable == null)
@@ -86,6 +90,11 @@ namespace PfeRH.Controllers
             if (totalEntretiens == totalTerminés)
             {
                 var candidature = entretien.Candidature;
+                var admin = (await _userManager.GetUsersInRoleAsync("Admin")).FirstOrDefault();
+                if (admin == null)
+                {
+                    return BadRequest(new { message = "Aucun administrateur trouvé" });
+                }
 
                 if (candidature != null && candidature.Offre != null)
                 {
@@ -93,7 +102,7 @@ namespace PfeRH.Controllers
                     var notification = new Notification(
                         contenu: $"Une nouvelle candidature pour le poste de {candidature.Offre.Titre} a été traitée.",
                         type: "Parcours Candidature",
-                        utilisateurId: 1, // ID de l'administrateur
+                        utilisateurId: admin.Id, // ID de l'administrateur
                         candidatureId: candidature.Id
                     );
 
@@ -133,31 +142,40 @@ namespace PfeRH.Controllers
 
             return Ok(dates);
         }
-
-        [HttpGet("by-responsable")]
-        public async Task<ActionResult<IEnumerable<object>>> GetEntretiensByResponsableName([FromQuery] string nom)
+        [HttpGet("by-responsable-id")]
+        public async Task<ActionResult<IEnumerable<object>>> GetEntretiensByResponsableId([FromQuery] int id)
         {
-            if (string.IsNullOrWhiteSpace(nom))
+            if (id <= 0)
             {
-                return BadRequest("Le nom du responsable est requis.");
+                return BadRequest("L'identifiant du responsable est requis.");
             }
 
             var entretiens = await _context.Entretiens
                 .Include(e => e.Responsable)
-                .Where(e => e.Responsable != null &&
-                            (e.Responsable.NomPrenom).ToLower().Contains(nom.ToLower()))
+                .Include(e => e.Candidature)
+                    .ThenInclude(c => c.Offre)
+                .Include(e => e.Candidature)
+                    .ThenInclude(c => c.Candidat) // Inclure le candidat
+                .Where(e => e.ResponsableId == id)
                 .Select(e => new
                 {
-                    Id = e.Id,
-                    Commentaire = e.Commentaire,
-                    Statut = e.Statut,
-                    CandidatureId = e.CandidatureId,
-                    NomPrenomResponsable = e.Responsable.NomPrenom
+                    IdEntretien = e.Id,
+                    TypeEntretien = e.TypeEntretien,
+                    ModeEntretien = e.ModeEntretien,
+                    DateEntretien=e.DateEntretien,
+                    StatutEntretien = e.Statut,
+                    NomPrenom = e.Candidature != null && e.Candidature.Candidat != null
+                                ? e.Candidature.Candidat.NomPrenom
+                                : null,
+                    NomOffre = e.Candidature != null && e.Candidature.Offre != null
+                               ? e.Candidature.Offre.Titre
+                               : null
                 })
                 .ToListAsync();
 
             return Ok(entretiens);
         }
+
 
 
 

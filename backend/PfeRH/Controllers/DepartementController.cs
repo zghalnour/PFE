@@ -138,15 +138,50 @@ public async Task<IActionResult> UpdateDepartement(int id, [FromBody] UpdateDepa
 
             await _context.SaveChangesAsync();
 
-            return Ok("Département supprimé avec succès.");
+            return Ok(new { message = "Département supprimé avec succès." });
+
         }
-      
+        [HttpPost("add")]
+        public async Task<IActionResult> AddDepartement([FromBody] AddDepartementRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Nom))
+            {
+                return BadRequest("Le nom du département est requis.");
+            }
+
+            // Vérifier s'il existe déjà un département avec le même nom
+            var existingDepartement = await _context.Departements
+                .FirstOrDefaultAsync(d => d.Nom.ToLower() == request.Nom.ToLower());
+
+            if (existingDepartement != null)
+            {
+                return Conflict("Un département avec ce nom existe déjà.");
+            }
+
+            var departement = new Departement
+            {
+                Nom = request.Nom
+            };
+
+            _context.Departements.Add(departement);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Département ajouté avec succès.",
+                DepartementId = departement.Id,
+                Nom = departement.Nom,
+                nomResponsable="Aucun"
+            });
+        }
+
+
 
 
         public class AddDepartementRequest
         {
             public string Nom { get; set; }
-            public string NomResponsable { get; set; }
+           
         }
 
         public class UpdateDepartementRequest

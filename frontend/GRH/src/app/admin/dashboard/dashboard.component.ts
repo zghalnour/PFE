@@ -287,7 +287,7 @@ barChartDisplayYear: number | null = new Date().getFullYear();
                 display: true,
               
                text: `⏳ En cours: ${projectDataForYear.enCours}   •   ✅ Terminés: ${projectDataForYear.termines}   •   ❌ Non Terminés: ${projectDataForYear.nonTermines}`,
-                font: { size: 14, style: 'italic',weight: 'bold' },
+                font: { size: 14,weight: 'bold' },
                 padding: { top: 0, bottom: 15 }, // Espace après le sous-titre
                 color: '#555'
               },

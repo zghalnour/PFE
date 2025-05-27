@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PfeRH.DTO;
 using PfeRH.Models;
+using PfeRH.services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,13 +23,17 @@ namespace PfeRH.Controllers
         private readonly UserManager<Utilisateur> _userManager;
         private readonly RoleManager<IdentityRole<int>> _roleManager;
         private readonly CvScoringController _cvScoringController;
+        private readonly EmailService _emailService;
 
-        public CandidatureController(ApplicationDbContext context, UserManager<Utilisateur> userManager, RoleManager<IdentityRole<int>> roleManager, CvScoringController cvScoringController)
+        public CandidatureController(ApplicationDbContext context, UserManager<Utilisateur> userManager, RoleManager<IdentityRole<int>> roleManager, CvScoringController cvScoringController,
+            EmailService emailService
+            )
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
             _cvScoringController = cvScoringController;
+            _emailService = emailService;
         }
         [HttpPost("soumettre-candidature")]
         public async Task<IActionResult> SoumettreCandidature([FromForm] CandidatureSubmissionDto candidatureDto)
@@ -235,9 +240,10 @@ namespace PfeRH.Controllers
         {
             try
             {
-                // Rechercher la candidature dans la base de données, y compris ses réponses
+                // Rechercher la candidature dans la base de données, y compris ses réponses et ses entretiens
                 var candidature = await _context.Candidatures
-                                                .Include(c => c.ReponseCandidats) // Inclure les réponses associées
+                                                .Include(c => c.ReponseCandidats)
+                                                .Include(c => c.Entretiens) // Inclure les entretiens liés
                                                 .FirstOrDefaultAsync(c => c.Id == id);
 
                 if (candidature == null)
@@ -245,23 +251,31 @@ namespace PfeRH.Controllers
                     return NotFound("Candidature non trouvée.");
                 }
 
-                // Supprimer toutes les réponses associées
-                _context.ReponseCandidats.RemoveRange(candidature.ReponseCandidats);
+                // Supprimer les entretiens associés
+                if (candidature.Entretiens != null && candidature.Entretiens.Any())
+                {
+                    _context.Entretiens.RemoveRange(candidature.Entretiens);
+                }
+
+                // Supprimer les réponses associées
+                if (candidature.ReponseCandidats != null && candidature.ReponseCandidats.Any())
+                {
+                    _context.ReponseCandidats.RemoveRange(candidature.ReponseCandidats);
+                }
 
                 // Supprimer la candidature
                 _context.Candidatures.Remove(candidature);
                 await _context.SaveChangesAsync();
 
-                // Retourner une réponse réussie
                 return Ok(new { message = "Candidature supprimée avec succès." });
             }
             catch (Exception ex)
             {
-                // Enregistrer l'exception interne
                 var innerExceptionMessage = ex.InnerException?.Message ?? "Aucune exception interne";
                 return StatusCode(500, $"Une erreur est survenue : {ex.Message}. Exception interne: {innerExceptionMessage}");
             }
         }
+
 
         [HttpPut("modifier-statut/{id}/{nouveauStatut}")]
         public async Task<IActionResult> ModifierStatutCandidature(int id, string nouveauStatut)
@@ -269,7 +283,12 @@ namespace PfeRH.Controllers
             try
             {
                 // Vérifier si la candidature existe
-                var candidature = await _context.Candidatures.FindAsync(id);
+                var candidature = await _context.Candidatures
+               .Include(c => c.Candidat)
+               .Include(c => c.Entretiens)
+
+               .FirstOrDefaultAsync(c => c.Id == id);
+
                 if (candidature == null)
                 {
                     return NotFound("Candidature non trouvée.");
@@ -281,6 +300,97 @@ namespace PfeRH.Controllers
                 // Sauvegarder les modifications
                 _context.Candidatures.Update(candidature);
                 await _context.SaveChangesAsync();
+                var statutNormalise = nouveauStatut.Trim().ToLower();
+         
+                 if (statutNormalise == "acceptepreselection")
+                {
+                    await _emailService.EnvoyerEmailPreselectionAsync(candidature.Candidat.Email, candidature.Candidat.NomPrenom);
+                }
+                else if (statutNormalise == "refusepreselection" || statutNormalise == "refusé")
+                {
+                    await _emailService.EnvoyerEmailRefusAsync(
+       candidature.Candidat.Email,
+       candidature.Candidat.NomPrenom
+   );
+                }
+  
+                else if (statutNormalise.Contains("programmé"))
+                {
+                    // Récupérer la liste des entretiens futurs triés par date
+                    var entretiensProchains = candidature.Entretiens
+                        .Where(e => e.Statut == "En cours")
+                        .OrderBy(e => e.DateEntretien)
+                        .ToList();
+
+                    // Prendre le plus proche
+                    var entretienLePlusProche = entretiensProchains.FirstOrDefault();
+
+                    if (entretienLePlusProche != null)
+                    {
+                        await _emailService.EnvoyerEmailEntretienProgrammeAsync(
+                            candidature.Candidat.Email,
+                            candidature.Candidat.NomPrenom,
+                            entretienLePlusProche.TypeEntretien,
+                            entretienLePlusProche.ModeEntretien,
+                            entretienLePlusProche.DateEntretien
+                        );
+                    }
+                }
+                else if (statutNormalise.Contains("accepté"))
+                {
+                    // Récupérer les entretiens passés (ceux dont la date est antérieure ou égale à maintenant)
+                    var entretiensPasses = candidature.Entretiens
+                       .Where(e => e.DateEntretien <= DateTime.Now || e.Statut != "En cours")
+
+                        .OrderByDescending(e => e.DateEntretien)
+                        .ToList();
+
+                    int nbPasses = entretiensPasses.Count;
+
+                    if (nbPasses < candidature.nbEntretiens)
+                    {
+                        var dernierEntretien = entretiensPasses.FirstOrDefault();
+
+                        if (dernierEntretien != null)
+                        {
+                            await _emailService.EnvoyerEmailEntretienReussiEtEnAttenteAsync(
+                                candidature.Candidat.Email,
+                                candidature.Candidat.NomPrenom,
+                                dernierEntretien.TypeEntretien,
+                                dernierEntretien.DateEntretien
+                            );
+                        }
+                    }
+                }
+                else if (statutNormalise.Contains("refusé"))
+                {
+                    // Récupérer les entretiens passés (ceux dont la date est antérieure ou égale à maintenant)
+                    var entretiensPasses = candidature.Entretiens
+                       .Where(e => e.DateEntretien <= DateTime.Now || e.Statut != "En cours")
+
+                        .OrderByDescending(e => e.DateEntretien)
+                        .ToList();
+
+                    int nbPasses = entretiensPasses.Count;
+
+                    if (nbPasses < candidature.nbEntretiens)
+                    {
+                        var dernierEntretien = entretiensPasses.FirstOrDefault();
+
+                        if (dernierEntretien != null)
+                        {
+                            await _emailService.EnvoyerEmailEntretienRefuseEtProchainAsync(
+                                candidature.Candidat.Email,
+                                candidature.Candidat.NomPrenom,
+                                dernierEntretien.TypeEntretien,
+                                dernierEntretien.DateEntretien
+                            );
+                        }
+                    }
+                }
+              
+              
+
 
                 return Ok(new { message = "Statut de la candidature mis à jour avec succès." });
             }
@@ -415,6 +525,26 @@ namespace PfeRH.Controllers
                 return StatusCode(500, $"Une erreur est survenue : {ex.Message}");
             }
         }
+        [HttpGet("{id}/statut")]
+        public async Task<IActionResult> GetStatutParCandidatureId(int id)
+        {
+            var candidature = await _context.Candidatures
+                .Where(c => c.Id == id)
+                .Select(c => new
+                {
+                    c.Id,
+                    Statut = c.Statut
+                })
+                .FirstOrDefaultAsync();
+
+            if (candidature == null)
+            {
+                return NotFound(new { message = "Candidature non trouvée." });
+            }
+
+            return Ok(candidature);
+        }
+
 
         [HttpGet("getAllCandidatures")]
         public async Task<ActionResult<IEnumerable<CandidatureDtoRH>>> GetAllCandidatures()
@@ -490,7 +620,8 @@ namespace PfeRH.Controllers
                     e.Statut,
                     e.Commentaire,
                     e.ModeEntretien,
-                    ResponsableNom = e.Responsable != null ? e.Responsable.NomPrenom : "Non assigné", // Nom du responsable
+                    responsableId = e.ResponsableId, // ✅ Utiliser directement la propriété ResponsableId
+                    responsableNom = e.Responsable != null ? e.Responsable.NomPrenom : "Non assigné", // Nom du responsable
                     NomCandidat = candidature.Candidat != null ? candidature.Candidat.NomPrenom : "Candidat non trouvé",
                     EmailCandidat = candidature.Candidat != null ? candidature.Candidat.Email : "Email non trouvé", 
                     TelephoneCandidat = candidature.Candidat != null ? candidature.Candidat.PhoneNumber : "Téléphone non trouvé",

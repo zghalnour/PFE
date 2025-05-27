@@ -17,6 +17,9 @@
 
 
           <h2>Connectez-vous</h2>
+          <div *ngIf="loginErrorMessage" class="error-message generic-error-container">
+            {{ loginErrorMessage }}
+          </div>
           <div class="form-input-group">
             <input type="email" placeholder="Email" [(ngModel)]="loginForm.email" name="email" required email #emailModel="ngModel">
             <div *ngIf="emailModel.invalid && (emailModel.dirty || emailModel.touched)" class="error-message">
