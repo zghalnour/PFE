@@ -127,7 +127,8 @@ export class DashboardComponent implements OnInit {
       }
     });
   }
-  selectedYear: number=2025;
+
+   selectedYear = new Date().getFullYear();
   availableYears: number[] = [];
   isLoadingTrendData: boolean = true;
  

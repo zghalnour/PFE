@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PfeRH.DTO;
+using PfeRH.Hubs;
 using PfeRH.Models;
 using PfeRH.services;
 using System;
@@ -24,9 +26,10 @@ namespace PfeRH.Controllers
         private readonly RoleManager<IdentityRole<int>> _roleManager;
         private readonly CvScoringController _cvScoringController;
         private readonly EmailService _emailService;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
         public CandidatureController(ApplicationDbContext context, UserManager<Utilisateur> userManager, RoleManager<IdentityRole<int>> roleManager, CvScoringController cvScoringController,
-            EmailService emailService
+            EmailService emailService, IHubContext<NotificationHub> hubContext
             )
         {
             _context = context;
@@ -34,6 +37,7 @@ namespace PfeRH.Controllers
             _roleManager = roleManager;
             _cvScoringController = cvScoringController;
             _emailService = emailService;
+            _hubContext = hubContext;
         }
         [HttpPost("soumettre-candidature")]
         public async Task<IActionResult> SoumettreCandidature([FromForm] CandidatureSubmissionDto candidatureDto)
@@ -225,7 +229,23 @@ namespace PfeRH.Controllers
 
                 // Commit de la transaction
                 await transaction.CommitAsync();
+                await _emailService.EnvoyerEmailConfirmationCandidatureAsync(candidature.Candidat.Email, candidature.Candidat.NomPrenom);
+                var admin = (await _userManager.GetUsersInRoleAsync("Admin")).FirstOrDefault();
+                var notification = new Notification(
+                       contenu: $"Une nouvelle candidature pour le poste de {candidature.Offre.Titre} a été traitée.",
+                       type: "Parcours Candidature",
+                       utilisateurId: admin.Id, // ID de l'administrateur
+                       candidatureId: candidature.Id
+                   );
 
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
+
+                // Envoyer via SignalR
+                await _hubContext.Clients.User(admin.Id.ToString()).SendAsync("ReceiveNotification", new
+                {
+                    message = notification.Contenu
+                });
                 return Ok(new { message = "Candidature soumise avec succès.", candidatureId = candidature.Id, testScore  });
             }
             catch (Exception ex)
@@ -301,10 +321,43 @@ namespace PfeRH.Controllers
                 _context.Candidatures.Update(candidature);
                 await _context.SaveChangesAsync();
                 var statutNormalise = nouveauStatut.Trim().ToLower();
-         
+             
                  if (statutNormalise == "acceptepreselection")
                 {
                     await _emailService.EnvoyerEmailPreselectionAsync(candidature.Candidat.Email, candidature.Candidat.NomPrenom);
+                    var rh = (await _userManager.GetUsersInRoleAsync("Gestionnaire RH")).FirstOrDefault();
+                    if (rh == null)
+                    {
+                        // Log, throw, ou skip en toute sécurité
+                        Console.WriteLine("Aucun utilisateur avec le rôle Gestionnaire RH trouvé.");
+                        
+                    }
+
+                    var notification = new Notification(
+                           contenu: $"Une nouvelle candidature a été acceptée lors de la présélection",
+
+                           type: "PreSelection",
+                           utilisateurId: rh.Id, // ID de l'administrateur
+                           candidatureId: candidature.Id
+                       );
+
+                    try
+                    {
+                        _context.Notifications.Add(notification);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Erreur lors de l'enregistrement de la notification : " + ex.Message);
+                    }
+
+
+                    // Envoyer via SignalR
+                    await _hubContext.Clients.User(rh.Id.ToString()).SendAsync("ReceiveNotification", new
+                    {
+                        message = notification.Contenu
+                    });
+
                 }
                 else if (statutNormalise == "refusepreselection" || statutNormalise == "refusé")
                 {
@@ -347,7 +400,7 @@ namespace PfeRH.Controllers
 
                     int nbPasses = entretiensPasses.Count;
 
-                    if (nbPasses < candidature.nbEntretiens)
+                    if (nbPasses <= candidature.nbEntretiens)
                     {
                         var dernierEntretien = entretiensPasses.FirstOrDefault();
 
@@ -362,32 +415,7 @@ namespace PfeRH.Controllers
                         }
                     }
                 }
-                else if (statutNormalise.Contains("refusé"))
-                {
-                    // Récupérer les entretiens passés (ceux dont la date est antérieure ou égale à maintenant)
-                    var entretiensPasses = candidature.Entretiens
-                       .Where(e => e.DateEntretien <= DateTime.Now || e.Statut != "En cours")
-
-                        .OrderByDescending(e => e.DateEntretien)
-                        .ToList();
-
-                    int nbPasses = entretiensPasses.Count;
-
-                    if (nbPasses < candidature.nbEntretiens)
-                    {
-                        var dernierEntretien = entretiensPasses.FirstOrDefault();
-
-                        if (dernierEntretien != null)
-                        {
-                            await _emailService.EnvoyerEmailEntretienRefuseEtProchainAsync(
-                                candidature.Candidat.Email,
-                                candidature.Candidat.NomPrenom,
-                                dernierEntretien.TypeEntretien,
-                                dernierEntretien.DateEntretien
-                            );
-                        }
-                    }
-                }
+          
               
               
 
@@ -516,6 +544,24 @@ namespace PfeRH.Controllers
                 await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();
+                await _emailService.EnvoyerEmailConfirmationCandidatureAsync(candidature.Candidat.Email, candidature.Candidat.NomPrenom);
+                var admin = (await _userManager.GetUsersInRoleAsync("Admin")).FirstOrDefault();
+                var notification = new Notification(
+                       contenu: $"Un nouveau candidat a soumis sa candidature pour l'offre {candidature.Offre.Titre} ",
+
+                       type: "Nouvelle Candidature",
+                       utilisateurId: admin.Id, // ID de l'administrateur
+                       candidatureId: candidature.Id
+                   );
+
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
+
+                // Envoyer via SignalR
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", new
+                {
+                    message = notification.Contenu
+                });
 
                 return Ok(new { message = "Candidature soumise avec succès.", candidatureId = candidature.Id, scoreAI });
             }

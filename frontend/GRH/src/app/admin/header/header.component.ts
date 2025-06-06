@@ -2,10 +2,11 @@ import { Component ,OnInit} from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
-import * as signalR from '@microsoft/signalr'; // Import SignalR
+import * as signalR from '@microsoft/signalr'; 
 export interface Notification {
   id: number; // Assuming notifications have an ID from the backend
   contenu: string;
+  type:string;
   link: string;
   isRead: boolean;
   candidatureId:number
@@ -72,6 +73,7 @@ export class HeaderComponent implements OnInit{
       const newNotification: Notification = {
         id: notificationData.id || Date.now(), // Use ID from backend or generate temporary one
         contenu: notificationData.contenu,
+        type: notificationData.type,
         link: notificationData.link,
         candidatureId: notificationData.candidatureId,
         isRead: false // New notifications are unread
@@ -81,13 +83,7 @@ export class HeaderComponent implements OnInit{
       this.notifications.unshift(newNotification);
       this.unreadCount++;
 
-      // Optional: Limit the number of notifications stored/displayed
-      // if (this.notifications.length > 20) { this.notifications.pop(); }
-
-      // Note: Since this runs outside Angular's zone sometimes,
-      // you *might* need NgZone.run() for UI updates if they don't happen automatically,
-      // but often Angular handles it with HttpClient/async pipe. Test first.
-      // Example: this.zone.run(() => { this.unreadCount++; });
+    
     });
 
     // Optional: Handle reconnection events
@@ -153,6 +149,44 @@ export class HeaderComponent implements OnInit{
         }
       });
   }
+  handleNotificationClick(notification: Notification): void {
+  const notificationId = notification.id;
+  const type = notification.type;
+  const regex = /l'offre\s+(.+)$/i;
+  const match = notification.contenu.match(regex);
+  const offreTitre = match ? match[1].trim() : '';
+  switch (type) {
+    case 'Parcours Candidature':
+      if (notification.candidatureId) {
+        this.router.navigate(['/candidat-parcours', notification.candidatureId]);
+       this.showDropdown = false;
+       this.markAsRead(notificationId);
+      }
+       else {
+      console.warn('Aucun candidatureId trouvé pour cette notification.');
+    }
+      break;
+
+    case 'Nouvelle Candidature':
+      if (notification.candidatureId) {
+    // Navigation vers le composant candidatures avec queryParams facultatifs
+    this.router.navigate(['/candidatures',offreTitre], {
+    
+    });
+  }
+      this.markAsRead(notificationId);
+      break;
+
+  
+
+    default:
+      console.warn(`Type de notification non pris en charge : ${type}`);
+      break;
+  }
+
+  this.showDropdown = false; // Fermer le dropdown si tu en utilises un
+}
+
 
   navigateTo(notificationId: number, candidatureId: number): void {
     if (candidatureId) {

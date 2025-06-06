@@ -18,10 +18,7 @@
     <div class="trend-header">
       <h2><i class="fas fa-chart-line"></i> Tendance de Performance Mensuelle</h2>
       <div class="year-filter">
-        <label for="yearSelect">Année :</label>
-        <select id="yearSelect" [(ngModel)]="selectedYear" (ngModelChange)="onYearChange()">
-          <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
-        </select>
+        <span>Année : {{ selectedYear }}</span>
       </div>
     </div>
     <div class="chart-container"> <!-- Conteneur pour le canvas -->

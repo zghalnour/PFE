@@ -1,0 +1,456 @@
+.content {
+  height: 1550px;
+  width: calc(100% - 260px);
+  margin-left: 255px;
+  margin-top: 55px;
+  margin-right: 5px;
+  padding: 20px;
+  background-color: #eae8e889;
+  display: flex;
+  flex-direction: column;
+}
+
+.integration-page-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 25px; /* Espace entre la checklist et le panneau d'aide */
+  width: 100%;
+}
+/* Styles pour la section de téléchargement d'image dans les étapes */
+.step-guide-item {
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+.step-guide-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.step-image-section {
+  margin-top: 15px;
+  padding: 20px;
+  border: 2px dashed #007bff; /* Bordure pointillée plus visible */
+  border-radius: 8px;
+  text-align: center;
+  background-color: #f8f9fa; /* Fond légèrement différent */
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.image-upload-prompt .btn-upload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 25px; /* Augmentation du padding */
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.image-upload-prompt .btn-upload:hover {
+  background-color: #0056b3;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+.image-upload-prompt .btn-upload svg {
+  margin-right: 8px;
+  width: 20px; /* Taille de l'icône */
+  height: 20px;
+}
+
+.upload-instructions {
+  font-size: 0.9em;
+  color: #555; /* Couleur de texte légèrement plus foncée */
+  margin-top: 10px;
+}
+
+.image-display-area .image-preview-title {
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #333;
+  font-size: 1.1em;
+}
+.image-preview {
+  max-width: 100%;
+  max-height: 280px; /* Hauteur max de l'aperçu augmentée */
+  border-radius: 8px; /* Bordure arrondie plus prononcée */
+  border: 2px solid #007bff; /* Bordure assortie au bouton */
+  margin-bottom: 20px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #fff; /* Fond blanc pour l'image */
+  padding: 5px; /* Petit padding autour de l'image */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.image-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px; /* Espacement augmenté */
+}
+
+.image-controls .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+}
+.image-controls .btn:active {
+    transform: translateY(1px);
+}
+
+.image-controls .btn-change-image {
+  background-color: #ffc107;
+  color: #212529;
+}
+.image-controls .btn-change-image:hover {
+  background-color: #e0a800;
+}
+
+.image-controls .btn-send {
+  background-color: #28a745;
+  color: white;
+}
+.image-controls .btn-send:hover {
+  background-color: #1e7e34;
+}
+
+/* Style pour l'icône SVG dans le bouton de téléchargement */
+.btn-upload svg path[clip-rule="evenodd"] { /* Cible le bon path pour l'icône de nuage */
+    fill: white;
+}
+/* c:\Users\nourh\OneDrive\Documents\Terminal\PFE\PfeGit\PFE\frontend\GRH\src\app\employe\integration\integration.component.css */
+
+/* ... (vos styles existants) ... */
+
+.contract-signing-section {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  background-color: #fdfdfd;
+}
+
+.pdf-viewer-container {
+  margin-bottom: 20px;
+  max-height: 60vh; /* Limite la hauteur du visualiseur PDF */
+  overflow-y: auto; /* Ajoute une barre de défilement si le contenu dépasse */
+}
+
+.pdf-viewer-container iframe {
+  min-height: 400px; /* Hauteur minimale pour une bonne visibilité */
+}
+
+.signature-upload-section {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px dashed #ccc;
+}
+
+.signature-upload-section .upload-instructions {
+  font-size: 0.9em;
+  color: #555;
+}
+
+.signature-preview img {
+  background-color: #fff; /* Fond blanc pour mieux voir les signatures transparentes */
+}
+
+/* Style pour le bouton d'upload si vous n'utilisez pas de classes bootstrap/autres frameworks */
+#signatureFile {
+  display: block; /* Ou inline-block selon votre layout */
+  margin-top: 10px;
+}
+
+.integration-checklist-container { /* Anciennement .integration-container */
+  flex: 1 1 55%; /* La checklist prend un peu plus de la moitié */
+  max-width: 750px; /* Peut être un peu plus large */
+  font-family: Arial, sans-serif;
+  padding: 25px;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.integration-checklist-container h2 {
+  text-align: center;
+  color: #333;
+  font-size: 1.8em;
+  margin-bottom: 25px;
+}
+
+.progress-bar-container {
+  margin-bottom: 25px;
+  text-align: left; /* Aligner le texte de progression à gauche */
+}
+
+.progress-bar-container span {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.95em;
+  color: #555;
+}
+
+.progress-bar {
+  background-color: #e9ecef;
+  border-radius: 6px;
+  height: 22px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  background-color: #28a745; /* Vert bootstrap success */
+  height: 100%;
+  transition: width 0.4s ease-in-out;
+  text-align: center;
+  line-height: 22px;
+  color: white;
+  font-size: 0.8em;
+}
+
+
+.task-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.task-item label {
+  flex-grow: 1;
+  cursor: pointer;
+  color: #495057;
+  font-size: 1em;
+  margin-right: 10px; /* Espace avant l'icône d'aide */
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 5px; /* Un peu plus de padding */
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease;
+}
+
+.task-item:hover {
+  background-color: #f8f9fa;
+}
+
+.task-item:last-child {
+  border-bottom: none;
+}
+
+.task-item input[type="checkbox"] {
+  margin-right: 15px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  flex-shrink: 0; /* Empêche la checkbox de rétrécir */
+}
+
+
+.task-item.completed label {
+  text-decoration: line-through;
+  color: #6c757d; /* Gris plus doux */
+}
+
+.task-description {
+  font-size: 0.85em;
+  color: #6c757d;
+  margin-left: 33px; /* (width checkbox + margin-right checkbox) */
+  margin-top: 5px;
+  font-style: italic;
+}
+
+.completion-message {
+  text-align: center;
+  color: #28a745;
+  font-weight: bold;
+  margin-top: 25px;
+  font-size: 1.1em;
+}
+
+/* Styles pour #noTasks */
+.integration-checklist-container p:empty { /* Cible le <p> de ng-template #noTasks */
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  padding: 20px;
+}
+
+/* Styles pour l'icône d'aide */
+.help-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  margin-left: auto; /* Pousse l'icône à droite */
+  color: #007bff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.help-icon:hover {
+  color: #0056b3;
+}
+
+/* Styles pour le panneau d'aide à droite */
+.integration-help-panel {
+  flex: 1 1 45%; /* Le panneau d'aide prend le reste */
+  padding: 25px;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  background-color: #fdfdfd; /* Fond légèrement différent */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  height: fit-content; /* S'adapte à son contenu */
+  max-height: calc(100vh - 100px); /* Limite la hauteur et active le scroll si besoin */
+  overflow-y: auto;
+}
+
+.help-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.help-panel-header h3 {
+  margin: 0;
+  font-size: 1.4em;
+  color: #333;
+}
+
+.close-help-button {
+  background: none;
+  border: none;
+  font-size: 2em;
+  cursor: pointer;
+  color: #888;
+  line-height: 1;
+  padding: 0 5px;
+}
+.close-help-button:hover {
+  color: #333;
+}
+
+.help-panel-content .aide-texte-principal {
+  font-size: 1em;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.help-panel-content .aide-section {
+  margin-bottom: 20px;
+}
+.help-panel-content .aide-section h4 {
+  font-size: 1.1em;
+  color: #555;
+  margin-bottom: 10px;
+}
+.help-panel-content .aide-button {
+  display: inline-block;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.2s;
+}
+.help-panel-content .aide-button:hover {
+  background-color: #0056b3;
+}
+.help-panel-content .aide-qrcode .qr-code-img { /* Classe pour le conteneur du QR code généré */
+  display: block;
+  margin: 10px auto; /* Centrer le QR code */
+  max-width: 200px; /* Ajuster la taille max */
+}
+.help-panel-content .aide-qrcode small {
+  display: block;
+  text-align: center;
+  font-size: 0.9em;
+  color: #666;
+}
+.help-panel-content ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+.help-panel-content ul li a {
+  color: #007bff;
+  text-decoration: none;
+}
+.help-panel-content ul li a:hover {
+  text-decoration: underline;
+}
+
+/* Styles pour la section step-by-step */
+.aide-step-by-step h4 {
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 1.2em;
+}
+
+.steps-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.step-item {
+  background-color: #f9f9f9;
+  border-left: 4px solid #007bff;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 0 4px 4px 0;
+}
+
+.step-item:last-child {
+  margin-bottom: 0;
+}
+
+.step-item h5 {
+  font-size: 1.1em;
+  color: #0056b3; /* Un bleu plus foncé pour le titre de l'étape */
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.step-item p {
+  font-size: 0.95em;
+  line-height: 1.6;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+.step-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-top: 10px;
+  border: 1px solid #e0e0e0;
+}

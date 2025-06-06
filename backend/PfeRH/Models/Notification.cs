@@ -22,8 +22,8 @@ namespace PfeRH.Models
         public int? UtilisateurId { get; set; }
         public Utilisateur Utilisateur { get; set; }
         [ForeignKey("Candidature")]
-        public int CandidatureId { get; set; }
-        public Candidature Candidature { get; set; }
+        public int? CandidatureId { get; set; }
+        public Candidature? Candidature { get; set; }
         public Notification() { }
 
         public Notification(string contenu, string type, int utilisateurId, int candidatureId, string? link = null)
@@ -35,6 +35,16 @@ namespace PfeRH.Models
             UtilisateurId = utilisateurId;
             CandidatureId = candidatureId;
            
+        }
+        public Notification(string contenu, string type, int utilisateurId)
+        {
+            Contenu = contenu;
+            DateCreation = DateTime.Now;
+            IsRead = false; // Par défaut, la notification n'est pas lue
+            Type = type;
+            UtilisateurId = utilisateurId;
+            
+
         }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PfeRH.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PfeRH.Controllers
 {
@@ -15,6 +16,7 @@ namespace PfeRH.Controllers
         {
             _context = context;
         }
+       
         [HttpGet("overview")]
         public async Task<IActionResult> GetEmployeeOverview()
         {
@@ -47,6 +49,7 @@ namespace PfeRH.Controllers
                 OpenJobOffers = openJobOffers
             });
         }
+       
         [HttpGet("stats")]
         public async Task<IActionResult> GetYearlyEmployeeStats([FromQuery] int year)
         {
@@ -83,6 +86,7 @@ namespace PfeRH.Controllers
                 MonthlyStats = stats
             });
         }
+      
         [HttpGet("departements-employes")]
         public async Task<IActionResult> GetEmployeeCountByDepartment()
         {
@@ -96,6 +100,7 @@ namespace PfeRH.Controllers
 
             return Ok(result);
         }
+     
         [HttpGet("classifiedProjectByYear")]
         public async Task<IActionResult> GetProjetsClassifiesParAnnee([FromQuery] int annee)
         {

@@ -311,6 +311,33 @@
   font-style: italic;
   margin-top: 8px; /* Add some space if the responsible name is shown */
 }
+/* Dans dashboard.component.css ou un fichier de styles global */
+.all-interviews-failed-message {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  margin-top: 10px;
+  border: 1px solid #f5c6cb; /* Bordure rouge clair */
+  background-color: #f8d7da; /* Fond rouge clair */
+  color: #721c24; /* Texte rouge foncé */
+  border-radius: 4px;
+}
+
+.all-interviews-failed-message .icon {
+  margin-right: 12px; /* Un peu plus d'espace pour l'icône d'erreur */
+  font-size: 28px; /* Icône légèrement plus grande si souhaité */
+}
+
+.all-interviews-failed-message .message-content h4 {
+  margin-top: 0;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.all-interviews-failed-message .message-content p {
+  margin-bottom: 0;
+}
+
 
 
 

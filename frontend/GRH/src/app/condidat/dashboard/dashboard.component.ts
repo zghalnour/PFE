@@ -16,7 +16,7 @@ export class DashboardComponent implements AfterViewChecked {
   selectedContract: string = '';
   selectedCompany: string = '';
 
-  contractTypes: string[] = ['CDI', 'CDD', 'Stage', 'Contrat d\'apprentissage'];
+  contractTypes: string[] = ['CDI', 'CDD', 'NDA'];
 
   selectedJob: any = null;
   applicant = {
@@ -269,6 +269,22 @@ isJobExpired(job: any): boolean {
     })
       .then((response) => response.json())
       .then((data) => {
+         this.applicant = {
+    offreId: 0, // ou this.selectedJob.id si tu veux garder la référence
+    nomPrenom: '',
+    email: '',
+    telephone: '',
+    linkedin: '',
+    cv: null,
+    reponses: []
+  };
+
+  // Réinitialiser les réponses aux questions
+  if (this.selectedJob.testQuestions) {
+    this.selectedJob.testQuestions.forEach((q: any) => {
+      q.selectedOption = null;
+    });
+  }
         this.router.navigate(['/postuler']);  
       })
       .catch((error) => {
@@ -305,6 +321,22 @@ isJobExpired(job: any): boolean {
         return response.json();
       })
       .then((data) => {
+         this.applicant = {
+    offreId: 0, // ou this.selectedJob.id si tu veux garder la référence
+    nomPrenom: '',
+    email: '',
+    telephone: '',
+    linkedin: '',
+    cv: null,
+    reponses: []
+  };
+
+  // Réinitialiser les réponses aux questions
+  if (this.selectedJob.testQuestions) {
+    this.selectedJob.testQuestions.forEach((q: any) => {
+      q.selectedOption = null;
+    });
+  }
         this.isLoading = false;
         this.router.navigate(['/postuler']);  
       })

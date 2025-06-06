@@ -147,6 +147,7 @@ namespace PfeRH.Controllers
                 .Include(c => c.Candidat)
                 .Include(c => c.ReponseCandidats)
                     .ThenInclude(r => r.Question)
+                .OrderByDescending(c => c.ScoreAI)
                 .ToListAsync();
 
             if (!candidatures.Any())

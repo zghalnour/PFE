@@ -22,12 +22,16 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { EntretiensComponent } from './entretiens/entretiens.component';
+import { IntegrationComponent } from './integration/integration.component';
+import { QRCodeModule } from 'angularx-qrcode';
+
 @NgModule({
   declarations: [
     DashboardComponent,
     HeaderComponent,
     DemandeCongeComponent,
-    EntretiensComponent
+    EntretiensComponent,
+    IntegrationComponent
   ],
   imports: [
     CommonModule,
@@ -48,7 +52,8 @@ import { EntretiensComponent } from './entretiens/entretiens.component';
     MatSortModule,
     MatChipsModule,
     MatProgressSpinnerModule,
-    MatTooltipModule
+    MatTooltipModule,
+    QRCodeModule
   
   ]
 })

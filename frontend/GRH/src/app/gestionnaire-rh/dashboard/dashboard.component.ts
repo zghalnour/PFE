@@ -75,6 +75,7 @@ allPossibleTimeSlots: string[] = []; // All slots from 8h to 17h
 availableTimeSlots: string[] = []; // Available slots for the selected date
 selectedTypeOption: string = '';
 isLoadingSlots: boolean = false
+isFailed:boolean=false;
 loggedInUser: any = null;
 loggedInUserId: any = null;
   constructor(private http: HttpClient,private snackbar: MatSnackBar) {}
@@ -91,9 +92,13 @@ loggedInUserId: any = null;
     this.loadResponsables();
     this.loadEntretiensForAllCandidatures();
     this.fetchBookedSlots();
-
     this.generateAllPossibleTimeSlots(); 
+  
   }
+  hasFailedInterview(): boolean {
+  return this.selectedCandidature?.entretiens?.some(entretien => entretien.statut === 'Echoué') ?? false;
+}
+
     handleTypeChange(): void {
     if (this.selectedTypeOption === 'RH') {
       this.nouvelEntretien.typeEntretien = 'RH';
@@ -464,8 +469,10 @@ loggedInUserId: any = null;
     if (!this.selectedCandidature || !this.entretiens[this.selectedCandidature.id]) {
       return false; // No candidate selected or no interviews for this candidate
     }
-    // Check if any interview for the selected candidate has the status 'En cours'
+  
+  
     return this.entretiens[this.selectedCandidature.id].some(entretien => entretien.statut === 'En cours');
+  
   }
   creerEntretien(): void {
     console.log('ID Responsable sélectionné avant création:', this.nouvelEntretien.responsableId); // <-- AJOUTE CECI
@@ -559,8 +566,12 @@ loggedInUserId: any = null;
             newStatus // Use the corrected newStatus
           );
         }
+  
       
         entretien.showDecision = true;
+        if(entretien.statut==="Echoué"){
+          this.isFailed=true
+        }
         this.loadEntretiensForAllCandidatures();
       },
       error: (error) => {

@@ -30,7 +30,7 @@
     <!-- Card Équipe -->
     <div *ngFor="let dept of filteredDepartments" class="bg-white rounded-lg shadow-lg overflow-hidden transition-shadow duration-300 hover:shadow-xl flex flex-col">
       <!-- Header Équipe -->
-      <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4 text-white flex justify-between items-center">
+      <div class="bg-gradient-to-r from-blue-500 to-blue-400 p-4 text-white flex justify-between items-center">
         <h2 class="text-xl font-semibold">{{ dept.nom }}</h2>
         <span class="text-sm opacity-90 flex items-center">
           <mat-icon class="mr-1 text-base">folder</mat-icon>
@@ -94,12 +94,10 @@
             <!-- Employé Assignés -->
             <div class="pl-2 border-l-2 border-blue-300 ml-1">
               <!-- ✅ Employés assignés -->
-              
                 <h4 class="text-sm font-semibold text-black">Employés assignés :</h4>
           
-            
               <ul *ngIf="projet.employesAssignes && projet.employesAssignes.length > 0; else noEmployees" class="text-sm space-y-1">
-                <li *ngFor="let emp of projet.employesAssignes" class="text-gray-700 flex items-center gap-2 group"> <!-- Added gap-2 for spacing -->
+                <li *ngFor="let emp of projet.employesAssignes" class="text-gray-700 flex items-center  group"> <!-- Added gap-2 for spacing -->
                   <mat-icon class="text-gray-500 text-base">person</mat-icon> <!-- Changed icon and color -->
                   <span>{{ emp.nomPrenom }}</span>
                 </li>
@@ -351,9 +349,9 @@
 
   <!-- Modal: Modifier un Projet -->
   <div *ngIf="isEditProjectModalVisible"
-       class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 backdrop-blur-sm" >
+       class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 " >
 
-      <div class="bg-white rounded-lg shadow-lg w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div class="bg-white rounded-lg shadow-lg w-full max-w-xl max-h-[75vh] flex flex-col overflow-hidden">
 
           <!-- Modal Header -->
           <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">

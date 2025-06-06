@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using PfeRH.Hubs;
 using PfeRH.Models;
+using PfeRH.services;
 
 namespace PfeRH.Controllers
 {
@@ -14,14 +15,15 @@ namespace PfeRH.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<Utilisateur> _userManager;
-
+        private readonly EmailService _emailService;
         private readonly IHubContext<NotificationHub> _hubContext;
 
-        public EntretienController(ApplicationDbContext context, IHubContext<NotificationHub> hubContext, UserManager<Utilisateur> userManager)
+        public EntretienController(ApplicationDbContext context, IHubContext<NotificationHub> hubContext, UserManager<Utilisateur> userManager, EmailService emailService)
         {
             _context = context;
             _hubContext = hubContext;
             _userManager = userManager;
+            _emailService = emailService;
         }
         [HttpPost("add")]
         public async Task<ActionResult<Entretien>> AddEntretien([FromBody] EntretienCreateDto dto)
@@ -32,8 +34,8 @@ namespace PfeRH.Controllers
                 return NotFound($"Candidature avec ID {dto.CandidatureId} non trouvée.");
             }
             var responsable = await _context.Users
-       .OfType<Personnel>() // Filtrer pour obtenir uniquement les Employe
-       .FirstOrDefaultAsync(u => u.Id == dto.ResponsableId); // Rechercher l'employé avec l'ID du responsable
+       .OfType<Personnel>() 
+       .FirstOrDefaultAsync(u => u.Id == dto.ResponsableId); 
 
             if (responsable == null)
             {
@@ -47,12 +49,31 @@ namespace PfeRH.Controllers
                 ModeEntretien = dto.ModeEntretien,
                 DateEntretien = dto.DateEntretien,
                 ResponsableId = dto.ResponsableId,
-                Commentaire = "", // vide par défaut
-                Statut = "En cours" // par défaut
+                Commentaire = "", 
+                Statut = "En cours" 
             };
 
             _context.Entretiens.Add(entretien);
             await _context.SaveChangesAsync();
+            var resp = await _userManager.FindByIdAsync(dto.ResponsableId.ToString());
+
+            if (resp != null)
+            {
+                var notification = new Notification(
+                    contenu: $"Un nouvel entretien a été programmé.",
+                    type: "Entretien Planifié",
+                    utilisateurId: resp.Id,
+                    candidatureId: entretien.CandidatureId
+                );
+
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
+
+                await _hubContext.Clients.User(resp.Id.ToString()).SendAsync("ReceiveNotification", new
+                {
+                    message = notification.Contenu
+                });
+            }
 
             return Ok(entretien.Id);
 
@@ -64,6 +85,8 @@ namespace PfeRH.Controllers
             var entretien = await _context.Entretiens
      .Include(e => e.Candidature)
          .ThenInclude(c => c.Offre)
+       .Include(e => e.Candidature)
+            .ThenInclude(c => c.Candidat)
      .FirstOrDefaultAsync(e => e.Id == id);
             if (entretien == null)
             {
@@ -82,14 +105,36 @@ namespace PfeRH.Controllers
 
             _context.Entretiens.Update(entretien);
             await _context.SaveChangesAsync();
+            var candidature = entretien.Candidature;
             var candidatureId = entretien.CandidatureId;
             var totalEntretiens = entretien.Candidature.nbEntretiens;
             var totalTerminés = await _context.Entretiens
     .Where(e => e.CandidatureId == candidatureId && e.Statut != "En cours")
     .CountAsync();
-            if (totalEntretiens == totalTerminés)
+            if (dto.Statut == "Echoué")
             {
-                var candidature = entretien.Candidature;
+                if (candidature?.Candidat != null)
+                {
+                  
+                    await _emailService.EnvoyerEmailRefusAsync(
+                        candidature.Candidat.Email,
+                        candidature.Candidat.NomPrenom
+                    );
+                }
+                else
+                {
+                    Console.WriteLine("Candidat est null !");
+                }
+            }
+            var hasEchec = await _context.Entretiens
+    .AnyAsync(e => e.CandidatureId == candidatureId && e.Statut == "Echoué");
+
+            if (totalEntretiens == totalTerminés && !hasEchec)
+
+
+                if (totalEntretiens == totalTerminés)
+            {
+                
                 var admin = (await _userManager.GetUsersInRoleAsync("Admin")).FirstOrDefault();
                 if (admin == null)
                 {
@@ -110,7 +155,7 @@ namespace PfeRH.Controllers
                     await _context.SaveChangesAsync();
 
                     // Envoyer via SignalR
-                    await _hubContext.Clients.All.SendAsync("ReceiveNotification", new
+                    await _hubContext.Clients.User(admin.Id.ToString()).SendAsync("ReceiveNotification", new
                     {
                         message = notification.Contenu
                     });
@@ -156,7 +201,7 @@ namespace PfeRH.Controllers
                     .ThenInclude(c => c.Offre)
                 .Include(e => e.Candidature)
                     .ThenInclude(c => c.Candidat) // Inclure le candidat
-                .Where(e => e.ResponsableId == id)
+                .Where(e => e.ResponsableId == id && e.Statut=="En cours")
                 .Select(e => new
                 {
                     IdEntretien = e.Id,

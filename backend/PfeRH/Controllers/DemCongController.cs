@@ -7,6 +7,9 @@ using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
+using PfeRH.Hubs;
 namespace PfeRH.Controllers
 {
     [Route("api/[controller]")]
@@ -14,10 +17,13 @@ namespace PfeRH.Controllers
     public class DemCongController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-
-        public DemCongController(ApplicationDbContext context)
+        private readonly UserManager<Utilisateur> _userManager;
+        private readonly IHubContext<NotificationHub> _hubContext;
+        public DemCongController(ApplicationDbContext context, UserManager<Utilisateur> userManager , IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _userManager = userManager;
+            _hubContext = hubContext;
         }
         [HttpPost("ajouter/{idEmploye}")]
         public async Task<IActionResult> AjouterDemandeConge(int idEmploye, [FromBody] DemandeCongeDto dto)
@@ -45,6 +51,36 @@ namespace PfeRH.Controllers
 
             _context.DemandesConge.Add(demande);
             await _context.SaveChangesAsync();
+            var rh = (await _userManager.GetUsersInRoleAsync("Gestionnaire RH")).FirstOrDefault();
+            if (rh == null)
+            {
+                return BadRequest(new { message = "Aucun gestionnaire RH trouvé pour envoyer la notification." });
+            }
+
+         var notification = new Notification(
+         contenu: $"Nouvelle demande de congé de l'employé {employe.NomPrenom}.",
+         type: "Demande de Congé",
+         utilisateurId: rh!.Id
+         
+     );
+
+
+            try
+            {
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur lors de l'enregistrement de la notification : " + ex.Message);
+            }
+
+
+            // Envoyer via SignalR
+            await _hubContext.Clients.User(rh.Id.ToString()).SendAsync("ReceiveNotification", new
+            {
+                message = notification.Contenu
+            });
 
             return Ok(new { message = "Demande de congé ajoutée avec succès." });
         }
@@ -127,6 +163,39 @@ namespace PfeRH.Controllers
 
             demande.Statut = dto.NouveauStatut;
             await _context.SaveChangesAsync();
+            var employe = await _userManager.FindByIdAsync(demande.EmployeId.ToString());
+
+            if (employe != null)
+            {
+                string contenuNotif;
+
+                switch (dto.NouveauStatut.ToLower())
+                {
+                    case "Approuvée":
+                        contenuNotif = "Votre demande de congé a été acceptée.";
+                        break;
+                    case "Refusée":
+                        contenuNotif = "Votre demande de congé a été refusée.";
+                        break;
+                    default:
+                        contenuNotif = $"Le statut de votre demande de congé a été {dto.NouveauStatut}.";
+                        break;
+                }
+                var notification = new Notification(
+                    contenu: contenuNotif,
+                    type: "Rep Congé",
+                    utilisateurId: employe.Id
+                  
+                );
+
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
+
+                await _hubContext.Clients.User(employe.Id.ToString()).SendAsync("ReceiveNotification", new
+                {
+                    message = notification.Contenu
+                });
+            }
 
             return Ok(new { message = "Statut de la demande de congé mis à jour avec succès." });
         }

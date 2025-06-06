@@ -8,11 +8,8 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 60px; /* Hauteur de la top-bar, ajustez si besoin */
-  background-color: #219ea0; /* Couleur de fond pour la top-bar */
-  /* Vous pouvez utiliser la même couleur que la sidebar ou une couleur complémentaire */
-  /* Exemple avec une couleur légèrement différente pour la distinction : */
-  /* background-color: #f8f9fa; */
+  height: 60px; 
+  background: linear-gradient(to right, #cae8ea, #219ea0); 
   display: flex;
   justify-content: space-between; /* Espace les éléments enfants */
   align-items: center;
@@ -37,16 +34,16 @@
 .user-info {
   display: flex;
   align-items: center;
-  color: #000000; /* Couleur du texte pour les infos utilisateur */
+  color: #ffffff; /* Couleur du texte pour les infos utilisateur */
 }
 
 .user-info .user-icon {
   margin-right: 8px;
-  font-size: 1.2rem; /* Taille de l'icône utilisateur */
+  font-size: 1.35rem; /* Taille de l'icône utilisateur */
 }
 
 .user-info .username {
-  font-size: 0.9rem;
+  font-size: 1.2rem;
 }
 
 .icons-container {
@@ -62,7 +59,7 @@
 
 .icons i {
   font-size: 1.3rem; /* Taille des icônes de notification et de déconnexion */
-  color: #000000; /* Couleur des icônes */
+  color: #ffffff; /* Couleur des icônes */
   margin-left: 20px; /* Espace entre les icônes */
   cursor: pointer;
   transition: color 0.2s ease;
@@ -214,7 +211,7 @@
   padding: 12px 17px;
   margin-bottom: 16px;
   text-decoration: none;
-  color: #495057;
+  color: #343a40;
   border-radius: 6px;
   /* Add transparent borders to prevent layout shift on hover/active */
   border-left: 3px solid transparent; /* Ajustez l'épaisseur si besoin */
@@ -228,7 +225,7 @@
   font-size: 1.1em;
   width: 20px;
   text-align: center;
-  color: #6c757d;
+  color: #343a40;
 }
 
 .sidebar li a span {
@@ -251,3 +248,8 @@
   height: 50px; /* Ajustez la hauteur selon vos besoins */
   margin-left: 55px; /* Espace à droite du logo si d'autres éléments suivent */
 }
+.sidebar-header {
+    display: flex;
+    align-items: left; /* Vertically aligns the icon and text */
+    justify-content: left; /* Horizontally centers the icon and text */
+  }

@@ -1,128 +1,249 @@
-html,body {
-  font-family: Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
+/* Styles pour header.component.css */
 
-}
+/* ... (styles précédents pour .sidebar, .sidebar-header, etc. restent les mêmes) ... */
 
+/* Styles pour la top-bar (navbar supérieure) */
 .top-bar {
+  position: fixed; /* Fixe la top-bar en haut */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px; 
+  background: linear-gradient(to right, #cae8ea, #219ea0); 
+  display: flex;
+  justify-content: space-between; /* Espace les éléments enfants */
+  align-items: center;
+  padding: 0 20px; /* Espacement interne horizontal */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Ombre subtile sous la top-bar */
+  z-index: 1010; /* S'assure qu'elle est au-dessus de la sidebar si elles se chevauchent */
+  border-bottom: 1px solid #e9ecef; /* Ligne de séparation subtile */
+}
+
+.left-section {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: rgb(250, 250, 250);
-
-  box-shadow: 3px 3px 3px 3px rgba(7, 51, 74, 0.1);
-  height: 60px;
-
 }
-.left-section {
 
-  .logo {
-    width: 70px;
-    margin-left: 85px;
+.sidebar-header {
+    display: flex;
+    align-items: left; /* Vertically aligns the icon and text */
+    justify-content: left; /* Horizontally centers the icon and text */
   }
-}
-
-.notification-icon {
-  font-size: 20px;
-  cursor: pointer;
-
-}
-.logout-icon {
-  font-size: 20px;
-  cursor: pointer;
-  margin-right: 15px;
-}
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 10px;
-
-  .username {
-    font-size: 16px;
-    font-weight: bold;
-  }
-
-  .user-icon {
-    font-size: 22px;
-  }
+  color: #ffffff; /* Couleur du texte pour les infos utilisateur */
 }
 
+.user-info .user-icon {
+  margin-right: 8px;
+  font-size: 1.35rem; /* Taille de l'icône utilisateur */
+}
 
+.user-info .username {
+  font-size: 1.2rem;
+}
 
+.icons-container {
+  display: flex;
+  align-items: center;
+  position: relative; /* Pour le positionnement du dropdown */
+}
+
+.icons {
+  display: flex;
+  align-items: center;
+}
 
 .icons i {
-  margin-left: 15px;
-  font-size: 20px;
+  font-size: 1.3rem; /* Taille des icônes de notification et de déconnexion */
+  color: #ffffff; /* Couleur des icônes */
+  margin-left: 20px; /* Espace entre les icônes */
   cursor: pointer;
+  transition: color 0.2s ease;
 }
 
-.menu-icon {
-  font-size: 22px;
+
+
+.notification-container {
+  position: relative; /* Pour le positionnement du badge */
   cursor: pointer;
+  margin-left: 20px;
 }
 
-/* Menu latéral */
-.sidebar {
+.notification-icon {
+  font-size: 1.3rem;
+  color: #6c757d;
+}
+
+
+.notification-badge {
   position: absolute;
-  left:0px;
-  top: 65px; 
-  width: 220px;
-  height: calc(200vh - 60px); 
-  background:rgb(250, 250, 250);
-  padding-top: 30px;
-  transition: left 0.3s ease;
-  box-shadow: 5px 5px 5px 5px rgba(7, 51, 74, 0.1);
+  top: -5px;
+  right: -8px;
+  background-color: #dc3545; /* Rouge pour le badge */
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  line-height: 1;
+  border: 1px solid white; /* Petite bordure pour mieux le détacher */
 }
 
-.sidebar ul {
+
+
+/* Styles pour le menu déroulant des notifications */
+.notification-dropdown {
+  position: absolute;
+  top: 50px; /* Ajustez en fonction de la hauteur de la top-bar et de l'espacement désiré */
+  right: 0;
+  width: 320px; /* Largeur du dropdown */
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1020; /* Au-dessus de la top-bar */
+  max-height: 400px; /* Hauteur maximale avant scroll */
+  overflow-y: auto; /* Scroll si contenu trop long */
+}
+
+.dropdown-header {
+  padding: 12px 15px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #343a40;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.no-notifications {
+  padding: 20px 15px;
+  text-align: center;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.notification-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.sidebar ul li {
-  padding-left: 25px;
-  padding-right: 30px;
-  padding-top: 20px;
-
-  text-align: start;
-}
-
-.sidebar ul li a {
-  color: black;
-  text-decoration: none;
-  display: block;
-  padding: 15px;
-  border-radius: 5px;
+.notification-list li {
+  padding: 12px 15px;
+  border-bottom: 1px solid #f1f1f1;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-.sidebar ul li a i {
-  margin-right: 15px; /* Espacement entre l'icône et le texte */
-  font-size: 18px;
+.notification-list li:last-child {
+  border-bottom: none;
 }
 
-.sidebar ul li a span {
-  flex-grow: 1;
+.notification-list li:hover {
+  background-color: #f8f9fa;
 }
 
-.sidebar ul li a:hover {
-  background: rgba(0, 0, 0, 0.1);
+.notification-list li.unread {
+  background-color: #e9f5ff; /* Fond légèrement différent pour les non lues */
+  font-weight: 500; /* Ou autre style pour marquer comme non lu */
+}
+.notification-list li.unread .notification-content {
+  color: #0056b3; /* Couleur de texte plus foncée pour les non lues */
 }
 
-/* Élément actif */
-.sidebar ul li a.active {
-  border-left: 4px solid rgba(3, 98, 149, 0.534);
-  border-right: 4px solid rgba(3, 98, 149, 0.534);
-  font-weight: bold;
-  background: transparent;
+.notification-content {
+  font-size: 0.85rem;
+  color: #495057;
+  line-height: 1.4;
+  /* Pour gérer les textes longs */
+  white-space: normal; /* Permet le retour à la ligne */
+  word-wrap: break-word; /* Coupe les mots longs si nécessaire */
+}
+
+/* Styles pour la sidebar (existants et nouveaux) */
+.sidebar {
+  position: fixed;
+  top: 60px; /* Doit correspondre à la hauteur de .top-bar */
+  left: 0;
+  width: 240px;
+  height: calc(100vh - 60px); /* Hauteur de la sidebar, moins la hauteur de la top-bar */
+  background-color: #ffffff;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column; /* Important pour positionner le footer en bas */
+  overflow-y: auto;
+}
+
+.sidebar-header {
+  padding: 20px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.sidebar-header i {
+  font-size: 1.5rem;
+  color: #219ea0;
+  margin-right: 15px;
+}
+
+.sidebar-header span {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #343a40;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0 20px;
+  margin: 0;
+  flex-grow: 1; /* Permet à la liste de prendre l'espace vertical disponible */
+}
+
+.sidebar li a {
+  display: flex;
+  align-items: center;
+  padding: 12px 17px;
+  margin-bottom: 16px;
+  text-decoration: none;
+  color: #343a40;
+  border-radius: 6px;
+  /* Add transparent borders to prevent layout shift on hover/active */
+  border-left: 3px solid transparent; /* Ajustez l'épaisseur si besoin */
+  border-right: 3px solid transparent; /* Ajustez l'épaisseur si besoin */
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.sidebar li a i {
+
+  margin-right: 6px;
+  font-size: 1.1em;
+  width: 20px;
+  text-align: center;
+  color: #343a40;
+}
+
+.sidebar li a span {
+  font-size: 0.95rem;
+
 }
 
 
+.sidebar li a.active {
+  color: #219ea0; /* Changé de #ffffff pour la visibilité */
+  font-weight: 500;
+  border-left-color: #219ea0;
+  border-right-color: #219ea0;
+}
+
+.sidebar li a.active i {
+  color: #219ea0; /* Changé de #ffffff */
+}
+.top-bar .logo {
+  height: 50px; /* Ajustez la hauteur selon vos besoins */
+  margin-left: 45px; /* Espace à droite du logo si d'autres éléments suivent */
+}

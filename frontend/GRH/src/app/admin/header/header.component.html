@@ -37,7 +37,7 @@
         <ul *ngIf="notifications.length > 0" class="notification-list">
           <li *ngFor="let notif of notifications"
               [class.unread]="!notif.isRead"
-              (click)="navigateTo(notif.id, notif.candidatureId)">
+              (click)="handleNotificationClick(notif)">
             <div class="notification-content"> <!-- Conteneur pour le contenu -->
                {{ notif.contenu }}
             </div>

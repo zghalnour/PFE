@@ -66,7 +66,7 @@
       <!-- Formulaire de création d'entretien -->
           <!-- Formulaire de création d'entretien OU Message de fin d'entretiens -->
       <!-- Vérifier si le nombre total est fixé ET si le nombre planifié est inférieur au total -->
-      <div class="form-container "  *ngIf="selectedCandidature?.nbFixe && nombreEntretiensPlanifies < (selectedCandidature?.nbEntretiens ?? 0)">
+      <div class="form-container "  *ngIf="selectedCandidature?.nbFixe && nombreEntretiensPlanifies < (selectedCandidature?.nbEntretiens ?? 0) && !hasFailedInterview() && !isFailed">
         <div class="form-group">
           <label>Progression des entretiens : {{ nombreEntretiensPlanifies }} / {{ selectedCandidature.nbEntretiens }}</label>
         </div>
@@ -151,7 +151,7 @@
               </label>
               <label>
                 <input type="radio" name="mode" [(ngModel)]="nouvelEntretien.modeEntretien" value="En ligne">
-                En ligne
+              En&nbsp;ligne
               </label>
             </div>
           </div>
@@ -162,7 +162,7 @@
 
       <!-- Message affiché quand tous les entretiens sont terminés -->
       <!-- Vérifier si le nombre total est fixé ET si le nombre planifié est >= au total -->
-      <div class="all-interviews-complete-message" *ngIf="selectedCandidature?.nbFixe && nombreEntretiensPlanifies >= (selectedCandidature?.nbEntretiens ?? 0)">
+      <div class="all-interviews-complete-message" *ngIf="selectedCandidature?.nbFixe && nombreEntretiensPlanifies >= (selectedCandidature?.nbEntretiens ?? 0) && !hasFailedInterview()">
         <mat-icon class="icon">check_circle_outline</mat-icon>
         <div class="message-content">
           <h4>Tous les entretiens sont terminés !</h4>
@@ -170,7 +170,13 @@
         </div>
       </div>
 
-      
+        <div class="all-interviews-failed-message" *ngIf="isFailed || hasFailedInterview()">
+        <mat-icon class="icon" color="warn">error_outline</mat-icon>
+        <div class="message-content">
+         <h4>Processus de recrutement terminé.</h4>
+              <p>La candidature n'a pas réussi le dernier entretien. Un email automatique a été envoyé pour informer le candidat de cette décision.</p>
+            </div>
+      </div>
       
       
   

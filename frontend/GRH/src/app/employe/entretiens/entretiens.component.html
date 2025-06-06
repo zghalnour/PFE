@@ -10,7 +10,7 @@
       </div>
 
       <!-- List of interviews -->
-      <div *ngIf="entretiens && entretiens.length > 0" class="interviews-list">
+      <div *ngIf="entretiens && entretiens.length > 0 " class="interviews-list">
         <div *ngFor="let entretien of entretiens; let i = index" class="interview-card card-style">
           <div class="card-header">
             <h3>{{ entretien.nomOffre }}</h3>

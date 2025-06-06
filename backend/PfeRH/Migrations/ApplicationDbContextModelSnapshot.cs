@@ -396,7 +396,7 @@ namespace PfeRH.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CandidatureId")
+                    b.Property<int?>("CandidatureId")
                         .HasColumnType("int");
 
                     b.Property<string>("Contenu")
@@ -915,7 +915,7 @@ namespace PfeRH.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PfeRH.Models.Employe", "Responsable")
+                    b.HasOne("PfeRH.Models.Personnel", "Responsable")
                         .WithMany()
                         .HasForeignKey("ResponsableId");
 
@@ -939,9 +939,7 @@ namespace PfeRH.Migrations
                 {
                     b.HasOne("PfeRH.Models.Candidature", "Candidature")
                         .WithMany()
-                        .HasForeignKey("CandidatureId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CandidatureId");
 
                     b.HasOne("PfeRH.Models.Utilisateur", "Utilisateur")
                         .WithMany()

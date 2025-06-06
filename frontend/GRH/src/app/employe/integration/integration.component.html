@@ -1,0 +1,97 @@
+<app-header></app-header>
+<main class="content">
+  <div class="integration-page-wrapper">
+    <div class="integration-checklist-container"> <!-- Anciennement integration-container -->
+      <h2>Mon Parcours d'Intégration</h2>
+
+      <div *ngIf="tasks.length > 0; else noTasks">
+        <div class="progress-bar-container">
+          <span>Progression: {{ progressPercentage }}%</span>
+          <div class="progress-bar">
+            <div class="progress-bar-fill" [style.width.%]="progressPercentage"></div>
+          </div>
+        </div>
+
+        <ul class="task-list">
+          <li *ngFor="let task of tasks" class="task-item" [class.completed]="task.estComplete">
+            <input
+              type="checkbox"
+              [id]="'task-' + task.id"
+              [(ngModel)]="task.estComplete"
+              (ngModelChange)="onTaskToggle(task)">
+            <label [for]="'task-' + task.id">{{ task.titre }}</label>
+            <!-- Icône d'aide -->
+            <button class="help-icon" (click)="showHelp(task)" title="Afficher l'aide pour cette tâche">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20px" height="20px"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v2h-2zm0 4h2v6h-2z"></path></svg>
+            </button>
+          </li>
+        </ul>
+        <p *ngIf="progressPercentage === 100" class="completion-message">
+          Félicitations, vous avez terminé toutes les étapes de votre intégration !
+        </p>
+      </div>
+
+      <ng-template #noTasks>
+        <p>Aucune tâche d'intégration n'est actuellement assignée.</p>
+      </ng-template>
+    </div>
+
+    <!-- Panneau d'aide à droite -->
+    <div class="integration-help-panel" *ngIf="selectedTaskForHelp">
+      <div class="help-panel-header">
+        <h3>Aide pour : {{ selectedTaskForHelp.titre }}</h3>
+        <button class="close-help-button" (click)="closeHelpPanel()" title="Fermer l'aide">&times;</button>
+      </div>
+      <div class="help-panel-content" *ngIf="selectedTaskForHelp.aideDetails as aide">
+        <!-- This text is common to all types, displayed at the top -->
+        <p class="aide-texte-principal">{{ aide.textePrincipal }}</p> 
+
+        <!-- Section for Info type -->
+        <div *ngIf="aide.type === 'info'">
+          <!-- Additional content specific to 'info' type can go here if needed -->
+        </div>
+
+    <!-- Section for Step-by-Step Guide -->
+    <div *ngIf="aide.type === 'stepByStepGuide' && aide.steps">
+      <div *ngFor="let step of selectedTaskForHelp.aideDetails.steps; let i = index" class="step-guide-item">      
+        <div class="step-image-section">
+          <!-- Input de fichier caché, déclenché par les labels -->
+          <input type="file" id="stepImageUpload{{i}}" class="visually-hidden"
+                 accept="image/png"
+                 (change)="handleStepImageUpload($event, selectedTaskForHelp, i)">
+
+          <!-- Affichage si aucune image n'est encore sélectionnée pour cette étape -->
+          <div *ngIf="!step.imageUrlEtape" class="image-upload-prompt">
+            <label for="stepImageUpload{{i}}" class="btn btn-upload">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="1em" height="1em" style="margin-right: 8px;"><path d="M9.36 14.64l-1.06-1.06L12 9.83l3.71 3.71-1.06 1.06L12 11.94zM12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm0-4.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" clip-rule="evenodd" fill-rule="evenodd"></path><path d="M19 12h-2V9a5 5 0 00-9.37-2.5A5.5 5.5 0 006.5 12H4a8 8 0 0115.87-1.21A7.96 7.96 0 0119 12zM9.17 16.83a3.5 3.5 0 004.66 0l.71-.71-1.06-1.06-.7.7a1.5 1.5 0 01-2.12 0l-.71-.71-1.06 1.06.71.71z"></path></svg>
+              Sélectionner une photo (PNG)
+            </label>
+            <p class="upload-instructions">Cliquez sur le bouton ci-dessus pour choisir un fichier.</p>
+          </div>
+
+          <!-- Affichage si une image a été sélectionnée -->
+          <div *ngIf="step.imageUrlEtape" class="image-display-area">
+            <p class="image-preview-title">Votre photo sélectionnée :</p>
+            <img [src]="step.imageUrlEtape" alt="Aperçu de la photo" class="image-preview">
+            <div class="image-controls">
+              <label for="stepImageUpload{{i}}" class="btn btn-change-image">Changer la photo</label>
+              <button class="btn btn-send" (click)="submitImage()">Envoyer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+        <!-- Section for QR Code -->
+      <div *ngIf="aide.type === 'qrCode' && aide.qrCodeData">
+          <div class="qr-code-container">
+            <img [src]="'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + aide.qrCodeData" alt="QR Code">
+          </div>
+      </div>
+
+        <!-- Remove the signContractPdf section as it's no longer in defaultTasks -->
+        <!-- Add sections for other types like 'link', 'event', 'invitation' as needed -->
+    </div>
+    </div>
+  </div>
+</main>

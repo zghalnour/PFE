@@ -20,7 +20,7 @@ namespace PfeRH.services
             <li><strong>Email :</strong> {email}</li>
             <li><strong>Code d'accès :</strong> {motDePasse}</li>
         </ul>
-        Merci de vous connecter dès que possible pour compléter votre profil.";
+        Merci de vous connecter dès que possible.";
 
             string htmlContent = "<html>"
                 + "<body style='font-family: Arial, sans-serif; background-color: #f0f0f0;'>"
@@ -143,8 +143,19 @@ namespace PfeRH.services
 
             string htmlContent = GenererContenuHtml(nomPrenom, body);
 
-            await EnvoyerEmailAsync(destinataire, "📩 Prochain entretien après refus", htmlContent);
+            await EnvoyerEmailAsync(destinataire, " Prochain entretien après refus", htmlContent);
         }
+        public async Task EnvoyerEmailConfirmationCandidatureAsync(string destinataire, string nomPrenom)
+        {
+            string body = "Nous vous confirmons que votre candidature a bien été <strong>enregistrée</strong> avec succès.<br/><br/>"
+                        + "Notre équipe de recrutement procédera à l’examen de votre profil dans les plus brefs délais.<br/><br/>"
+                        + "Vous recevrez une notification par email à chaque étape du processus.";
+
+            string htmlContent = GenererContenuHtml(nomPrenom, body);
+
+            await EnvoyerEmailAsync(destinataire, " Confirmation de réception de votre candidature", htmlContent);
+        }
+
 
 
         private async Task EnvoyerEmailAsync(string destinataire, string sujet, string htmlContent)

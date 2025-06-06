@@ -71,6 +71,7 @@ barChartDisplayYear: number | null = new Date().getFullYear();
   }
 
   fetchDashboardData(): void {
+    
     this.http.get<DashboardOverviewData>(this.apiUrl).subscribe({
       next: (data) => {
         this.dashboardData = data;
