@@ -257,8 +257,33 @@ originalDemandes: any[] = [];
       // Pas besoin de traiter 'result' ici car la soumission se fait via onSubmit()
     });
   }
+  deleteDemande(demande: any): void {
+    
+    const demandeId = demande.id;
 
-  // --- Logique de soumission (inchangée) ---
+    if (!demandeId) {
+      console.error('Demande ID is missing, cannot delete.');
+    
+      return;
+    }
+
+    const apiUrl = `http://localhost:5053/api/DemCong/Supprimer/${demandeId}`;
+
+    this.http.delete<any>(apiUrl).subscribe({
+      next: (response) => {
+        console.log('Delete response:', response);
+      
+        
+        this.listeDemandes = this.listeDemandes.filter(d => d.id !== demandeId); 
+        
+      },
+      error: (error) => {
+        console.error('Error deleting demande de congé:', error);
+        
+      }
+    });
+  }
+
   submitNewDemande(apiRequestData: any): void {
     if (!this.employeId) {
         console.error("Cannot submit leave request without Employee ID.");
@@ -266,7 +291,7 @@ originalDemandes: any[] = [];
         return;
     }
 
-    this.isLoading = true; // Indicate loading
+    this.isLoading = true; 
     // Use the specific endpoint with the employee ID in the URL
     const apiUrl = `${this.apiBaseUrl}/ajouter/${this.employeId}`;
 

@@ -90,6 +90,13 @@
           <button mat-icon-button color="warn" *ngIf="demande.statut === 'En Attente'" (click)="cancelDemande(demande)">
             <mat-icon>cancel</mat-icon>
           </button>
+            <button mat-icon-button
+                  color="warn"
+                  *ngIf="demande.statut !== 'En Attente'"
+                  (click)="deleteDemande(demande)"
+                  matTooltip="Supprimer la demande">
+            <mat-icon>delete</mat-icon>
+            </button>
         </td>
       </ng-container>
   

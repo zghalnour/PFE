@@ -19,14 +19,14 @@ namespace PfeRH.Models
 
         // Clé étrangère vers l'utilisateur destinataire
         [ForeignKey("Utilisateur")]
-        public int? UtilisateurId { get; set; }
+        public int UtilisateurId { get; set; }
         public Utilisateur Utilisateur { get; set; }
         [ForeignKey("Candidature")]
         public int? CandidatureId { get; set; }
         public Candidature? Candidature { get; set; }
         public Notification() { }
 
-        public Notification(string contenu, string type, int utilisateurId, int candidatureId, string? link = null)
+        public Notification(string contenu, string type, int utilisateurId, int candidatureId)
         {
             Contenu = contenu;
             DateCreation = DateTime.Now;

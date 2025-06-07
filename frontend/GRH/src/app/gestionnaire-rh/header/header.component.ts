@@ -190,8 +190,8 @@ export class HeaderComponent implements OnInit{
           break;
     
         case 'Demande de Congé':
-            this.router.navigate(['/gestionnaire-rh/traitement-conge']);
-           this.showDropdown = false;
+          this.router.navigate(['/gestionnaire-rh/traitement-conge']);
+          this.showDropdown = false;
           this.markAsRead(notificationId);
           break;
     

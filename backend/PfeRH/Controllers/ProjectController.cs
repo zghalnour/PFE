@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using PfeRH.Hubs;
 using PfeRH.Models;
 using System.Globalization;
 
@@ -12,10 +14,12 @@ namespace PfeRH.Controllers
 
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public ProjectController(ApplicationDbContext context)
+        public ProjectController(ApplicationDbContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
         [HttpDelete("{projetId}/delete")]
         public async Task<IActionResult> DeleteProjetWithTaches(int projetId)
@@ -285,7 +289,31 @@ namespace PfeRH.Controllers
                 }).ToList();
 
             if (affectationsAAjouter.Any())
+            {
                 _context.Affectations.AddRange(affectationsAAjouter);
+                await _context.SaveChangesAsync();
+
+                // Envoyer une notification à chaque nouvel employé affecté
+                foreach (var affectation in affectationsAAjouter)
+                {
+                    var notification = new Notification(
+                        contenu: $"Vous avez été affecté(e) au projet « {projet.Nom} ».",
+                        type: "Affectation",
+                        utilisateurId: affectation.EmployeId
+                    );
+
+                    _context.Notifications.Add(notification);
+
+                    // Envoi en temps réel via SignalR
+                    await _hubContext.Clients.User(affectation.EmployeId.ToString())
+                        .SendAsync("ReceiveNotification", new
+                        {
+                            message = notification.Contenu
+                        });
+                }
+
+                await _context.SaveChangesAsync();
+            }
 
             // Supprimer les affectations des employés retirés
             var affectationsASupprimer = projet.Affectations

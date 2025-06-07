@@ -440,8 +440,6 @@ export class DashboardComponent implements OnInit {
 
     this.http.post('http://localhost:5053/api/Reclamation/add', complaintData).subscribe({
       next: (response: any) => {
-        console.log('Réclamation envoyée avec succès:', response);
-        alert(response.message || 'Votre réclamation a été envoyée avec succès.');
         this.complaintText = ''; // Clear the textarea
         this.showComplaintForm = false; // Optionally close the form
       },

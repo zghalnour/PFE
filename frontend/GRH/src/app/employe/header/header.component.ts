@@ -194,6 +194,17 @@ export class HeaderComponent implements OnInit {
          this.showDropdown = false;
          this.markAsRead(notificationId);
          break;
+      case 'Objectif':
+         this.router.navigate(['/employe']);
+         this.showDropdown = false;
+         this.markAsRead(notificationId);
+         break;
+      case 'Affectation':
+        this.router.navigate(['/employe']);
+         this.showDropdown = false;
+         this.markAsRead(notificationId);
+         break;
+
     
       default:
         console.warn(`Type de notification non pris en charge : ${type}`);

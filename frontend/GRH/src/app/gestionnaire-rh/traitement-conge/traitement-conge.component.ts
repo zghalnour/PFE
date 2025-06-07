@@ -210,7 +210,6 @@ getStatutClass(statut: string): string {
         }
       });
   }
-  
 
   rejeterDemande(demande: DemandeConge) {
     console.log('Rejeter demande:', demande.id);

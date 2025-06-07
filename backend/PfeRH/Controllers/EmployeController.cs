@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using PfeRH.Hubs;
 using PfeRH.Models;
 using PfeRH.services;
 using System.Linq;
@@ -18,14 +20,18 @@ namespace PfeRH.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<Utilisateur> _userManager;
         private readonly RoleManager<IdentityRole<int>> _roleManager;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
         private readonly EmailService _emailService;
 
-        public EmployeController(ApplicationDbContext context, UserManager<Utilisateur> userManager, RoleManager<IdentityRole<int>> roleManager, EmailService emailService)
-        {
+        public EmployeController(ApplicationDbContext context, UserManager<Utilisateur> userManager, RoleManager<IdentityRole<int>> roleManager, 
+            EmailService emailService, IHubContext<NotificationHub> hubContext
+            )
+        { 
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _hubContext = hubContext;
             _emailService = emailService;
         }
         [HttpPost("add")]
@@ -282,6 +288,7 @@ namespace PfeRH.Controllers
             {
                 return NotFound("Employé non trouvé.");
             }
+            var Id = dto.EmployeId;
 
             // Mettre à jour les champs simples
             employe.Role = dto.Poste;
@@ -300,7 +307,9 @@ namespace PfeRH.Controllers
 
             employe.DepartementId = departement.Id;
 
-            // Supprimer les anciens objectifs SMART
+            var anciensObjectifsCount = await _context.Objectifs
+    .Where(o => o.EmployeId == employe.Id)
+    .CountAsync();
             _context.Objectifs.RemoveRange(employe.ObjectifsSmarts);
 
             // Ajouter les nouveaux
@@ -312,6 +321,31 @@ namespace PfeRH.Controllers
             }).ToList();
 
             await _context.SaveChangesAsync();
+            
+            if ( dto.ObjectifsSmarts.Count() > anciensObjectifsCount)
+            {
+             
+                Console.WriteLine($"gergegregre {Id}");
+
+                var utilisateurExiste = await _context.Personnels.AnyAsync(u => u.Id == Id);
+               
+                if (utilisateurExiste)
+                {
+                    var notification = new Notification(
+                        contenu: $"Un ou plusieurs nouveaux objectifs SMART ont été ajoutés.",
+                        type: "Objectif",
+                        utilisateurId: Id
+                    );
+
+                    _context.Notifications.Add(notification);
+                    await _context.SaveChangesAsync();
+
+                    await _hubContext.Clients.User(Id.ToString()).SendAsync("ReceiveNotification", new
+                    {
+                        message = notification.Contenu
+                    });
+                }
+            }
 
             return Ok("Employé mis à jour avec succès.");
         }
@@ -414,7 +448,7 @@ namespace PfeRH.Controllers
                 Description = t.Description,
                 Statut = "En cours",
                 ProjetId = projet.Id,
-                EmployeId = t.EmployeId // Assure-toi que le modèle Tache a un champ EmployeId
+                EmployeId = t.EmployeId 
             }).ToList();
 
             _context.Taches.AddRange(taches);
@@ -430,6 +464,24 @@ namespace PfeRH.Controllers
             }).ToList();
 
             _context.Affectations.AddRange(affectations);
+
+            await _context.SaveChangesAsync();
+            foreach (var employeId in employeIds)
+            {
+                var notification = new Notification(
+                    contenu: $"Vous avez été affecté(e) au projet '{projet.Nom}'.",
+                    type: "Affectation",
+                    utilisateurId: employeId??0
+                );
+
+                _context.Notifications.Add(notification);
+
+                // Optionnel : envoyer via SignalR si tu utilises un hub de notifications
+                await _hubContext.Clients.User(employeId.ToString()).SendAsync("ReceiveNotification", new
+                {
+                    message = notification.Contenu
+                });
+            }
 
             await _context.SaveChangesAsync();
 

@@ -245,8 +245,7 @@ submitEvaluationMeeting(): void {
 
 // --- Task Creation for Forms (Modify to handle existing tasks) ---
 createTaskGroup(task: Task | null = null): FormGroup {
-  // Si une tâche existante est fournie, remplir avec ses données
-  // Sinon, créer un groupe vide pour une nouvelle tâche
+
   return this.fb.group({
     id: [task ? task.id : 0, Validators.required], // Stocker l'ID original, 0 pour les nouvelles tâches
     nom: [task ? task.nom : '', Validators.required],
@@ -276,10 +275,7 @@ removeTaskFromEditForm(index: number): void {
 
 }
 
-// ... (votre méthode loadInitialData existante) ...
-// ASSUREZ-VOUS que loadInitialData charge bien les projets AVEC leurs tâches (proj.taches)
-// Si ce n'est pas le cas, il faudra ajouter un appel API dans openEditProjectModal
-// pour récupérer les détails du projet (incluant les tâches) avant d'ouvrir le modal.
+
 
 // --- Edit Project Modal Logic ---
 openEditProjectModal(project: Project, department: Department): void {
@@ -343,16 +339,13 @@ private proceedToOpenEditModal(projectWithTasks: Project, department: Department
     // Check if the task object from API has 'nom'. If not, adapt 'createTaskGroup' or API response.
     if (task.nom === undefined) {
         console.warn(`Task with ID ${task.id} fetched from API is missing the 'nom' property. Using description or placeholder.`);
-        // Handle missing 'nom' - maybe use description or a default value
-        // task.nom = task.description || 'Tâche sans nom'; // Example fallback
+      
     }
     this.editTaches.push(this.createTaskGroup(task));
   });
 
-  // Ensure department.employes is Employee[] and not SimpleEmployee[] if you need nomPrenom
-  // If department.employes is SimpleEmployee[], you might need to fetch full employee details
-  // or adjust the interface/data loading. Assuming it's Employee[] for now.
-  this.departmentEmployeesForModal = department.employes as Employee[]; // Cast if necessary, ensure data matches
+  
+  this.departmentEmployeesForModal = department.employes as Employee[]; 
   if (!this.departmentEmployeesForModal || this.departmentEmployeesForModal.length === 0) {
       console.warn(`No employees found for department ${department.nom} to populate dropdown.`);
       // Potentially load them here if needed: this.loadEmployeesForDepartment(department.id);

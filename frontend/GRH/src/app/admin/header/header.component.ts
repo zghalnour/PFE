@@ -176,7 +176,12 @@ export class HeaderComponent implements OnInit{
   }
       this.markAsRead(notificationId);
       break;
+    case 'Reclamation':
 
+       this.router.navigate(['/employes']);
+       this.showDropdown = false;
+       this.markAsRead(notificationId);
+       break;
   
 
     default:

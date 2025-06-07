@@ -413,7 +413,7 @@ namespace PfeRH.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UtilisateurId")
+                    b.Property<int>("UtilisateurId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -943,7 +943,9 @@ namespace PfeRH.Migrations
 
                     b.HasOne("PfeRH.Models.Utilisateur", "Utilisateur")
                         .WithMany()
-                        .HasForeignKey("UtilisateurId");
+                        .HasForeignKey("UtilisateurId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Candidature");
 
