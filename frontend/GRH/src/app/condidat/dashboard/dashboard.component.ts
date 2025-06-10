@@ -1,6 +1,7 @@
 import { Component, OnInit, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -44,7 +45,7 @@ export class DashboardComponent implements AfterViewChecked {
   @ViewChild('chatContainer') private chatContainer!: ElementRef;
   isChatExpanded: boolean = false; 
 
-  constructor(private router: Router , private http: HttpClient) {}
+  constructor(private router: Router , private http: HttpClient, private snackBar: MatSnackBar) {}
 
   ngOnInit() {
     this.fetchJobs();
@@ -83,7 +84,7 @@ export class DashboardComponent implements AfterViewChecked {
   }
   async fetchJobs() {
     try {
-      const response = await fetch('http://localhost:5053/api/Offre/get-all-offres');
+      const response = await fetch('http://localhost:5053/api/Offre/get-Ouv-offres');
       if (!response.ok) throw new Error('Erreur lors de la récupération des offres');
       
       const data = await response.json();
@@ -91,7 +92,7 @@ export class DashboardComponent implements AfterViewChecked {
         id:job.id,
         title: job.titre,
         type: job.typeContrat,
-        skills: job.competences.split(', '),
+        skills: job.competences.split(/[,\;/\|\-]\s*/),
         deadline: job.dateLimite,
         description: job.description,
         descrTest: job.descTest,
@@ -235,9 +236,12 @@ isJobExpired(job: any): boolean {
 
   // Soumettre la candidature
   submitApplication() {
-    // Vérifier si les informations sont complètes
-    if (!this.applicant.nomPrenom || !this.applicant.email || !this.applicant.telephone || !this.applicant.linkedin || !this.applicant.cv) {
-      alert('Veuillez remplir tous les champs obligatoires.');
+  
+    if (!this.applicant.nomPrenom || !this.applicant.email || !this.applicant.telephone || !this.applicant.linkedin || !this.applicant.cv ) {
+      this.snackBar.open('Veuillez remplir tous les champs obligatoires et sélectionner un CV.', 'Fermer', {
+        duration: 3000, 
+        verticalPosition: 'top'
+      });
       return;
     }
     this.isLoading = true;
@@ -293,8 +297,11 @@ isJobExpired(job: any): boolean {
       });
   }
   submitSimpleApplication() {
-    if (!this.applicant.nomPrenom || !this.applicant.email || !this.applicant.telephone || !this.applicant.linkedin || !this.applicant.cv) {
-      alert('Veuillez remplir tous les champs obligatoires.');
+    if (!this.applicant.nomPrenom || !this.applicant.email || !this.applicant.telephone || !this.applicant.linkedin || !this.applicant.cv ) {
+      this.snackBar.open('Veuillez remplir tous les champs obligatoires et sélectionner un CV.', 'Fermer', {
+        duration: 3000,
+        verticalPosition: 'top'
+      });
       return;
     }
     this.isLoading = true;

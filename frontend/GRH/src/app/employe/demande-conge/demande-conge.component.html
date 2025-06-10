@@ -195,11 +195,11 @@
     </div>
   </mat-dialog-content>
 
-  <mat-dialog-actions  class="border-t pt-3 mt-4">
+  <mat-dialog-actions  class="flex justify-end items-center gap-x-3 border-t pt-3 mt-4 ml-8">
     <!-- Utilisez les méthodes onCancel et onSubmit du composant principal -->
     <button mat-stroked-button (click)="onCancel()">Annuler</button>
-    <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="!demandeForm.valid">
-     Envoyer la Demande
+    <button class="custom-blue-btn" (click)="onSubmit()" [disabled]="!demandeForm.valid">
+     Envoyer 
     </button>
   </mat-dialog-actions>
 </ng-template>

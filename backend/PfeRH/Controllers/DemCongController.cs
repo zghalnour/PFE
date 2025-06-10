@@ -171,10 +171,10 @@ namespace PfeRH.Controllers
 
                 switch (dto.NouveauStatut.ToLower())
                 {
-                    case "Approuvée":
+                    case "approuvée":
                         contenuNotif = "Votre demande de congé a été acceptée.";
                         break;
-                    case "Refusée":
+                    case "refusée":
                         contenuNotif = "Votre demande de congé a été refusée.";
                         break;
                     default:

@@ -374,7 +374,7 @@
     [(ngModel)]="employe.role"
     class="mt-2 p-2 w-full border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
     placeholder="Ex: Chef Marketing"
-    readonly
+    
   />
 </div>
 
@@ -386,7 +386,7 @@
 
         <!-- Département -->
             <!-- Département - Conditionally displayed -->
-            <div *ngIf="employe.selectedRoleType === 'Autre'" class="w-full md:w-[48%]">
+            <div *ngIf="!employe.role.toLowerCase().includes('rh') && employe.role !== ''"  class="w-full md:w-[48%]">
               <label class="block text-lg font-medium mb-1">Département</label>
               <select
                 [(ngModel)]="employe.departementNom"

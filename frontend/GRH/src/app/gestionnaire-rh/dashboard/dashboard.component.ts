@@ -530,7 +530,7 @@ loggedInUserId: any = null;
             `Entretien${this.nouvelEntretien.typeEntretien}Programmé`
           );
           this.nouvelEntretien = { typeEntretien: '', dateEntretien: new Date(), modeEntretien: 'présentiel',responsableId: null };
-          
+          this.resetNouvelEntretienForm();
         
         },
         error: (error) => {

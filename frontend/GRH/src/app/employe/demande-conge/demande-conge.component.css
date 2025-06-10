@@ -42,5 +42,23 @@
   cursor: pointer; /* pour montrer que c'est cliquable/survolable */
 }
 
+.custom-blue-btn{
+  background-color:#1f90bc;
+  color: white;
+  width: 80px;
+  height: 35px; 
+  border: none; /* Supprimer la bordure par défaut */
+  border-radius: 8px; /* Coins arrondis pour un look plus doux */
+  display: flex; /* Permet de centrer le contenu (ex: une icône) */
+  align-items: center; /* Centre verticalement */
+  justify-content: center; /* Centre horizontalement */
+  cursor: pointer; /* Change le curseur pour indiquer que c'est cliquable */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Transitions douces pour les effets */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); /* Ombre subtile pour un effet de profondeur */
+}
 
+.custom-blue-btn:hover {
+
+  transform: translateY(-1px); /* Léger effet de soulèvement au survol */
+}
 

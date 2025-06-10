@@ -232,7 +232,7 @@ barChartDisplayYear: number | null = new Date().getFullYear();
               return 'rgba(54, 162, 235, 0.7)'; // Blue
             case 'terminé':
           
-              return 'rgba(75, 192, 192, 0.7)'; // Green
+              return 'rgba(58, 216, 137, 0.7)'; // Green
             case 'non terminé':
             case 'non termine': // Handle variations
             case 'en retard': // Example for another status

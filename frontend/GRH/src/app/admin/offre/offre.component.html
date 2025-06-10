@@ -53,8 +53,8 @@
     </div>
 <!-- Formulaire avec 'ngIf' basé sur la variable isOpenForm -->
 <!-- Modal de modification de l'offre -->
-<div *ngIf="isEditing" class="modal fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
-  <div class="bg-white p-8 rounded-lg shadow-lg h-auto flex"
+<div *ngIf="isEditing" class="modal fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50 ml-[5%] mt-[4%]">
+  <div class="bg-white p-6 rounded-lg shadow-lg h-auto flex"
   [ngClass]="currentOffre?.questions?.length > 0 ? 'w-3/4' : 'w-1/2'">
 
     <!-- Partie gauche : Modifier l'offre -->

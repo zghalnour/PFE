@@ -253,7 +253,7 @@
             <div class="border-t border-gray-200 pt-4 mt-4 space-y-3"> <!-- Add separator and spacing -->
               <div class="flex justify-between items-center mb-2">
                    <h3 class="text-md font-medium text-black">Tâches du Projet</h3>
-                   <button mat-stroked-button color="accent" type="button" (click)="addTask()">
+                   <button mat-stroked-button color="primary" type="button" (click)="addTask()">
                        <mat-icon>add</mat-icon> Ajouter
                    </button>
               </div>
@@ -333,9 +333,9 @@
         <!-- Modal Actions -->
         <div class="flex justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50">
             <button mat-stroked-button (click)="closeAddProjectModal()">Annuler</button>
-            <button mat-flat-button color="primary" (click)="submitAddProject()" [disabled]="isSubmittingProject || projectForm.invalid">
+            <button class="custom-blue-btn"  (click)="submitAddProject()" [disabled]="isSubmittingProject || projectForm.invalid">
                 <span *ngIf="!isSubmittingProject" class="flex items-center gap-1">
-                    <mat-icon>save</mat-icon> Créer
+                     Ajouter
                 </span>
                 <span *ngIf="isSubmittingProject" class="flex items-center gap-2">
                     <mat-progress-spinner [diameter]="20" mode="indeterminate"></mat-progress-spinner>
@@ -421,7 +421,7 @@
               <div class="border-t border-gray-200 pt-4 mt-4 space-y-3">
                   <div class="flex justify-between items-center mb-2">
                       <h3 class="text-md font-medium text-black">Tâches du Projet</h3>
-                      <button mat-stroked-button color="accent" type="button" (click)="addTaskToEditForm()">
+                      <button mat-stroked-button color="primary" type="button" (click)="addTaskToEditForm()">
                           <mat-icon>add</mat-icon> Ajouter Tâche
                       </button>
                   </div>
@@ -503,9 +503,9 @@
           <!-- Modal Actions -->
           <div class="flex justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50">
               <button mat-stroked-button (click)="closeEditProjectModal()">Annuler</button>
-              <button mat-flat-button color="primary" (click)="submitEditProject()" [disabled]="isSubmittingProject">
+              <button class="custom-blue-btn"  (click)="submitEditProject()" [disabled]="isSubmittingProject">
                   <span *ngIf="!isSubmittingProject" class="flex items-center gap-1">
-                      <mat-icon>save</mat-icon> Enregistrer
+                       Modifier
                   </span>
                   <span *ngIf="isSubmittingProject" class="flex items-center gap-2">
                       <mat-progress-spinner [diameter]="20" mode="indeterminate"></mat-progress-spinner>
@@ -609,11 +609,11 @@
       <!-- Footer -->
       <div class="flex justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50">
         <button mat-stroked-button (click)="closeEvaluationModal()">Annuler</button>
-        <button mat-flat-button color="primary"
+        <button class="custom-blue-btn"
                 (click)="submitEvaluationMeeting()"
                 [disabled]="isSubmittingEvaluation || evaluationForm.invalid">
           <span *ngIf="!isSubmittingEvaluation" class="flex items-center gap-1">
-            <mat-icon>send</mat-icon> Planifier
+             Planifier
           </span>
           <span *ngIf="isSubmittingEvaluation" class="flex items-center gap-2">
             <mat-progress-spinner [diameter]="20" mode="indeterminate"></mat-progress-spinner>

@@ -2,6 +2,7 @@ import { Component,OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js'; 
+import { forkJoin } from 'rxjs';
 interface Project {
   projetId: number;
   nomProjet: string;
@@ -182,7 +183,7 @@ export class DashboardComponent implements OnInit {
    ngOnInit(): void {
     this.loadUserData();
     this.fetchEmployeeData();
-    this.fetchProjectsAndTasks();
+    
     
   }
    calculateAndSetKpi(): void {
@@ -244,7 +245,6 @@ export class DashboardComponent implements OnInit {
           this.employeeDepartment = data.nomDepartement;
           this.employeePosition = data.poste;
           this.assignedProjects = data.projets;
-          this.calculateStatistics();
           this.upcomingMeetings=data.reunionsAVenir;
           this.smartGoals=data.objectifsSmart;
           this.monthlyTaskCompletionData = data.nombreTachesCompletesParMois;
@@ -324,7 +324,7 @@ export class DashboardComponent implements OnInit {
   }
     // Renamed from fetchPerformanceTrendData
     processPerformanceTrendData(year: number): void {
-      this.isLoadingTrendData = true; // Indicate processing started
+      
       console.log(`Processing performance trend data for year: ${year}`);
   
       // Initialize the chart data for the 12 months with zeros
@@ -350,7 +350,7 @@ export class DashboardComponent implements OnInit {
       // Update the chart dataset
       this.performanceLineChartData.datasets[0].data = monthlyDataForChart;
   
-      this.isLoadingTrendData = false; // Indicate processing finished
+      this.isLoadingTrendData = false; 
       console.log(`Processed performance trend data for ${year}:`, monthlyDataForChart);
   
       // Note: ng2-charts should update automatically. If not, inject BaseChartDirective
@@ -370,7 +370,7 @@ export class DashboardComponent implements OnInit {
       (response: any) => {
         if (response.message === "Tâche terminée avec succès.") {
           
-          this.fetchProjectsAndTasks();
+          this.fetchEmployeeData();
           this.calculateStatistics(); 
         
         }
@@ -380,14 +380,43 @@ export class DashboardComponent implements OnInit {
       }
     );
   }
-  fetchEmployeeData(): void {
-    // Logique pour récupérer projets, réunions, objectifs...
-    console.log('Fetching other employee data...');
-    // Simuler la fin du chargement pour l'exemple
-    // this.isLoadingProjects = false;
-    // this.isLoadingMeetings = false;
-    // this.isLoadingGoals = false;
-  }
+fetchEmployeeData(): void {
+  const employeId = this.employeId;
+
+  // Construire les observables pour chaque API
+  const employeInfo$ = this.http.get<any>(`http://localhost:5053/api/Employe/${employeId}`);
+  const projets$ = this.http.get<any>(`http://localhost:5053/api/Employe/${employeId}/projets`);
+  const reunions$ = this.http.get<any>(`http://localhost:5053/api/Employe/${employeId}/reunions-avenir`);
+  const objectifs$ = this.http.get<any>(`http://localhost:5053/api/Employe/${employeId}/objectifs-smart`);
+  const tachesParMois$ = this.http.get<any>(`http://localhost:5053/api/Employe/${employeId}/taches-par-mois`);
+
+  // Appeler toutes les APIs en parallèle
+  forkJoin({
+    employeInfo: employeInfo$,
+    projets: projets$,
+    reunions: reunions$,
+    objectifs: objectifs$,
+    tachesParMois: tachesParMois$
+  }).subscribe({
+    next: (results) => {
+      // Affecter les données dans les propriétés de ton component
+      this.employeeDepartment = results.employeInfo.nomDepartement;
+      this.employeePosition = results.employeInfo.poste;
+      this.assignedProjects = results.projets;
+      this.upcomingMeetings = results.reunions;
+      this.smartGoals = results.objectifs;
+      this.monthlyTaskCompletionData = results.tachesParMois;
+
+      this.calculateStatistics();
+      this.calculateAndSetKpi();
+      this.processPerformanceTrendData(this.selectedYear);
+      this.fetchAutomaticSuggestions();
+    },
+    error: (err) => {
+      console.error('Erreur lors de la récupération des données de l\'employé', err);
+    }
+  });
+}
 
 
 
@@ -410,7 +439,7 @@ export class DashboardComponent implements OnInit {
         console.log('Réponse du serveur:', response);
         
         if (response.message === 'obj terminée avec succès.') {
-          this.fetchProjectsAndTasks();
+          this.fetchEmployeeData();
         } else {
           console.error('Erreur dans la réponse du serveur:', response);
         }

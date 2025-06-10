@@ -142,15 +142,7 @@
         </div>
       </div>
 
-      <!-- Content when NO job is selected (Placeholder for initial state or if user deselects) -->
-      <div *ngIf="!selectedJob"
-           class="no-job-selected-placeholder bg-white p-6 rounded-lg shadow-lg h-full flex flex-col items-center justify-center text-center">
-        <i class="fas fa-hand-pointer fa-4x text-blue-500 mb-4"></i> <!-- Or another icon like fas fa-info-circle -->
-        <h2 class="text-xl font-semibold text-gray-700 mb-2">Consultez les détails d'une offre</h2>
-        <p class="text-gray-600">
-          Cliquez sur une offre dans la liste à gauche pour afficher ses informations ici.
-        </p>
-      </div>
+  
     </div>
     <div *ngIf="isModalOpen" class="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white p-8 rounded-lg shadow-lg w-1/2 relative h-[490px]  flex flex-col">
@@ -161,32 +153,48 @@
 
         
         <!-- Formulaire avec flexbox pour ajuster le contenu -->
-        <form (ngSubmit)="submitApplication()" class="flex flex-col flex-grow mt-8">
+        <form (ngSubmit)="submitApplication()" #applicationForm="ngForm" class="flex flex-col flex-grow mt-8" novalidate>
           
           <!-- Informations personnelles -->
           <div class="grid grid-cols-2 gap-4 mb-4" *ngIf="currentStep === 'form'">
             <div class="flex flex-col">
               <label for="nomPrenom" class="font-medium text-gray-700">Nom et Prénom</label>
-              <input id="nomPrenom" type="text" [(ngModel)]="applicant.nomPrenom" name="nomPrenom" class="border-b-2 border-gray-300 p-2 rounded" required />
+              <input id="nomPrenom" type="text" [(ngModel)]="applicant.nomPrenom" name="nomPrenom" class="border-b-2 border-gray-300 p-2 rounded" required #nomPrenomModel="ngModel" />
+              <div *ngIf="nomPrenomModel.invalid && (nomPrenomModel.dirty || nomPrenomModel.touched || applicationForm.submitted)" class="text-red-500 text-sm mt-1">
+                Veuillez remplir ce champ.
+              </div>
             </div>
             <div class="flex flex-col">
               <label for="email" class="font-medium text-gray-700">Email</label>
-              <input id="email" type="email" [(ngModel)]="applicant.email" name="email" class="border-b-2 border-gray-300 p-2 rounded" required />
+              <input id="email" type="email" [(ngModel)]="applicant.email" name="email" class="border-b-2 border-gray-300 p-2 rounded" required #emailModel="ngModel" />
+              <div *ngIf="emailModel.invalid && (emailModel.dirty || emailModel.touched || applicationForm.submitted)" class="text-red-500 text-sm mt-1">
+                <span *ngIf="emailModel.hasError('required')">Veuillez remplir ce champ.</span>
+                <span *ngIf="emailModel.hasError('email')">Veuillez saisir une adresse e-mail valide.</span>
+              </div>
             </div>
             <div class="flex flex-col">
               <label for="telephone" class="font-medium text-gray-700">Téléphone</label>
-              <input id="telephone" type="tel" [(ngModel)]="applicant.telephone" name="telephone" class="border-b-2 border-gray-300 p-2 rounded" required />
+              <input id="telephone" type="tel" [(ngModel)]="applicant.telephone" name="telephone" class="border-b-2 border-gray-300 p-2 rounded" required #telephoneModel="ngModel" />
+              <div *ngIf="telephoneModel.invalid && (telephoneModel.dirty || telephoneModel.touched || applicationForm.submitted)" class="text-red-500 text-sm mt-1">
+                Veuillez remplir ce champ.
+              </div>
             </div>
             <div class="flex flex-col mb-[16px]">
               <label for="linkedin" class="font-medium text-gray-700">LinkedIn</label>
-              <input id="linkedin" type="text" [(ngModel)]="applicant.linkedin" name="linkedin" class="border-b-2 border-gray-300 p-2 rounded" required />
+              <input id="linkedin" type="text" [(ngModel)]="applicant.linkedin" name="linkedin" class="border-b-2 border-gray-300 p-2 rounded" required #linkedinModel="ngModel" />
+              <div *ngIf="linkedinModel.invalid && (linkedinModel.dirty || linkedinModel.touched || applicationForm.submitted)" class="text-red-500 text-sm mt-1">
+                Veuillez remplir ce champ.
+              </div>
             </div>
           </div>
         
           <!-- Importer CV -->
           <div class="mb-4" *ngIf="currentStep === 'form'">
             <label for="cv" class="font-medium text-gray-700 block mb-1">Importer votre CV</label>
-            <input id="cv" type="file" (change)="onCvSelected($event)" class="p-2" required />
+            <input id="cv" type="file" (change)="onCvSelected($event)" name="cv" class="p-2" required #cvModel="ngModel" ngModel />
+            <div *ngIf="cvModel.invalid && (cvModel.touched || applicationForm.submitted)" class="text-red-500 text-sm mt-1">
+              Veuillez sélectionner un fichier CV.
+            </div>
           </div>
       
           <!-- Questions de Test -->
@@ -224,6 +232,7 @@
             <button *ngIf="currentStep === 'form' && selectedJob?.testQuestions && selectedJob.testQuestions.length > 0"
                     type="button"
                     (click)="goToNextStep()"
+                    [disabled]="!applicant.nomPrenom || !applicant.email || !applicant.telephone || !applicant.linkedin || !applicant.cv"
                     class="bg-[#01b9b9] text-white px-4 py-2 rounded  mt-auto mx-auto mb-0">
               Passer au Test
             </button>

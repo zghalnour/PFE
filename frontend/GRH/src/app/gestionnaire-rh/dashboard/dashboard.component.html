@@ -71,7 +71,7 @@
           <label>Progression des entretiens : {{ nombreEntretiensPlanifies }} / {{ selectedCandidature.nbEntretiens }}</label>
         </div>
         <br>
-        <h3>Créer Entretien</h3>
+        <h3>Planifier Entretien</h3>
 
         <!-- Ligne 1: Type + Date -->
         <div class="form-row">
@@ -157,7 +157,7 @@
           </div>
         </div>
 
-        <button class="btn-create" (click)="creerEntretien()" [disabled]="isNewInterviewCreationDisabled()">Créer</button>
+        <button class="btn-create" (click)="creerEntretien()" [disabled]="isNewInterviewCreationDisabled()">Planifier</button>
       </div>
 
       <!-- Message affiché quand tous les entretiens sont terminés -->

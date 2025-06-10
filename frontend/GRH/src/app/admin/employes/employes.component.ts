@@ -41,7 +41,6 @@ interface CreerEmployePayload {
   email: string;
   password: string;
   phoneNumber: string;
-
   poste: string;
   salaire: number;
   departementNom: string | null;// L'API attend le nom final ici
@@ -613,10 +612,20 @@ export class EmployesComponent implements OnInit {
 
   submitEmploye() {
     let apiUrl: string;
-    let dataToSend: any; // Use 'any' for flexibility or create specific payload types
+    let dataToSend: any;
+    let role=this.employe.role;
+    if(role.toLowerCase().includes('rh')){
+      this.employe.selectedRoleType='GestionnaireRH';
+      this.employe.customRole=role;
+    }
+    else{
+      this.employe.selectedRoleType='Autre';
+      this.employe.customRole=role;
+    }
 
     // Validate and set the final 'role' and determine API URL and payload
     if (this.employe.selectedRoleType === 'GestionnaireRH') {
+      console.log('hiii')
       this.employe.role = 'Gestionnaire RH';
       apiUrl = 'http://localhost:5053/api/Employe/add-gestionnaire-rh';
       dataToSend = {
@@ -632,6 +641,7 @@ export class EmployesComponent implements OnInit {
       this.employe.nouveauDepartementNom = '';
 
     } else if (this.employe.selectedRoleType === 'Autre') {
+      console.log('bye')
       if (!this.employe.customRole || this.employe.customRole.trim() === '') {
         this.formError = "Veuillez préciser le poste.";
         return;
@@ -664,6 +674,7 @@ export class EmployesComponent implements OnInit {
         salaire: this.employe.salaire,
         departementNom: finalDepartementNom
       } as CreerEmployePayload;
+      console.log("pourquoiiii",dataToSend)
 
     } else {
       this.formError = "Veuillez sélectionner un type de poste.";
@@ -674,7 +685,8 @@ export class EmployesComponent implements OnInit {
     this.formError = null;
     this.departementError = null;
 
-    console.log('Envoi des données de l\'employé :', dataToSend, 'to URL:', apiUrl);
+    
+    console.log('Objet final à envoyer :', JSON.stringify(dataToSend, null, 2));
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     this.http.post<any>(apiUrl, dataToSend, { headers })

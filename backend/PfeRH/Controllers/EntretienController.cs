@@ -57,7 +57,7 @@ namespace PfeRH.Controllers
             await _context.SaveChangesAsync();
             var resp = await _userManager.FindByIdAsync(dto.ResponsableId.ToString());
 
-            if (resp != null)
+            if (resp != null && !(resp.Role?.ToLower().Contains("rh")??false))
             {
                 var notification = new Notification(
                     contenu: $"Un nouvel entretien a été programmé.",

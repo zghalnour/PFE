@@ -125,6 +125,48 @@ namespace PfeRH.Controllers
 
             return Ok(offres);
         }
+        [HttpGet("get-Ouv-offres")]
+        public async Task<ActionResult<IEnumerable<OffreDTO>>> GetAllOffresC()
+        {
+            var offres = await _context.Offres
+                .AsNoTracking()
+                .Where(o => o.DateLimitePostulation >= DateTime.Now) 
+                .GroupJoin(
+                    _context.Candidatures,
+                    o => o.Id,
+                    c => c.OffreId,
+                    (o, candidatures) => new { Offre = o, NombreCandidatures = candidatures.Count() }
+                )
+                .Select(o => new OffreDTO
+                {
+                    ID = o.Offre.Id,
+                    Titre = o.Offre.Titre,
+                    TypeContrat = o.Offre.TypeContrat,
+                    Description = o.Offre.Description,
+                    Competences = o.Offre.Competences,
+                    NombreCandidatures = o.NombreCandidatures,
+                    Statut = o.Offre.Statut,
+                    DateLimite = DateOnly.FromDateTime(o.Offre.DateLimitePostulation).ToString("dd/MM/yyyy"),
+
+                    TestId = o.Offre.TestId ?? 0,
+                    descTest = o.Offre.Test != null ? o.Offre.Test.Description : string.Empty,
+
+                    Questions = o.Offre.Test != null
+                        ? o.Offre.Test.Questions.Select(q => new QuestionDTO
+                        {
+                            Id = q.Id,
+                            Intitule = q.Intitule,
+                            Option1 = q.Option1,
+                            Option2 = q.Option2,
+                            Option3 = q.Option3,
+                            ReponseCorrecte = q.ReponseCorrecte
+                        }).ToList()
+                        : new List<QuestionDTO>()
+                })
+                .ToListAsync();
+
+            return Ok(offres);
+        }
 
 
         [HttpGet("candidatures-par-offre-titre/{titre}")]

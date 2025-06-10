@@ -58,25 +58,45 @@ namespace PfeRH.Controllers
                 .ThenInclude(ca => ca.Entretiens)
             .FirstOrDefaultAsync(c => c.Email == employeDto.Email);
 
-                if (candidat != null)
+                try
                 {
-                    // Supprimer les entretiens associés
-                    foreach (var candidature in candidat.Candidatures)
+                    if (candidat != null)
                     {
-                        _context.Entretiens.RemoveRange(candidature.Entretiens);
+                        foreach (var candidature in candidat.Candidatures)
+                        {
+                            // Supprimer les notifications liées à cette candidature
+                            var notifications = await _context.Notifications
+                                .Where(n => n.CandidatureId == candidature.Id)
+                                .ToListAsync();
+
+                            _context.Notifications.RemoveRange(notifications);
+
+                            // Supprimer les entretiens liés
+                            _context.Entretiens.RemoveRange(candidature.Entretiens);
+                        }
+
+                        foreach (var candidature in candidat.Candidatures)
+                        {
+                            _context.Entretiens.RemoveRange(candidature.Entretiens);
+                        }
+
+                        _context.Candidatures.RemoveRange(candidat.Candidatures);
+                        _context.Candidats.Remove(candidat);
+
+                        await _context.SaveChangesAsync();
                     }
-
-                    // Supprimer les candidatures
-                    _context.Candidatures.RemoveRange(candidat.Candidatures);
-
-                    // Supprimer le candidat
-                    _context.Candidats.Remove(candidat);
-
-                    await _context.SaveChangesAsync();
                 }
-              
+                catch (DbUpdateException dbEx)
+                {
+                    return StatusCode(500, $"Erreur DBUpdateException : {dbEx.Message} | Inner : {dbEx.InnerException?.Message}");
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"Erreur Exception : {ex.Message} | Inner : {ex.InnerException?.Message}");
+                }
 
-                    var employe = new Employe
+
+                var employe = new Employe
                     {
                         UserName = employeDto.Email.Split('@')[0],
                         Email = employeDto.Email,
@@ -145,6 +165,48 @@ namespace PfeRH.Controllers
         {
             try
             {
+                var candidat = await _context.Candidats
+        .Include(c => c.Candidatures)
+            .ThenInclude(ca => ca.Entretiens)
+        .FirstOrDefaultAsync(c => c.Email == rhDto.Email);
+
+                try
+                {
+                    if (candidat != null)
+                    {
+                        foreach (var candidature in candidat.Candidatures)
+                        {
+                            // Supprimer les notifications liées à cette candidature
+                            var notifications = await _context.Notifications
+                                .Where(n => n.CandidatureId == candidature.Id)
+                                .ToListAsync();
+
+                            _context.Notifications.RemoveRange(notifications);
+
+                            // Supprimer les entretiens liés
+                            _context.Entretiens.RemoveRange(candidature.Entretiens);
+                        }
+
+                        foreach (var candidature in candidat.Candidatures)
+                        {
+                            _context.Entretiens.RemoveRange(candidature.Entretiens);
+                        }
+
+                        _context.Candidatures.RemoveRange(candidat.Candidatures);
+                        _context.Candidats.Remove(candidat);
+
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                catch (DbUpdateException dbEx)
+                {
+                    return StatusCode(500, $"Erreur DBUpdateException : {dbEx.Message} | Inner : {dbEx.InnerException?.Message}");
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"Erreur Exception : {ex.Message} | Inner : {ex.InnerException?.Message}");
+                }
+
                 var rh = new GestionnaireRH
                 {
                     UserName = rhDto.Email.Split('@')[0],
@@ -553,7 +615,103 @@ namespace PfeRH.Controllers
                 }
             });
         }
-        [HttpGet("api/employes/{idEmploye}/projets-taches")]
+        [HttpGet("{idEmploye}")]
+        public async Task<ActionResult<EmployeInfoResponse>> GetEmployeInfo(int idEmploye)
+        {
+            var employe = await _context.Users
+                .OfType<Employe>()
+                .Where(e => e.Id == idEmploye)
+                .Select(e => new EmployeInfoResponse
+                {
+                    EmployeId = e.Id,
+                    Nom = e.NomPrenom,
+                    Poste = e.Role,
+                    NomDepartement = e.Departement != null ? e.Departement.Nom : null,
+                })
+                .FirstOrDefaultAsync();
+
+            if (employe == null)
+                return NotFound();
+
+            return Ok(employe);
+        }
+        [HttpGet("{idEmploye}/projets")]
+        public async Task<ActionResult<List<ProjetResponse>>> GetEmployeProjets(int idEmploye)
+        {
+            var projets = await _context.Affectations
+                .Where(a => a.EmployeId == idEmploye)
+                .Select(a => new ProjetResponse
+                {
+                    ProjetId = a.Projet.Id,
+                    NomProjet = a.Projet.Nom,
+                    Taches = a.Projet.Taches
+                        .Where(t => t.EmployeId == idEmploye)
+                        .Select(t => new TacheResponse
+                        {
+                            TacheId = t.Id,
+                            Titre = t.Nom,
+                            Description = t.Description,
+                            Statut = t.Statut
+                        }).ToList(),
+                    NombreTachesCompletes = a.Projet.Taches.Count(t => t.EmployeId == idEmploye && t.Statut == "Terminée"),
+                    NombreTachesACompleter = a.Projet.Taches.Count(t => t.EmployeId == idEmploye && t.Statut == "En cours")
+                })
+                .ToListAsync();
+
+            return Ok(projets);
+        }
+        [HttpGet("{idEmploye}/reunions-avenir")]
+        public async Task<ActionResult<List<ReunionResponse>>> GetReunionsAVenir(int idEmploye)
+        {
+            var reunions = await _context.Affectations
+                .Where(a => a.EmployeId == idEmploye)
+                .SelectMany(a => a.Projet.Evaluations)
+                .Where(r => r.DateEvaluation > DateTime.Now)
+                .Select(r => new ReunionResponse
+                {
+                    ReunionId = r.Id,
+                    Titre = r.Titre,
+                    DateEvaluation = r.DateEvaluation,
+                    Lieu = r.Lieu,
+                })
+                .ToListAsync();
+
+            return Ok(reunions);
+        }
+        [HttpGet("{idEmploye}/objectifs-smart")]
+        public async Task<ActionResult<List<ObjectifSmartResponse>>> GetObjectifsSmart(int idEmploye)
+        {
+            var objectifs = await _context.Objectifs
+                .Where(o => o.EmployeId == idEmploye)
+                .Select(o => new ObjectifSmartResponse
+                {
+                    ObjectifId = o.Id,
+                    Description = o.Description,
+                    Etat = o.Etat,
+                })
+                .ToListAsync();
+
+            return Ok(objectifs);
+        }
+        [HttpGet("{idEmploye}/taches-par-mois")]
+        public async Task<ActionResult<List<TachesParMoisResponse>>> GetTachesParMois(int idEmploye)
+        {
+            var tachesParMois = await _context.Taches
+                .Where(t => t.EmployeId == idEmploye && t.Statut == "Terminée" && t.DateFinir != null)
+                .GroupBy(t => new { t.DateFinir.Value.Year, t.DateFinir.Value.Month })
+                .Select(g => new TachesParMoisResponse
+                {
+                    Mois = $"{g.Key.Year}-{g.Key.Month:D2}",
+                    NombreTaches = g.Count()
+                })
+                .ToListAsync();
+
+            return Ok(tachesParMois);
+        }
+
+
+
+        [HttpGet("{idEmploye}/projets-taches")]
         public async Task<ActionResult<EmployeProjetResponse>> GetEmployeProjetsEtTaches(int idEmploye)
         {
             var employe = await _context.Users
@@ -708,7 +866,19 @@ namespace PfeRH.Controllers
             public int ProjetId { get; set; }
             public int EmployeId { get; set; }
         }
+        
+        
+        public class EmployeInfoResponse
+        {
+            public int EmployeId { get; set; }
+            public string Nom { get; set; }
+            public string Poste { get; set; }
+            public string NomDepartement { get; set; }
+        }
+
+
         public class EmployeProjetResponse
+     
         {
             public int EmployeId { get; set; }
             public string Nom { get; set; }

@@ -232,8 +232,9 @@ namespace PfeRH.Controllers
                 await _emailService.EnvoyerEmailConfirmationCandidatureAsync(candidature.Candidat.Email, candidature.Candidat.NomPrenom);
                 var admin = (await _userManager.GetUsersInRoleAsync("Admin")).FirstOrDefault();
                 var notification = new Notification(
-                       contenu: $"Une nouvelle candidature pour le poste de {candidature.Offre.Titre} a été traitée.",
-                       type: "Parcours Candidature",
+                       contenu: $"Un nouveau candidat a soumis sa candidature pour l'offre {candidature.Offre.Titre} ",
+
+                       type: "Nouvelle Candidature",
                        utilisateurId: admin.Id, // ID de l'administrateur
                        candidatureId: candidature.Id
                    );
@@ -242,7 +243,7 @@ namespace PfeRH.Controllers
                 await _context.SaveChangesAsync();
 
                 // Envoyer via SignalR
-                await _hubContext.Clients.User(admin.Id.ToString()).SendAsync("ReceiveNotification", new
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", new
                 {
                     message = notification.Contenu
                 });
